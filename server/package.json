@@ -1,0 +1,16 @@
+{
+  "name": "track-and-trace-server",
+  "version": "1.0.0",
+  "description": "Middleware for Track & Trace demo app built on BlockApps STRATO",
+  "main": "index.js",
+  "repository": "https://github.com/blockapps/track-and-trace",
+  "author": "BlockApps Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.4",
+    "moment": "^2.24.0"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}

@@ -49,3 +49,7 @@ node_modules/
 
 # misc
 .DS_Store
+
+# IDE
+.vscode
+.idea

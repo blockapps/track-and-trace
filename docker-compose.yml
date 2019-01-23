@@ -1,0 +1,29 @@
+version: "2.1"
+services:
+  track-and-trace-server:
+    image: track-and-trace-server:latest
+    build: ./server
+    restart: always
+    environment:
+    - SERVER=${SERVER:-docker}
+  track-and-trace-ui:
+    depends_on:
+    - track-and-trace-server
+    image: track-and-trace-ui:latest
+    build: ./ui
+    restart: always
+  track-and-trace-nginx:
+    depends_on:
+    - track-and-trace-ui
+    image: track-and-trace-nginx:latest
+    build: ./nginx-docker
+    restart: always
+    ports:
+    - 80:80
+    - 443:443
+    volumes:
+    - ./nginx-docker/ssl:/tmp/ssl:ro
+    environment:
+    - HOST_IP=${HOST_IP}
+    - SSL=${SSL:-false}
+    - SSL_CERT_TYPE=${SSL_CERT_TYPE:-crt}

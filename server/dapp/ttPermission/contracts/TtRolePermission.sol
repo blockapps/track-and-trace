@@ -22,11 +22,9 @@ contract TtRolePermission  is TtRole, TtPermission {
     rolePermissions[uint(TtRole.DISTRIBUTOR)] =
       (1 << uint(TtPermission.TRANSFER_OWNERSHIP_MAP)) ;
 
-    rolePermissions[uint(TtRole.RETAILER)] =
-      (1 << uint(EchoPermission.TRANSFER_OWNERSHIP_MAP)) ;
+    rolePermissions[uint(TtRole.RETAILER)] = 0;
 
-    rolePermissions[uint(EchoRole.OFFICER)] =
-      (1 << uint(EchoPermission.GAS_MODIFY_DEAL));
+    rolePermissions[uint(TtRole.OFFICER)] = 0;
   }
 
   function getRolePermissions(TtRole _role) returns (uint) {

@@ -1,0 +1,5 @@
+/*
+ONLY the manufacturer can create assets
+ONLY the admin can create users
+ONLY the manufacturer and the distributor can transfer ownership
+*/

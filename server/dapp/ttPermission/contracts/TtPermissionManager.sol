@@ -1,11 +1,11 @@
 import "/blockapps-sol/auth/permission/contracts/PermissionManager.sol";
 import "./TtPermission.sol";
-import "./TtRolePermissions.sol";
+import "./TtRolePermission.sol";
 
 /**
 * TT Permission Manager
 */
-contract TtPermissionManager is PermissionManager, TtPermission, TtRolePermissions {
+contract TtPermissionManager is PermissionManager, TtPermission, TtRolePermission {
 
   constructor(
     address _admin,

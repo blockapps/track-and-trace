@@ -24,7 +24,7 @@ contract TtRolePermission  is TtRole, TtPermission {
 
     rolePermissions[uint(TtRole.RETAILER)] = 0;
 
-    rolePermissions[uint(TtRole.OFFICER)] = 0;
+    rolePermissions[uint(TtRole.REGULATOR)] = 0;
   }
 
   function getRolePermissions(TtRole _role) returns (uint) {

@@ -5,8 +5,9 @@
 import "/blockapps-sol/collections/hashmap/contracts/Hashmap.sol";
 import "/blockapps-sol/util/contracts/Util.sol";
 import "/blockapps-sol/rest/contracts/RestStatus.sol";
-import "/server/dapp/ttPermission/contracts/TtPermissionManager.sol";
-import "/server/dapp/asset/TtError.sol"
+
+import "/dapp/ttPermission/contracts/TtPermissionManager.sol";
+import "/dapp/asset/TtError.sol";
 
 import "./Asset.sol";
 import "./AssetEvent.sol";
@@ -16,7 +17,7 @@ import "./AssetState.sol";
 * Interface for Asset data contracts
 */
 
-contract AssetManager is Util, RestStatus, AssetState, AssetEvent {
+contract AssetManager is Util, RestStatus, AssetState, AssetEvent, TtError {
     TtPermissionManager public ttPermissionManager;
     //  Assets
     Hashmap assets;
@@ -29,7 +30,7 @@ contract AssetManager is Util, RestStatus, AssetState, AssetEvent {
         assets = new Hashmap();
     }
 
-    function exists(string _uid) return (bool) {
+    function exists(string _uid) returns (bool) {
         return assets.contains(_uid);
     }
 
@@ -48,7 +49,7 @@ contract AssetManager is Util, RestStatus, AssetState, AssetEvent {
 
     } */
 
-    function getAsset(string _uid) constant returns (address) {
+    function getAsset(string _uid) public view returns (address) {
       return assets.get(_uid);
     }
 

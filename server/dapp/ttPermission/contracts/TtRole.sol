@@ -8,6 +8,8 @@ contract TtRole {
     MANUFACTURER,
     DISTRIBUTOR,
     RETAILER,
-    REGULATOR
+    REGULATOR,
+    OFFICER,
+    MAX
   }
 }

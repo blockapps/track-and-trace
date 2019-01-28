@@ -6,10 +6,10 @@ ONLY the manufacturer and the distributor can transfer ownership
 import "./TtRole.sol";
 import "./TtPermission.sol";
 
-contract TtRolePermission  is TtRole, TtPermission {
+contract TtRolePermissions is TtRole, TtPermission {
   uint[] rolePermissions;
-  constructor() {
-    rolePermissions.length = uint(TtRole.REGULATOR)+1;
+  constructor() public {
+    rolePermissions.length = uint(TtRole.MAX);
     rolePermissions[uint(TtRole.NULL)] = 0;
 
     rolePermissions[uint(TtRole.ADMIN)] =
@@ -27,7 +27,7 @@ contract TtRolePermission  is TtRole, TtPermission {
     rolePermissions[uint(TtRole.OFFICER)] = 0;
   }
 
-  function getRolePermissions(TtRole _role) returns (uint) {
+  function getRolePermissions(TtRole _role) public view returns (uint) {
     return rolePermissions[uint(_role)];
   }
 }

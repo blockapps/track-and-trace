@@ -4,8 +4,8 @@ import "./AssetEvent.sol";
 
 contract AssetFSM is FSM, AssetState, AssetEvent {
     constructor() {
-        addTransition(CREATED, REQUEST_BIDS, BID_REQUESTED);
-        addTransition(BIDS_REQUESTED, CHANGE_OWNER, OWNER_UPDATED);
+        addTransition(AssetState.CREATED, AssetEvent.REQUEST_BIDS, AssetState.BIDS_REQUESTED);
+        addTransition(AssetState.BIDS_REQUESTED, AssetEvent.CHANGE_OWNER, AssetState.OWNER_UPDATED);
     }
 
     function handleEvent(AssetState _state, AssetEvent _event) returns (AssetState){

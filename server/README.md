@@ -1,5 +1,9 @@
 # Run tests
 
+## Install blockapps-sol submodule
+```
+git submodule update --init --recursive --remote
+```
 ## Install dependencies
 ```
 yarn install

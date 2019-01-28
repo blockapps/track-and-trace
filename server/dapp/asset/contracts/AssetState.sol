@@ -2,7 +2,7 @@ contract AssetState {
     enum AssetState {
         NULL,
         CREATED,
-        BID_REQUESTED,
+        BIDS_REQUESTED,
         OWNER_UPDATED,
         MAX
     }

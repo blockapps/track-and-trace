@@ -7,10 +7,17 @@
   "author": "BlockApps Inc.",
   "license": "MIT",
   "dependencies": {
+    "blockapps-rest": "git://github.com/blockapps/blockapps-rest#v6.2.10",
     "express": "^4.16.4",
     "moment": "^2.24.0"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test:asset": "mocha dapp/asset/test --config config/${SERVER:-localhost}.config.yaml"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "co-mocha": "^1.2.2",
+    "mocha": "^5.2.0"
   }
 }

@@ -1,0 +1,5 @@
+nodes:
+- id: 0
+  stratoUrl: 'http://localhost:8080/strato-api'
+  blocUrl: 'http://localhost:8080/bloc/v2.2'
+  searchUrl: 'http://localhost:8080/cirrus'

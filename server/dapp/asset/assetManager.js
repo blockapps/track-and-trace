@@ -1,7 +1,7 @@
 const { rest6: rest, common } = require('blockapps-rest');
 const { util, config } = common;
 
-const RestStatus = rest.getFields(`${config.libPath}/rest/contracts/RestStatus.sol`);
+const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
 
 const assetJs = require(`${process.cwd()}/${config.dappPath}/asset/asset`);
 const contractUtils = require(`${process.cwd()}/${config.dappPath}/asset/contractUtils`);
@@ -44,6 +44,10 @@ function bind(user, contract) {
     return yield createAssert(user, contract, args);
   }
 
+  contract.handleAssetEvent = function* (args) {
+    return yield handleAssetEvent(user, contract, args);
+  }
+
   return contract;
 }
 
@@ -71,6 +75,18 @@ function* createAssert(user, contract, args) {
   return asset;
 }
 
+function* handleAssetEvent(user, contract, args) {
+  rest.verbose('handleAssetEvent', args);
+
+  const method = 'handleAssetEvent';
+  const [restStatus, ttError, searchCounter, newState] = yield rest.callMethod(user, contract, method, util.usc(args));
+
+  if (restStatus != RestStatus.OK) throw new rest.RestError(restStatus, ttError, { method, args });
+
+  yield assetJs.waitForRequiredUpdate(args.uid, searchCounter);
+
+  return newState;
+}
 
 module.exports = {
   uploadContract,

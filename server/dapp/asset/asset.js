@@ -35,7 +35,24 @@ function bind(user, contract) {
   return contract;
 }
 
+function bindAddress(user, address) {
+  let contract = {
+    name: contractName,
+    address
+  }
+  return bind(user, contract);
+}
+
+function* waitForRequiredUpdate(uid, searchCounter) {
+  const queryString = `${contractName}?and=(uid.eq.${uid},searchCounter.gte.${searchCounter})`;
+  const results = yield rest.waitQuery(queryString, 1);
+
+  return results[0];
+}
+
 module.exports = {
   uploadContract,
+  bindAddress,
   contractName,
+  waitForRequiredUpdate
 }

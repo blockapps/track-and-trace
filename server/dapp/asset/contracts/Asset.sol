@@ -5,21 +5,16 @@ import "/blockapps-sol/meta/searchable/contracts/Searchable.sol";
 import "/dapp/ttPermission/contracts/TtPermissionManager.sol";
 import "/dapp/asset/TtError.sol";
 
-import "./AssetEvent.sol";
-import "./AssetFSM.sol";
 import "./AssetState.sol";
 
 /**
  * Asset data container
  */
-contract Asset is Util, RestStatus, Searchable, AssetState, AssetEvent {
+contract Asset is Util, RestStatus, Searchable, AssetState, TtError {
   TtPermissionManager public ttPermissionManager;
 
-  //internal
-  AssetFSM public assetFSM;
-  AssetState public assetState;
-
   string public uid;
+  AssetState public assetState;
 
   string name;
   string description;
@@ -30,20 +25,15 @@ contract Asset is Util, RestStatus, Searchable, AssetState, AssetEvent {
     ttPermissionManager = TtPermissionManager(_ttPermissionManager);
 
     uid = _uid;
+    assetState = AssetState.CREATED;
     /* timestamp           = block.timestamp; */
-    assetFSM            = new AssetFSM();
   }
 
-  function handleAssetEvent(AssetEvent _event) public returns (uint, AssetState, uint) {
-    //  check permissions
+  function setAssetState(AssetState _assetState) returns (uint, TtError, uint) {
+    // check permissions
     //if (!ttPermissionManager.canModifyAsset(msg.sender)) return (RestStatus.UNAUTHORIZED, AssetState.NULL, 0);
-    //  check validity
-    AssetState newState = assetFSM.handleEvent(assetState, _event);
-    if (newState == AssetState.NULL) {
-      return (RestStatus.BAD_REQUEST, AssetState.NULL, 0);
-    }
-    //  assume new state
-    assetState = newState;
-    return (RestStatus.OK, assetState, searchable());
+
+    assetState = _assetState;
+    return (RestStatus.OK, TtError.NULL, searchable());
   }
 }

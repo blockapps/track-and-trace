@@ -4,10 +4,13 @@ const { common, rest6: rest } = require('blockapps-rest');
 const { assert, config, util } = common;
 
 const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
-const TtError = rest.getFields(`${process.cwd()}/${config.dappPath}/asset/TtError.sol`);
+const TtError = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/TtError.sol`).TtError;
+const AssetState = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`).AssetState;
+const AssetEvent = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`).AssetEvent;
 
 const ttPermissionManagerJs = require(`${process.cwd()}/${config.dappPath}/ttPermission/ttPermissionManager`);
 const assetManagerJs = require(`${process.cwd()}/${config.dappPath}/asset/assetManager`);
+const assetJs = require(`${process.cwd()}/${config.dappPath}/asset/asset`);
 const assetFactory = require(`${process.cwd()}/${config.dappPath}/asset/asset.factory`);
 
 
@@ -102,5 +105,53 @@ describe('Asset Manager Tests', function () {
     yield assert.shouldThrowRest(function* () {
       yield manufacturerAssetManagerContract.createAsset(assetArgs);
     }, RestStatus.BAD_REQUEST, TtError.UID_EXISTS);
+  });
+
+  it('Handle Asset Event', function* () {
+    const assetArgs = assetFactory.getAssertArgs();
+    const asset = yield manufacturerAssetManagerContract.createAsset(assetArgs);
+    const assetContract = assetJs.bindAddress(manufacturerUser, asset.address);
+
+    const assertHandleAssertEvent = function* (assetEvent, expectedState) {
+      const handleAssetEventArgs = {
+        uid: assetArgs.uid,
+        assetEvent,
+      };
+      
+      const newState = yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
+      assert.equal(newState, expectedState, 'returned new state');
+
+      const state = yield assetContract.getState();
+      assert.equal(state.assetState, expectedState, 'new state');
+    }
+
+    yield assertHandleAssertEvent(AssetEvent.REQUEST_BIDS, AssetState.BIDS_REQUESTED);
+    yield assertHandleAssertEvent(AssetEvent.CHANGE_OWNER, AssetState.OWNER_UPDATED);
+  });
+
+  it('Handle Asset Event -- invalid event', function* () {
+    const assetArgs = assetFactory.getAssertArgs();
+    yield manufacturerAssetManagerContract.createAsset(assetArgs);
+
+    const handleAssetEventArgs = {
+      uid: assetArgs.uid,
+      assetEvent: AssetEvent.CHANGE_OWNER,
+    };
+
+    yield assert.shouldThrowRest(function* () {
+      yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
+    }, RestStatus.BAD_REQUEST, TtError.NULL);
+  });
+
+  it('Handle Asset Event -- asset not fonund', function* () {
+    const assetArgs = assetFactory.getAssertArgs();
+    const handleAssetEventArgs = {
+      uid: assetArgs.uid,
+      assetEvent: AssetEvent.REQUEST_BIDS,
+    };
+
+    yield assert.shouldThrowRest(function* () {
+      yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
+    }, RestStatus.NOT_FOUND, TtError.UID_NOT_FOUND);
   });
 });

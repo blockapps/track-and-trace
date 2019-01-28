@@ -12,6 +12,7 @@ import "/dapp/asset/TtError.sol";
 import "./Asset.sol";
 import "./AssetEvent.sol";
 import "./AssetState.sol";
+import "./AssetFSM.sol";
 
 /**
 * Interface for Asset data contracts
@@ -22,12 +23,16 @@ contract AssetManager is Util, RestStatus, AssetState, AssetEvent, TtError {
     //  Assets
     PermissionedHashmap assets;
 
+    AssetFSM assetFSM;
+
     /**
     * Constructor
     */
     constructor(address _ttPermissionManager) public {
       ttPermissionManager = TtPermissionManager(_ttPermissionManager);
       assets = new PermissionedHashmap(_ttPermissionManager);
+
+      assetFSM = new AssetFSM();
     }
 
     function exists(string _uid) public view returns (bool) {
@@ -51,22 +56,19 @@ contract AssetManager is Util, RestStatus, AssetState, AssetEvent, TtError {
       return assets.get(_uid);
     }
 
-    function _handleAssetEvent(string _uid, AssetEvent _assetEvent) public returns (uint, AssetState, uint) {
-      //  get the Asset
-      Asset asset = Asset(getAsset(_uid));
-      //  error if Asset not properly initalized
-      if (asset.assetState() == AssetState.NULL) {
-        return (RestStatus.BAD_REQUEST, AssetState.NULL, 0);
-      }
+    function handleAssetEvent(string _uid, AssetEvent _assetEvent) public returns (uint, TtError, uint, AssetState) {
+      //  check permissions
+      //if (!ttPermissionManager.canModifyAsset(msg.sender)) return (RestStatus.UNAUTHORIZED, AssetState.NULL, 0);
 
-      //  validate new event
-      var (restStatus, newState, searchCounter) = asset.handleAssetEvent(_assetEvent);
+      if (!exists(_uid)) return (RestStatus.NOT_FOUND, TtError.UID_NOT_FOUND, 0, AssetState.NULL);
 
-      if (newState == AssetState.NULL) {
-        return (RestStatus.BAD_REQUEST, newState, 0);
-      }
+      Asset asset = Asset(assets.get(_uid));
+      AssetState newState = assetFSM.handleEvent(asset.assetState(), _assetEvent);
+      
+      if (newState == AssetState.NULL) return (RestStatus.BAD_REQUEST, TtError.NULL, 0, AssetState.NULL);
 
-      return (restStatus, newState, searchCounter);
+      (, , uint searchCounter) = asset.setAssetState(newState);
+
+      return (RestStatus.OK, TtError.NULL, searchCounter, newState);
     }
-
 }

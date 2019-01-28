@@ -2,7 +2,7 @@
 // handleEvent
 // Store a hashmap of the assets
 
-import "/blockapps-sol/collections/hashmap/contracts/Hashmap.sol";
+import "/blockapps-sol/auth/permission/contracts/PermissionedHashmap.sol";
 import "/blockapps-sol/util/contracts/Util.sol";
 import "/blockapps-sol/rest/contracts/RestStatus.sol";
 
@@ -20,34 +20,32 @@ import "./AssetState.sol";
 contract AssetManager is Util, RestStatus, AssetState, AssetEvent, TtError {
     TtPermissionManager public ttPermissionManager;
     //  Assets
-    Hashmap assets;
+    PermissionedHashmap assets;
 
     /**
     * Constructor
     */
-    constructor(address _ttPermissionManager) {
-        ttPermissionManager = TtPermissionManager(_ttPermissionManager);
-        assets = new Hashmap();
+    constructor(address _ttPermissionManager) public {
+      ttPermissionManager = TtPermissionManager(_ttPermissionManager);
+      assets = new PermissionedHashmap(_ttPermissionManager);
     }
 
-    function exists(string _uid) returns (bool) {
-        return assets.contains(_uid);
+    function exists(string _uid) public view returns (bool) {
+      return assets.contains(_uid);
     }
 
-    function validateUid(string _uid) returns (uint, TtError) {
-      if(bytes(_uid).length == 0)
-        return (RestStatus.BAD_REQUEST, TtError.UID_EMPTY);
+    function createAsset(string _uid) public returns (uint, TtError, address) {
+      if (!ttPermissionManager.canCreateAsset(msg.sender)) return (RestStatus.UNAUTHORIZED, TtError.NULL, 0);
 
-      //  error if exists
-      if(exists(_uid))
-        return (RestStatus.BAD_REQUEST, TtError.UID_EXISTS);
+      if (bytes(_uid).length == 0) return (RestStatus.BAD_REQUEST, TtError.UID_EMPTY, 0);
 
-      return (RestStatus.OK, TtError.NULL);
+      if (exists(_uid)) return (RestStatus.BAD_REQUEST, TtError.UID_EXISTS, 0);
+
+      Asset asset = new Asset(ttPermissionManager, _uid);
+      assets.put(_uid, asset);
+
+      return (RestStatus.CREATED, TtError.NULL, asset);
     }
-
-    /* function validateAsset(bytes32[] _bytes32Array) returns (uint, EchoError) {
-
-    } */
 
     function getAsset(string _uid) public view returns (address) {
       return assets.get(_uid);

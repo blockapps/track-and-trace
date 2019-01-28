@@ -11,9 +11,20 @@ function* uploadContract(user, ttPermissionManagerContract, args) {
   });
 
   const contract = yield rest.uploadContract(user, contractName, contractFilename, util.usc(contractArgs));
+  yield compileSearch(contract);
   contract.src = 'removed';
 
   return bind(user, contract);
+}
+
+function* compileSearch(contract) {
+  rest.verbose('compileSearch', contractName);
+
+  const isSearchable = yield rest.isSearchable(contract.codeHash);
+  if (isSearchable) return;
+
+  const searchable = [contractName];
+  yield rest.compileSearch(searchable, contractName, contractFilename);
 }
 
 function bind(user, contract) {
@@ -26,4 +37,5 @@ function bind(user, contract) {
 
 module.exports = {
   uploadContract,
+  contractName,
 }

@@ -126,7 +126,8 @@ describe('Track and Trace - deploy contracts', function () {
 
     console.log('Create Master TTUser');
     Object.assign(args, { uid: 2, account: masterCreated.address, username: masterEmail });
-
+    yield dappBind.createUser(args);
+    
     console.log('Deployment');
     const deployment = yield dapp.deploy(config.deployFilename, config.presetsDeployFilename, presetFilename, userTokens);
     assert.isDefined(deployment);

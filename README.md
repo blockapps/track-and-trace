@@ -3,11 +3,40 @@ Demo app that uses STRATO to track products through a supply chain using OAuth a
 
 # Setup
 
-## Quick Start
+## Instructions for Development using OAuth
+
+### Start api server
+```
+cd server
+yarn install
+yarn start
 
 ```
-docker-compose up -d
+
+### Start UI
 ```
+cd ui
+yarn install
+APP_URL=http://localhost yarn start
+```
+
+### Start nginx
+```
+cd nginx-docker
+HOST_IP=<YOUR_IP> docker-compose up -d
+```
+
+Your ip can be obtained by `ifconfig`.
+
+### Usernames for oauth server
+administrator@track-and-trace.app
+distributor@track-and-trace.app 	
+manufacturer@track-and-trace.app 	
+master@track-and-trace.app 	
+regulator@track-and-trace.app 	
+retailer@track-and-trace.app
+
+Password for all users is `1234`
 
 ## Command Line Arguments
 

@@ -74,76 +74,35 @@ function* bind(admin, _contract) {
     }
     return yield deploy(admin, contract, deployFilename, presetsDeployFilename, managers, presetFilename, userTokens)
   }
-  // /*
-  //   Assets  WAITING FOR assetManager.js functions
-  // */
-  // // create gas deal
-  // contract.createGasDeal = function* (args) {
-  //   return yield gasDealManager.createGasDeal(args);
-  // };
-  // // makeup gas deal
-  // contract.makeupGasDeal = function* (args) {
-  //   return yield gasDealManager.createGasDeal(args);
-  // };
-  //
-  // // get gas deal price indexes
-  // contract.getAllPriceIndexItems = function* () {
-  //   return yield gasDealManager.getAllPriceIndexItems();
-  // };
-  // // get gas deal price indexes
-  // contract.getGasDeals = function* (args) {
-  //   return yield gasDealManager.getAll(args);
-  // };
-  // // get gas deal by uid
-  // contract.getGasDealByUid = function* (uid) {
-  //   return yield gasDealManager.getGasDealByUid(uid);
-  // };
-  // // get gas deals by uids
-  // contract.getGasDealsByUids = function* (args) {
-  //   return yield gasDealManager.getGasDealsByUids(args);
-  // };
-  // // get gas deal by trader ID
-  // contract.getGasDealsByTraderId = function* (traderId) {
-  //   return yield gasDealManager.getGasDealsByTraderId(traderId);
-  // };
-  // // set the counter party price
-  // contract.rejectGasDeal = function* (args) {
-  //   return yield gasDealManager.rejectGasDeal(args);
-  // };
-  // // set the counter party price
-  // contract.setCounterPartyPriceForGasDeal = function* (args) {
-  //   return yield gasDealManager.setCounterPartyPriceForGasDeal(args);
-  // };
-  // // set the trader price
-  // contract.setTraderPriceForGasDeal = function* (args) {
-  //   return yield gasDealManager.setTraderPriceForGasDeal(args);
-  // };
-  //
-  // // handle GasDealEvent event (used for testing respondExceptionCut route)
-  // contract.handleGasDealEvent = function* (args) {
-  //   return yield gasDealManager.handleGasDealEvent(args);
+  /*
+    Assets
+  */
+  // create asset
+  contract.createAsset = function* (args) {
+    return yield assetManager.createAsset(args);
+  };
+
+  // handle AssetEvent event (used for testing respondExceptionCut route)
+  contract.handleAssetEvent = function* (args) {
+    return yield assetManager.handleAssetEvent(args);
+  }
+
+  // // create assets from preset data
+  // contract.createPresetAssets = function* (presetAssets) {
+  //   return yield createPresetAssets(admin, assetManager, presetAssets);
   // }
-  // // ECHO-841 Removed as hotfix for release
-  // // handle nomination event - both NOMINATION and VOLUME_NOMINATED
-  // // contract.gasHandleNomination = function* (args) {
-  // //   return yield gasDealManager.handleNomination(args);
-  // // }
-  // // handle final event - both FINAL_VOLUME_MATCH and FINAL_VOLUME_MISMATCH
-  // contract.gasHandleFinal = function* (_args) {
-  //   // return yield gasDealManager.handleFinal(args);
-  //   const args = { ..._args, gasDealEvent: _args.isCut ? GasDealEvent.FINAL_VOLUME_MISMATCH : GasDealEvent.FINAL_VOLUME_MATCH };
-  //   return yield gasDealManager.handleGasDealEvent(args);
-  // }
-  // // handle final event - both FINAL_VOLUME_MATCH and FINAL_VOLUME_MISMATCH
-  // contract.gasHandleCutResolution = function* (_args) {
-  //   const args = { ..._args, gasDealEvent: GasDealEvent.RESOLVED };
-  //   return yield gasDealManager.handleGasDealEvent(args);
-  // }
-  //
-  // // create gas deals from preset data
-  // contract.createPresetGasDeals = function* (presetGasDeals) {
-  //   return yield createPresetGasDeals(admin, gasDealManager, presetGasDeals);
-  // }
+
+  // login
+  contract.login = function* (username, pwHash) {
+    return yield login(userManager, username, pwHash);
+  };
+
+  // create user
+  contract.createUser = function* (args) {
+    const user = yield userManager.createUser(args);
+    yield ttPermissionManager.grantRole(user, args.role);
+    return user;
+  };
 
   // get all users
   contract.getUsers = function* (args) {
@@ -158,7 +117,7 @@ function* bind(admin, _contract) {
 
   // replace asset manager
   contract.replaceAssetManager = function* (args) {
-    return yield replaceGasDealManager(admin, contract, args);
+    return yield replaceAssetManager(admin, contract, args);
   };
 
   return contract;
@@ -219,7 +178,7 @@ function* createPresets(admin, ttPermissionManager, userManager, assetManager, p
   // Create preset users
   yield createPresetUsers(admin, ttPermissionManager, userManager, presetData.users, userTokens);
   // Create preset asset deals
-  // yield createPresetGasDeals(admin, assetManager, presetData.assets);
+  // yield createPresetAssets(admin, assetManager, presetData.assets);
 }
 
 function readAccountData(filename) {
@@ -315,7 +274,7 @@ function* createPresetUsers(admin, ttPermissionManager, userManager, presetUsers
       throw new Error(`Invalid user address: ${address} for user: ${presetUsers[i].username}`);
     }
     const user = yield userManager.getUser(presetUsers[i].username);
-    yield ttPermissionManager.grantRole(user, EchoRole[presetUsers[i].role]);
+    yield ttPermissionManager.grantRole(user, TtRole[presetUsers[i].role]);
   }
 }
 
@@ -368,20 +327,20 @@ const createPresetAssetTxs = function* (admin, assetManager, presetAssetArgs) {
 //   });
 // }
 
-function* createPresetAssets(admin, assetManager, presetAssets) {
-  const formattedPresetAssetArgs = formatPresetAssets(presetAssets);
-  const txs = yield createPresetAssetTxs(admin, assetManager, formattedPresetAssetArgs);
-  const results = yield rest.callList(admin, txs);
-  results.forEach((result, index) => {
-    const [restStatus, echoError, address] = result
-    if (restStatus != RestStatus.CREATED) {
-      throw new Error(`Unable to create asset: ${presetAssets[index].uid} - ${RestStatus[restStatus]} - ${EchoError[echoError]}`);
-    }
-    if (!util.isAddress(address)) {
-      throw new Error(`Invalid asset address: ${address} for asset: ${presetAssets[index].uid}`);
-    }
-  })
-}
+// function* createPresetAssets(admin, assetManager, presetAssets) {
+//   const formattedPresetAssetArgs = formatPresetAssets(presetAssets);
+//   const txs = yield createPresetAssetTxs(admin, assetManager, formattedPresetAssetArgs);
+//   const results = yield rest.callList(admin, txs);
+//   results.forEach((result, index) => {
+//     const [restStatus, ttError, address] = result
+//     if (restStatus != RestStatus.CREATED) {
+//       throw new Error(`Unable to create asset: ${presetAssets[index].uid} - ${RestStatus[restStatus]} - ${TtError[ttError]}`);
+//     }
+//     if (!util.isAddress(address)) {
+//       throw new Error(`Invalid asset address: ${address} for asset: ${presetAssets[index].uid}`);
+//     }
+//   })
+// }
 
 // =========================== Business Functions ========================
 
@@ -408,3 +367,9 @@ function* replaceAssetManager(admin, contract, args) {
   // MUST refresh the managers of the dapp
   return yield bind(admin, contract)
 }
+
+module.exports = {
+  bind,
+  uploadContract,
+  readAccountData,
+};

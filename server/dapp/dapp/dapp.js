@@ -231,7 +231,7 @@ function* formatPresetUsers(presetUsers, userTokens) {
       uid: userArgs.uid,
       account: userCreated.address,
       username: userArgs.username,
-      orgIds: argsToBytes32(userArgs.orgIds),
+      // orgIds: argsToBytes32(userArgs.orgIds),
       role: TtRole[userArgs.role],
     });
   }

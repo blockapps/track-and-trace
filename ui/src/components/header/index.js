@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/styles';
 
 class Header extends Component {
   render() {
@@ -17,4 +18,9 @@ class Header extends Component {
   }
 }
 
-export default Header;
+const styles = theme => ({
+  // any local styling classes would go here
+});
+
+
+export default withStyles(styles)(Header);

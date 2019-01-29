@@ -5,7 +5,7 @@ set -x
 # echo 'Checking if app has been deployed...'
 # if [ ! -f config/docker.deploy.yaml ]; then
 #     echo 'Deploying app...'
-#     npm run deploy
+yarn deploy
 # fi
 
 echo 'Starting track-and-trace-server...'

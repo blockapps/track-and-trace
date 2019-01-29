@@ -53,3 +53,9 @@ node_modules/
 # IDE
 .vscode
 .idea
+
+# Build directories
+**/build
+
+# blockapps config
+server/config.yaml

@@ -5,7 +5,6 @@ import { ConnectedRouter } from 'connected-react-router'
 import store, {history} from './store'
 import App from './components/app'
 
-
 ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
@@ -14,5 +13,5 @@ ReactDOM.render(
   </Provider>
   , 
   document.getElementById('root')
-);
+)
 

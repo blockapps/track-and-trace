@@ -1,13 +1,14 @@
 
 import { 
-  // fork, 
+  fork, 
   all 
 } from 'redux-saga/effects';
+import watchAuthActions from './authentication.saga'
 
-const rootSaga = function* startForeman() {
-  yield all([// YOUR SAGAS HERE
-    // fork (watchSomeEvent)
+const rootSaga = function* () {
+  yield all([
+    fork (watchAuthActions)
   ])
-};
+}
 
-export default rootSaga;
+export default rootSaga

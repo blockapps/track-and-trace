@@ -35,6 +35,7 @@ if (process.env.NODE_ENV === 'development') {
   if (typeof devToolsExtension === 'function') {
     enhancers.push(devToolsExtension())
   }
+  
 }
 
 // combine all the middlewares
@@ -52,7 +53,6 @@ const store = createStore(
 
 // run root saga
 sagaMiddleware.run(rootSaga)
-
 // export store
 export default store
 

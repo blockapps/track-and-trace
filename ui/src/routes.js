@@ -1,13 +1,14 @@
 import React, {Component} from 'react'
 import { Route } from 'react-router-dom'
 import Dashboard from './components/dashboard/'
+import EnsureAuthenticated from './components/ensureAuthenticated/'
 
 class Routes extends Component {
   render() {
     return (
-      <div>
-      	<Route exact path="/" component={Dashboard} />
-      </div>
+        <EnsureAuthenticated>
+          <Route exact path="/" component={Dashboard} />
+        </EnsureAuthenticated>
     );
   }
 }

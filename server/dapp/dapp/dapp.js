@@ -173,8 +173,6 @@ function* deploy(admin, contract, deployFilename, presetsDeployFilename, manager
 function* createPresets(admin, ttPermissionManager, userManager, assetManager, presetData, userTokens) {
   // Create preset users
   yield createPresetUsers(admin, ttPermissionManager, userManager, presetData.users, userTokens);
-  // Create preset asset deals
-  // yield createPresetAssets(admin, assetManager, presetData.assets);
 }
 
 function readAccountData(filename) {

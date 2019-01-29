@@ -87,10 +87,6 @@ function* bind(admin, _contract) {
     return yield assetManager.handleAssetEvent(args);
   }
 
-  // // create assets from preset data
-  // contract.createPresetAssets = function* (presetAssets) {
-  //   return yield createPresetAssets(admin, assetManager, presetAssets);
-  // }
 
   // login
   contract.login = function* (username, pwHash) {
@@ -295,52 +291,6 @@ const createPresetAssetTxs = function* (admin, assetManager, presetAssetArgs) {
   });
 }
 
-// function formatPresetAssets(presetAssets) {
-//   const uid = util.uid();
-//   return presetAssets.map((presetAsset) => {
-//     const args = {
-//       ...presetAsset,
-//       uid: `${presetAsset.uid}_${uid}`,
-//       // priceType: PriceType[presetGasDeal.priceType], // convert string to enum
-//       // volumeUnits: GasVolumeUnits[presetGasDeal.volumeUnits], // convert string to enum
-//       // // dates
-//       // dealDate: (new Date(presetGasDeal.dealDate).getTime() / 1000).toString(), // date to epoch
-//       // beginFlowDate: (new Date(presetGasDeal.beginFlowDate).getTime() / 1000).toString(), // date to epoch
-//       // endFlowDate: (new Date(presetGasDeal.endFlowDate).getTime() / 1000).toString(), // date to epoch
-//     };
-//     // price
-//     if (Number(args.priceType) === 1) { // fixed
-//       args.dealPrice *= 10 ** Constants.PRECISION;
-//     } else {
-//       args.indexPriceAdder *= 10 ** Constants.PRECISION;
-//     }
-//     const foundPipeline = pipelines.filter(pipeline => pipeline.name === args.pipelineEBB);
-//     if (foundPipeline.length !== 1) {
-//       console.log('ERROR: not found: pipeline:', args.pipelineEBB);
-//       process.exit();
-//     }
-//     args.pipelineEBB = foundPipeline[0].duns;
-//     const byteArrayArgs = {
-//       bytes32Array: assetJs.argsToBytes32(args),
-//     };
-//     return byteArrayArgs;
-//   });
-// }
-
-// function* createPresetAssets(admin, assetManager, presetAssets) {
-//   const formattedPresetAssetArgs = formatPresetAssets(presetAssets);
-//   const txs = yield createPresetAssetTxs(admin, assetManager, formattedPresetAssetArgs);
-//   const results = yield rest.callList(admin, txs);
-//   results.forEach((result, index) => {
-//     const [restStatus, ttError, address] = result
-//     if (restStatus != RestStatus.CREATED) {
-//       throw new Error(`Unable to create asset: ${presetAssets[index].uid} - ${RestStatus[restStatus]} - ${TtError[ttError]}`);
-//     }
-//     if (!util.isAddress(address)) {
-//       throw new Error(`Invalid asset address: ${address} for asset: ${presetAssets[index].uid}`);
-//     }
-//   })
-// }
 
 // =========================== Business Functions ========================
 

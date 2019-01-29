@@ -13,10 +13,9 @@ const { TtRole } = rest.getEnums(`${config.dappPath}/ttPermission/TtRole.sol`);
 // const { orgIdToNameMapping } = require(`${cwd}/server/enums`);
 
 // const userTokens = utils.loadAccessTokens();
-// const userTokens = utils.loadAccessTokens();
 // const adminToken = userTokens.admin;
 // const masterToken = userTokens.master;
-// const ADMIN_ROLE = 'ADMIN'
+const ADMIN_ROLE = 'ADMIN'
 
 // ---------------------------------------------------
 //   deploy the projects contracts
@@ -54,7 +53,7 @@ describe('Track and Trace - deploy contracts', function () {
     const dappBind = yield dappJs.bind(adminToken, { name: dapp.name, address: dapp.address });
     const role = TtRole[ADMIN_ROLE];
     const args = {
-      orgIds: [orgIdToNameMapping[0].id],
+      // orgIds: [orgIdToNameMapping[0].id],
       role,
     }
 

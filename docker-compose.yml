@@ -12,6 +12,9 @@ services:
     image: track-and-trace-ui:latest
     build: ./ui
     restart: always
+    environment: 
+    - APP_URL=${APP_URL:-http://$HOST_IP}
+    - NODE_ENV=${NODE_ENV:-production}
   track-and-trace-nginx:
     depends_on:
     - track-and-trace-ui

@@ -1,9 +1,10 @@
-const ba = require('blockapps-rest');
-const { rest6: rest } = ba;
-const { config, util } = ba.common;
+const { rest6: rest, common } = require('blockapps-rest');
+const { util, config } = common;
 
 const permissionManagerJs = require(`${process.cwd()}/${config.libPath}/auth/permission/permissionManager`);
+
 const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
+const TtRole = rest.getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`).TtRole;
 
 const contractName = 'TtPermissionManager';
 const contractFilename = `${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtPermissionManager.sol`;
@@ -31,10 +32,23 @@ function bind(admin, _contract) {
   contract.canTransferOwnershipMap = function* (user) {
     return yield canTransferOwnershipMap(admin, contract, user);
   }
+  contract.canModifyMap = function* (user) {
+    return yield canModifyMap(admin, contract, user);
+  }
   contract.canCreateUser = function* (user) {
     return yield canCreateUser(admin, contract, user);
   }
+  contract.grantManufacturerRole = function* (user) {
+    return yield grantRole(admin, contract, user, TtRole.MANUFACTURER);
+  }
 
+  contract.grantDistributorRole = function* (user) {
+    return yield grantRole(admin, contract, user, TtRole.DISTRIBUTOR);
+  }
+
+  contract.grantAssetManager = function* (user) {
+    return yield grantRole(admin, contract, user, TtRole.ASSET_MANAGER);
+  }
   return contract;
 }
 
@@ -65,6 +79,14 @@ function* canCreateAsset(admin, contract, user) {
 function* canTransferOwnershipMap(admin, contract, user) {
   // function canCreateTransferOwnershipMap() returns (address)
   const method = 'canTransferOwnershipMap';
+  const args = {address: user.address};
+  const [isPermitted] = yield rest.callMethod(admin, contract, method, util.usc(args));
+  return isPermitted;
+}
+
+function* canModifyMap(admin, contract, user) {
+  // function canModifyMap() returns (address)
+  const method = 'canModifyMap';
   const args = {address: user.address};
   const [isPermitted] = yield rest.callMethod(admin, contract, method, util.usc(args));
   return isPermitted;

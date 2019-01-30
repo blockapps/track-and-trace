@@ -1,11 +1,11 @@
 import "/blockapps-sol/auth/permission/contracts/PermissionManager.sol";
 import "./TtPermission.sol";
-import "./TtRolePermission.sol";
+import "./TtRolePermissions.sol";
 
 /**
 * TT Permission Manager
 */
-contract TtPermissionManager is PermissionManager, TtPermission, TtRolePermission {
+contract TtPermissionManager is PermissionManager, TtPermission, TtRolePermissions {
 
   constructor(
     address _admin,
@@ -22,6 +22,11 @@ contract TtPermissionManager is PermissionManager, TtPermission, TtRolePermissio
 
   function canCreateAsset(address _address) returns (bool) {
     uint permissions = 1 << uint(TtPermission.CREATE_ASSET);
+    return check(_address, permissions) == RestStatus.OK;
+  }
+
+  function canModifyMap(address _address) returns (bool) {
+    uint permissions = 1 << uint(TtPermission.MODIFY_ASSET_MAP);
     return check(_address, permissions) == RestStatus.OK;
   }
 

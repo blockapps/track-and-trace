@@ -5,9 +5,12 @@ contract TtRole {
   enum TtRole {
     NULL,
     ADMIN,
+    ASSET_MANAGER,
     MANUFACTURER,
     DISTRIBUTOR,
     RETAILER,
-    REGULATOR
+    REGULATOR,
+    OFFICER,
+    MAX
   }
 }

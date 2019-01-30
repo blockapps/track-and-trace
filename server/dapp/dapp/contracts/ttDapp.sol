@@ -29,18 +29,4 @@ import "/dapp/ttPermission/contracts/TtPermissionManager.sol";
      assetManager = new AssetManager(ttPermissionManager);
    }
 
-   /**
-    * Replace the AssetManager
-    * @param _address address - the new manager
-    *
-    * @return {uint}  RestStatus
-    */
-    function replaceAssetManager(address _address) returns (uint) {
-      //  transfer the map from the existing manager to the new manager
-      uint restStatus = assetManager.transferOwnershipMap(_address);
-      if (restStatus != RestStatus.OK)  return restStatus;
-      //  replace the manager
-      assetManager = AssetManager(_address);
-      return RestStatus.OK;
-    }
  }

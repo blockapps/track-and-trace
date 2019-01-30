@@ -10,6 +10,7 @@ const dappJs = require('./dapp');
 
 const { TtRole } = rest.getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`);
 
+const ADMIN_ROLE = 'ADMIN';
 // ---------------------------------------------------
 //   deploy the projects contracts
 // ---------------------------------------------------
@@ -39,7 +40,6 @@ describe('Track and Trace - deploy contracts', function () {
     const ttPermissionManager = yield ttPermissionManagerJs.uploadContract(process.env.ADMIN_TOKEN, process.env.MASTER_TOKEN);
     console.log('Uploading dapp');
     const dapp = yield dappJs.uploadContract(process.env.ADMIN_TOKEN, ttPermissionManager);
-    console.log('Time for dappBind');
     const dappBind = yield dappJs.bind(process.env.ADMIN_TOKEN, { name: dapp.name, address: dapp.address });
     const role = TtRole[ADMIN_ROLE];
     const args = {
@@ -47,11 +47,11 @@ describe('Track and Trace - deploy contracts', function () {
     }
 
     console.log('Create Admin TTUser');
-    Object.assign(args, {uid: 1, account: adminCreated.address, username: adminEmail });
+    Object.assign(args, { account: adminCreated.address, username: adminEmail });
     yield dappBind.createUser(args);
 
     console.log('Create Master TTUser');
-    Object.assign(args, { uid: 2, account: masterCreated.address, username: masterEmail });
+    Object.assign(args, { account: masterCreated.address, username: masterEmail });
     yield dappBind.createUser(args);
 
     console.log('Deployment');

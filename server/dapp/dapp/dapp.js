@@ -26,9 +26,7 @@ function* uploadContract(admin, ttPermissionManager) {
   const args = {
     ttPermissionManager: ttPermissionManager.address,
   };
-  console.log('TEST');
   const contract = yield rest.uploadContract(admin, contractName, contractFilename, util.usc(args));
-  console.log('HERE');
   contract.src = 'removed';
   yield util.sleep(5 * 1000);
   return yield bind(admin, contract);
@@ -68,6 +66,12 @@ function* bind(admin, _contract) {
     return yield deploy(admin, contract, deployFilename, managers)
   }
 
+  // create user
+  contract.createUser = function* (args) {
+    const user = yield userManager.createUser(args);
+    yield ttPermissionManager.grantRole(user, args.role);
+    return user;
+  };
   // get all users
   contract.getUsers = function* (args) {
     const user = yield userManager.getUsers(args);

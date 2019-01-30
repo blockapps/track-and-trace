@@ -4,7 +4,6 @@ timeout: 120000
 dappPath: ./dapp
 libPath: ./blockapps-sol
 apiUrl: /api/v1
-deployFilename: ./config/localhost.deploy.yaml
 
 nodes:
 - id: 0

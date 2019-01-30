@@ -19,7 +19,7 @@
     "winston": "^3.2.0"
   },
   "scripts": {
-    "deploy": "mocha dapp/dapp.deploy.js --config config/${SERVER:-localhost}.config.yaml && cp config/${SERVER:-localhost}.config.yaml config.yaml",
+    "deploy": "mocha dapp/dapp/dapp.deploy.js --config config/${SERVER:-localhost}.config.yaml && cp config/${SERVER:-localhost}.config.yaml config.yaml",
     "start": "node index.js"
   },
   "devDependencies": {}

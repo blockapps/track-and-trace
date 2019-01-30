@@ -45,7 +45,7 @@ node_modules/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+**/.env
 
 # misc
 .DS_Store

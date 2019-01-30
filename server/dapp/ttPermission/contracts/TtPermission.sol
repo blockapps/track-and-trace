@@ -8,6 +8,7 @@ contract TtPermission {
 
   enum TtPermission {
     CREATE_ASSET,
+    MODIFY_ASSET_MAP,
     TRANSFER_OWNERSHIP_MAP,
     CREATE_USER
   }

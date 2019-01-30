@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const { baseUrl } = require('./api/helpers/constants');
+const { baseUrl } = require('./helpers/constants');
 const routes = require('./api/v1/routes');
 const authHandler = require('./api/middleware/authHandler');
 const expressWinston = require('express-winston');

@@ -45,4 +45,3 @@ Password for all users is `1234`
 | SSL           | Should server use SSL                      | No       | false   |
 | SSL_CERT_TYPE | Type of SSL certificate                    | No       | crt     |
 | SERVER        | Configuration selecter for node middleware | No       | docker  |      
-

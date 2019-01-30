@@ -3,8 +3,8 @@
 // user manager
 import "/blockapps-sol/rest/contracts/RestStatus.sol";
 import "/blockapps-sol/auth/user/contracts/UserManager.sol";
-import "/server/dapp/asset/contracts/AssetManager.sol";
-import "/server/dapp/ttPermission/contracts/TtPermissionManager.sol";
+import "/dapp/asset/contracts/AssetManager.sol";
+import "/dapp/ttPermission/contracts/TtPermissionManager.sol";
 /**
  * Single entry point to all the project's contract
  * Deployed by the deploy script

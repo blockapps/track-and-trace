@@ -26,9 +26,11 @@ const reducer = (state = initialState, action) => {
         break;
       case CREATE_ASSET_SUCCESS:
         draft.isCreateAssetModalOpen = false;
+        break;
       case CREATE_ASSET_FAILURE:
         draft.error = action.error;
         draft.isCreateAssetModalOpen = true;
+        break;
       case GET_ASSETS_SUCCESS:
         // draft.assets = action.assets;
         // TODO: change when you use API

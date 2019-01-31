@@ -12,3 +12,8 @@
   cursor: pointer;
   background-color: rgba(0, 0, 0, 0.07);
 }
+
+.asset-modal-button {
+  float: right;
+  padding: 10px 10px;
+}

@@ -61,8 +61,8 @@ class AssetsList extends Component {
 
     return (
       <div>
-        <CreateAssetModal />
         <Paper className="assets-container">
+          <div className="asset-modal-button"> <CreateAssetModal /> </div>
           <Table className="assets-table">
             <TableHead>
               <TableRow>

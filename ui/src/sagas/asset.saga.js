@@ -3,7 +3,7 @@ import {
   takeLatest,
   put
 } from 'redux-saga/effects';
-import { apiUrl } from '../constants';
+import { apiUrl, HTTP_METHODS } from '../constants';
 import { GET_ASSETS, getAssetsSuccess, getAssetsFailure, CREATE_ASSET, createAssetSuccess, createAssetFailure } from '../actions/asset.actions';
 
 // TODO: create an API to list the assets
@@ -12,7 +12,7 @@ const assetsUrl = `${apiUrl}/assets`;
 const createAssetUrl = `${apiUrl}/asset/create`;
 
 function fetchAssets() {
-  return fetch(assetsUrl, { method: 'GET' })
+  return fetch(assetsUrl, { method: HTTP_METHODS.GET })
     .then((response) => {
       return response.json()
     })
@@ -24,7 +24,7 @@ function fetchAssets() {
 function createAssetApiCall(asset) {
   return fetch(createAssetUrl,
     {
-      method: 'POST',
+      method: HTTP_METHODS.POST,
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'

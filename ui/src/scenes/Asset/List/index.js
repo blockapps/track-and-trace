@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Button, TablePagination, Table, TableBody, TableHead, TableRow, TableCell, Paper } from '@material-ui/core';
+import { TablePagination, Table, TableBody, TableHead, TableRow, TableCell, Paper } from '@material-ui/core';
+import CreateAssetModal from '../Create';
 
 import { getAssets } from "../../../actions/asset.actions";
 import './List.css';
@@ -60,9 +61,7 @@ class AssetsList extends Component {
 
     return (
       <div>
-        <Button variant="contained" color="primary">
-          Create asset
-        </Button>
+        <CreateAssetModal />
         <Paper className="assets-container">
           <Table className="assets-table">
             <TableHead>

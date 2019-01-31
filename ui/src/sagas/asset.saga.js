@@ -4,10 +4,12 @@ import {
   put
 } from 'redux-saga/effects';
 import { apiUrl } from '../constants';
-import { GET_ASSETS, getAssetsSuccess, getAssetsFailure } from '../actions/asset.actions';
+import { GET_ASSETS, getAssetsSuccess, getAssetsFailure, CREATE_ASSET, createAssetSuccess, createAssetFailure } from '../actions/asset.actions';
 
 // TODO: create an API to list the assets
 const assetsUrl = `${apiUrl}/assets`;
+// TODO: replace with the url created for this
+const createAssetUrl = `${apiUrl}/asset/create`;
 
 function fetchAssets() {
   return fetch(assetsUrl, { method: 'GET' })
@@ -16,6 +18,24 @@ function fetchAssets() {
     })
     .catch(err => {
       throw err
+    });
+}
+
+function createAssetApiCall(asset) {
+  return fetch(createAssetUrl,
+    {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ asset })
+    })
+    .then(function (response) {
+      return response.json()
+    })
+    .catch(function (error) {
+      throw error;
     });
 }
 
@@ -35,6 +55,21 @@ function* getAssets() {
   }
 }
 
+function* createAsset(action) {
+  try {
+    const response = yield call(createAssetApiCall, action.asset);
+    if (response.success) {
+      yield put(createAssetSuccess(response.assets));
+    } else {
+      yield put(createAssetFailure());
+    }
+  } catch (err) {
+    // TODO: handle unexpected error
+    yield put(createAssetFailure(err));
+  }
+}
+
 export default function* watchAssets() {
   yield takeLatest(GET_ASSETS, getAssets)
+  yield takeLatest(CREATE_ASSET, createAsset)
 }

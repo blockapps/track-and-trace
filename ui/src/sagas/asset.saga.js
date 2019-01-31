@@ -10,13 +10,23 @@ import { GET_ASSETS, getAssetsSuccess, getAssetsFailure } from '../actions/asset
 const assetsUrl = `${apiUrl}/assets`;
 
 function fetchAssets() {
-  return fetch(assetsUrl, { method: 'GET' })
-    .then((response) => {
-      return response.json()
-    })
-    .catch(err => {
-      throw err
-    });
+  return ({
+    success: true, assets: [
+      { id: 1, name: 'Frozen yoghurt', description: 159, price: 6.0 },
+      { id: 2, name: 'Ice cream sandwich', description: 159, price: 6.0 },
+      { id: 3, name: 'Eclair', description: 159, price: 6.0 },
+      { id: 4, name: 'Cupcake', description: 159, price: 6.0 },
+      { id: 5, name: 'Gingerbread', description: 159, price: 6.0 }
+    ]
+  });
+  // TODO: Uncomment when API implementation is Done
+  // return fetch(assetsUrl, { method: 'GET' })
+  //   .then((response) => {
+  //     return response.json()
+  //   })
+  //   .catch(err => {
+  //     throw err
+  //   });
 }
 
 function* getAssets() {

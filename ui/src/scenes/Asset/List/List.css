@@ -1,0 +1,19 @@
+.assets-container {
+  width: 80%;
+  margin: 2% 10% 0 10%;
+  overflow-x: auto;
+}
+
+.assets-table {
+  min-width: 700px;
+}
+
+.assets-table-body tr:hover {
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.07);
+}
+
+.asset-modal-button {
+  float: right;
+  padding: 10px 10px;
+}

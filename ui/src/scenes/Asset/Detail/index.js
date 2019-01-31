@@ -47,7 +47,7 @@ class AssetDetail extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   const assetId = ownProps.match.params.id;
-  let asset = state.asset.assets.filter((row) => row.id == assetId)[0];
+  let asset = state.asset.assets.filter((row) => row.id === parseInt(assetId))[0];
   return {
     asset: asset
   };

@@ -3,10 +3,10 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Button, TablePagination, Table, TableBody, TableHead, TableRow, TableCell, Paper } from '@material-ui/core';
 
-import { getAssets } from "../../actions/assets.actions";
-import './assets.css';
+import { getAssets } from "../../../actions/asset.actions";
+import './List.css';
 
-class Assets extends Component {
+class AssetsList extends Component {
 
   constructor(props) {
     super(props);
@@ -99,10 +99,10 @@ class Assets extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    assets: state.assets.assets
+    assets: state.asset.assets
   };
 };
 
-const connected = connect(mapStateToProps, { getAssets })(Assets);
+const connected = connect(mapStateToProps, { getAssets })(AssetsList);
 
 export default withRouter(connected);

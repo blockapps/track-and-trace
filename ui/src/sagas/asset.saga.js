@@ -4,7 +4,7 @@ import {
   put
 } from 'redux-saga/effects';
 import { apiUrl } from '../constants';
-import { GET_ASSETS, getAssetsSuccess, getAssetsFailure } from '../actions/assets.actions';
+import { GET_ASSETS, getAssetsSuccess, getAssetsFailure } from '../actions/asset.actions';
 
 // TODO: create an API to list the assets
 const assetsUrl = `${apiUrl}/assets`;

@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Paper, Grid, Icon } from '@material-ui/core';
-import { getAssets } from "../../../actions/assets.actions";
-import './detail.css';
+import { getAssets } from "../../../actions/asset.actions";
+import './Detail.css';
 
 class AssetDetail extends Component {
 
@@ -47,7 +47,7 @@ class AssetDetail extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   const assetId = ownProps.match.params.id;
-  let asset = state.assets.assets.filter((row) => row.id == assetId)[0];
+  let asset = state.asset.assets.filter((row) => row.id == assetId)[0];
   return {
     asset: asset
   };

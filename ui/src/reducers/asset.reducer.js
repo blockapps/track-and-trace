@@ -1,6 +1,6 @@
 //Immutability Library
 import producer from 'immer';
-import { GET_ASSETS, GET_ASSETS_SUCCESS, GET_ASSETS_FAILURE } from '../actions/assets.actions';
+import { GET_ASSETS, GET_ASSETS_SUCCESS, GET_ASSETS_FAILURE } from '../actions/asset.actions';
 
 const initialState = {
   assets: [],

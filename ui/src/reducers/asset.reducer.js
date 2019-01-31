@@ -32,16 +32,7 @@ const reducer = (state = initialState, action) => {
         draft.isCreateAssetModalOpen = true;
         break;
       case GET_ASSETS_SUCCESS:
-        // draft.assets = action.assets;
-        // TODO: change when you use API
-        draft.assets =
-          [
-            { id: 1, name: 'Frozen yoghurt', description: 159, price: 6.0 },
-            { id: 2, name: 'Ice cream sandwich', description: 159, price: 6.0 },
-            { id: 3, name: 'Eclair', description: 159, price: 6.0 },
-            { id: 4, name: 'Cupcake', description: 159, price: 6.0 },
-            { id: 5, name: 'Gingerbread', description: 159, price: 6.0 }
-          ];
+        draft.assets = action.assets;
         draft.error = null;
         break
       case GET_ASSETS_FAILURE:

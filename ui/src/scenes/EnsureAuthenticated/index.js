@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 
 class EnsureAuthenticated extends Component {
   componentDidMount() {
-    // this.props.getUser();
+    this.props.getUser();
   }
 
   render() {
@@ -27,7 +27,7 @@ class EnsureAuthenticated extends Component {
       loginUrl
     } = authentication;
 
-    if(!true) {
+    if(!isGetUserComplete) {
       return (
         <Grid item xs={12} className={classes.item}>
           <Grid container justify="center" alignItems="center" className={classes.container}>

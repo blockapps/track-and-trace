@@ -1,13 +1,8 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TablePagination from '@material-ui/core/TablePagination';
+import { Button, TablePagination, Table, TableBody, TableHead, TableRow, TableCell, Paper } from '@material-ui/core';
+
 import { getAssets } from "../../actions/assets.actions";
 import './assets.css';
 
@@ -35,7 +30,6 @@ class Assets extends Component {
   };
 
   redirectToAssetDetail = (event, id) => {
-    // TODO: Navigate to new page
     this.props.history.push(`/asset/${id}`);
   };
 
@@ -44,12 +38,12 @@ class Assets extends Component {
 
     if (assets.length) {
       return (assets.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-        .map((row, key) => {
+        .map((asset, key) => {
           return (
-            <TableRow key={key} hover onClick={event => this.redirectToAssetDetail(event, assets.id)}>
-              <TableCell align="left"> {row.name} </TableCell>
-              <TableCell align="left">{row.description}</TableCell>
-              <TableCell align="left">{row.price}</TableCell>
+            <TableRow key={key} hover onClick={event => this.redirectToAssetDetail(event, asset.id)}>
+              <TableCell align="left"> {asset.name} </TableCell>
+              <TableCell align="left">{asset.description}</TableCell>
+              <TableCell align="left">{asset.price}</TableCell>
             </TableRow>)
         }));
     }
@@ -65,35 +59,40 @@ class Assets extends Component {
     const { assets } = this.props;
 
     return (
-      <Paper className="assets-container">
-        <Table className="assets-table">
-          <TableHead>
-            <TableRow>
-              <TableCell align="left">Name</TableCell>
-              <TableCell align="left">Description</TableCell>
-              <TableCell align="left">Price</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody className="assets-table-body">
-            {this.renderRows(assets)}
-          </TableBody>
-        </Table>
-        <TablePagination
-          rowsPerPageOptions={[2]}
-          component="div"
-          count={assets.length}
-          rowsPerPage={this.state.rowsPerPage}
-          page={this.state.page}
-          backIconButtonProps={{
-            'aria-label': 'Previous Page',
-          }}
-          nextIconButtonProps={{
-            'aria-label': 'Next Page',
-          }}
-          onChangePage={this.handleChangePage}
-          onChangeRowsPerPage={this.handleChangeRowsPerPage}
-        />
-      </Paper>
+      <div>
+        <Button variant="contained" color="primary">
+          Create asset
+        </Button>
+        <Paper className="assets-container">
+          <Table className="assets-table">
+            <TableHead>
+              <TableRow>
+                <TableCell align="left">Name</TableCell>
+                <TableCell align="left">Description</TableCell>
+                <TableCell align="left">Price</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody className="assets-table-body">
+              {this.renderRows(assets)}
+            </TableBody>
+          </Table>
+          <TablePagination
+            rowsPerPageOptions={[2]}
+            component="div"
+            count={assets.length}
+            rowsPerPage={this.state.rowsPerPage}
+            page={this.state.page}
+            backIconButtonProps={{
+              'aria-label': 'Previous Page',
+            }}
+            nextIconButtonProps={{
+              'aria-label': 'Next Page',
+            }}
+            onChangePage={this.handleChangePage}
+            onChangeRowsPerPage={this.handleChangeRowsPerPage}
+          />
+        </Paper>
+      </div>
     )
   }
 }

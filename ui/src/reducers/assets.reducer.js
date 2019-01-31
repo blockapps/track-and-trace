@@ -18,11 +18,11 @@ const reducer = (state = initialState, action) => {
         // TODO: change when you use API
         draft.assets = 
         [
-          { name: 'Frozen yoghurt', description: 159, price: 6.0},
-          { name: 'Ice cream sandwich', description: 159, price: 6.0},
-          { name: 'Eclair', description: 159, price: 6.0},
-          { name: 'Cupcake', description: 159, price: 6.0},
-          { name: 'Gingerbread', description: 159, price: 6.0}
+          { id: 1, name: 'Frozen yoghurt', description: 159, price: 6.0},
+          { id: 2, name: 'Ice cream sandwich', description: 159, price: 6.0},
+          { id: 3, name: 'Eclair', description: 159, price: 6.0},
+          { id: 4, name: 'Cupcake', description: 159, price: 6.0},
+          { id: 5, name: 'Gingerbread', description: 159, price: 6.0}
         ];
         draft.error = null;
         break

@@ -5,12 +5,18 @@ Demo app that uses STRATO to track products through a supply chain using OAuth a
 
 ## Instructions for Development using OAuth
 
+### Start STRATO
+
+```
+HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration OAUTH_JWT_USERNAME_PROPERTY=email ./strato.sh --single
+```
+
 ### Start api server
 ```
 cd server
+git submodule update --init --recursive
 yarn install
 yarn start
-
 ```
 
 ### Start UI
@@ -29,20 +35,36 @@ HOST_IP=<YOUR_IP> docker-compose up -d
 Your ip can be obtained by `ifconfig`.
 
 ### Usernames for oauth server
-administrator@track-and-trace.app
-distributor@track-and-trace.app 	
-manufacturer@track-and-trace.app 	
-master@track-and-trace.app 	
-regulator@track-and-trace.app 	
-retailer@track-and-trace.app
+administrator@tt.app
+distributor@tt.app 	
+manufacturer@tt.app 	
+master@tt.app 	
+regulator@tt.app 	
+retailer@tt.app
 
 Password for all users is `1234`
 
-## Command Line Arguments
+## Tokens
 
-| Argument      | Description                                | Required | Default |
-| ------------- | ------------------------------------------ | -------- | ------- |
-| SSL           | Should server use SSL                      | No       | false   |
-| SSL_CERT_TYPE | Type of SSL certificate                    | No       | crt     |
-| SERVER        | Configuration selecter for node middleware | No       | docker  |      
+This app uses oauth for authentication. To get admin token and master tokens, use
 
+```
+cd server
+yarn install
+sudo PORT=80 yarn token-getter 
+```
+
+Then open a browser and goto http://localhost to obtain tokens for the admin and master users.
+
+These tokens can be provided on the command line as `ADMIN_TOKEN` and `MASTER_TOKEN` respectively. The recommended way is to store these tokens in the `.env` file. A valid `.env` file is as follows:
+
+```
+ADMIN_TOKEN=eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJTTlRQNXpMTzNHVVhtdzhxRGRNazlDYnY5LUZNeUFhY1JTWmRoUExQaWVFIn0.eyJqdGkiOiI4MjZkMDM4OS1hNmE0LTQzNGMtOWMwZS1hNjk5N2EwZWJjY2QiLCJleHAiOjE5ODA4NzM2NTUsIm5iZiI6MCwiaWF0IjoxNTQ4ODczNjU1LCJpc3MiOiJodHRwczovL2tleWNsb2FrLmJsb2NrYXBwcy5uZXQvYXV0aC9yZWFsbXMvdHJhY2stYW5kLXRyYWNlIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImU2NTEyZTcwLWI4ZTYtNDlmZC1hYmJjLTUzZjRhYjg1MWQwMyIsInR5cCI6IkJlYXJlciIsImF6cCI6InR0LWxvY2FsaG9zdCIsImF1dGhfdGltZSI6MTU0ODg3MzY1NSwic2Vzc2lvbl9zdGF0ZSI6IjdkMmNmZmVjLWNhNjgtNDIwMy1hMTUwLWJjZWQ2YTVjODJmYiIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cDovL2xvY2FsaG9zdCJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJUcmFjayBhbmQgVHJhY2UgQWRtaW5pc3RyYXRvciIsInByZWZlcnJlZF91c2VybmFtZSI6ImFkbWluaXN0cmF0b3JAdHQuYXBwIiwiZ2l2ZW5fbmFtZSI6IlRyYWNrIGFuZCBUcmFjZSIsImZhbWlseV9uYW1lIjoiQWRtaW5pc3RyYXRvciIsImVtYWlsIjoiYWRtaW5pc3RyYXRvckB0dC5hcHAifQ.Lrua1SLrs6NfveJZay_P3cvQsJ9fjswtJ4KOH3T44MsGTM50W_0wWrWzv1RAe1lPTsR_ldIVdo4mDWr6gTUFw80UwMPZxoquPIDhHpcYcSyD5i5Hm9lN0ZV66c8F4v8FffBF69XhiN9AEyRmM31XvoX3wkzANzbUV3_lZgxdqDS5tSM3UaWI6RxZXGfkKOs0OmTdIDb37tj8kHkmC3IsYKQ3pPDymbK1RneYxJhehLWfKTwLBdyhY6sNCV68Od5IbHtut94Tn4G8zuxzICdgIOg4NDhBXUh7CsAgMC1bRp8b-cxLoMo19d6Bryx5WfXVqi4_TiNpQCR0Ai47Dn4hEg
+MASTER_TOKEN=eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJTTlRQNXpMTzNHVVhtdzhxRGRNazlDYnY5LUZNeUFhY1JTWmRoUExQaWVFIn0.eyJqdGkiOiJkMmM5M2Q3MS03NmFhLTQxNGYtODg5Yi01MDExNmZiYTYxMjMiLCJleHAiOjE5ODA4NzM2ODEsIm5iZiI6MCwiaWF0IjoxNTQ4ODczNjgxLCJpc3MiOiJodHRwczovL2tleWNsb2FrLmJsb2NrYXBwcy5uZXQvYXV0aC9yZWFsbXMvdHJhY2stYW5kLXRyYWNlIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6Ijg5MTRhOWJmLTRlMzctNDI5Zi05MjdlLWU5OWE4NDFiMzlmNCIsInR5cCI6IkJlYXJlciIsImF6cCI6InR0LWxvY2FsaG9zdCIsImF1dGhfdGltZSI6MTU0ODg3MzY4MSwic2Vzc2lvbl9zdGF0ZSI6ImI5OTE2Mzc0LTRkZDktNDQ3Zi1hNTEwLTcwMWYyZTE3MWViYyIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cDovL2xvY2FsaG9zdCJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJUcmFjayBhbmQgVHJhY2UgTWFzdGVyIiwicHJlZmVycmVkX3VzZXJuYW1lIjoibWFzdGVyQHR0LmFwcCIsImdpdmVuX25hbWUiOiJUcmFjayBhbmQgVHJhY2UiLCJmYW1pbHlfbmFtZSI6Ik1hc3RlciIsImVtYWlsIjoibWFzdGVyQHR0LmFwcCJ9.ImfWGcp0tkfLpVnwhy2X7Liy2zHe2AZc7ewoQaA-KX_oifia-0RzuYZL6odOGGfEcT-lPQetNnSl1WJ7EvH-E9ca7YGRljQHoNVIdb9i7mKQA_v9Ev_bc87IVBCCFh6sQjLJb2aqt4I9NPOO3FDS7G4ww9aO1bf2Od3Trcdlj6_RXvoE6_MkZWe2twa-clfbOmBP-vf_4pzf3Diymj4boSoquavV3dBf36VsFySyvFo0_xsmguIrdStD85xQwGD7ombzwkuQTuqT8NvwEWkfshc2afx0glNjjOMXgWke69ZGL2IzRpiqO9X3_NrDs4zQCKoRdz6SUDsQCwT4iAydlw
+```
+
+## Run tests
+
+```
+yarn test:asset
+```

@@ -21,4 +21,3 @@ oauth:
   openIdDiscoveryUrl: "https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration"
   redirectUri: "http://localhost/api/v1/authentication/callback"
   logoutRedirectUri: "http://localhost" # url to redirect after OAuth logout (e.g. app's login screen)
-

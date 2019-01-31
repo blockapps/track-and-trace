@@ -10,8 +10,10 @@
     "blockapps-rest": "git://github.com/blockapps/blockapps-rest#v6.2.10",
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
+    "co-mocha": "^1.2.2",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.5",
+    "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "express-winston": "^3.0.1",
     "jwt-decode": "^2.2.0",
@@ -19,8 +21,9 @@
     "winston": "^3.2.0"
   },
   "scripts": {
-    "deploy": "cp config/${SERVER:-localhost}.config.yaml config.yaml",
-    "start": "node index.js"
+    "deploy": "mocha dapp/dapp/dapp.deploy.js --config config/${SERVER:-localhost}.config.yaml && cp config/${SERVER:-localhost}.config.yaml config.yaml",
+    "start": "node index.js",
+    "token-getter": "PORT=${PORT:-443} node node_modules/blockapps-rest/oauth-token-getter/index.js"
   },
   "devDependencies": {}
 }

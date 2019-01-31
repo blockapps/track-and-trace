@@ -16,6 +16,7 @@ HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_
 cd server
 git submodule update --init --recursive
 yarn install
+yarn deploy
 yarn start
 ```
 

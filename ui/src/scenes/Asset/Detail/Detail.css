@@ -1,49 +1,26 @@
-
-.asset {
-  flex-grow: 1;
-  width: 50%;
-  margin: 1% 25% 0 25%;
-}
-
-.asset-paper {
-  padding: 0;
-}
-
-.detail {
-  display: inline-block;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-  width: 100%;
-  border-bottom: 1px #dcdcdc solid;
-  padding: 20px;
-}
-
-.detail label {
-  width: 50%;
-  font-weight: 700;
+.appbar-name {
+  width: 40%;
   float: left;
 }
 
-.detail p {
-  width: 50%;
+.appbar-content {
+  width: 60%;
   float: left;
-  margin: 0;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: #3f51b5;
+  text-align: right;
 }
 
-.detail:last-child {
-  border-bottom: 0;
+.appbar-content button {
+  margin: 0px 10px;
 }
 
-.asset-heading {
-  margin: 0;
-  text-align: center;
-  display: inline-block;
-  width: 100%;
-  background: #3f51b5;
-  color: #fff;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-  letter-spacing: 0.5px;
-  padding: 12px 0;
+.asset-detail {
+  margin-top: 10px !important;
+}
+
+.asset-description {
+  padding: 16px;
+}
+
+.asset-spec {
+  margin-top: 20px;
 }

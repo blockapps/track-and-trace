@@ -11,7 +11,18 @@ const initialState = {
   loginUrl: null,
   logoutUrl: null,
   isGetUserComplete: false,
-  isAuthenticated: false
+  isAuthenticated: false,
+  /* 
+    Change the roles to see color based on roles Roles: 
+    MANUFACTURER: 'MANUFACTURER',
+    DISTRIBUTOR: 'DISTRIBUTOR',
+    RETAILER: 'RETAILER',
+    REGULATOR: 'REGULATOR',
+    ADMIN: 'ADMIN' 
+
+    TODO: Remove when API is ready to use
+  */
+  role: 'ADMIN'
 }
 
 const reducer = (state = initialState, action) => {

@@ -1,28 +1,35 @@
 import React, { Component } from 'react';
-import Header from '../components/header';
-import Routes from '../routes';
 import { withRouter } from 'react-router-dom'
 import { connect } from "react-redux";
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 
-class App extends Component {
-  render() {
-    const { classes } = this.props;
+import Header from '../components/header';
+import Routes from '../routes';
+import ThemedComponent from './Theme';
+import { themeColor } from '../utils/roles.utils';
 
+class App extends Component {
+
+  render() {
+    const { classes, role } = this.props;
     return (
-      <div className={classes.docRoot}>
-        <Header />
-        <Grid container className={classes.root} spacing={8}>
-          <Routes />
-        </Grid>
-      </div>
+      <ThemedComponent color={themeColor(role)} >
+        <div className={classes.docRoot}>
+          <Header />
+          <Grid container className={classes.root} spacing={8}>
+            <Routes />
+          </Grid>
+        </div>
+      </ThemedComponent>
     );
   }
 }
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+    role: state.authentication.role
+  };
 };
 
 const styles = theme => ({
@@ -30,8 +37,8 @@ const styles = theme => ({
     flexGrow: 1,
     paddingTop: theme.spacing.unit * 8,
   },
-  docRoot:{
-    top:0,
+  docRoot: {
+    top: 0,
     bottom: 0
   }
 });

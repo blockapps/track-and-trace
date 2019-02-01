@@ -3,7 +3,7 @@ require('co-mocha');
 const { common, rest6: rest } = require('blockapps-rest');
 const { assert, config, fsutil, util } = common;
 
-const { createAccount } = require(`${process.cwd()}/utils`);
+const { getEmailIdFromToken, createStratoUser } = require(`${process.cwd()}/helpers/oauth`);
 
 const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
 const TtError = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/TtError.sol`).TtError;
@@ -28,9 +28,10 @@ describe('Asset Manager Tests', function () {
   let assetManagerContract, manufacturerAssetManagerContract, distributorAssetManagerContract;
 
   function* createUser(userToken) {
-    const createAccountResponse = yield createAccount(userToken);
+    const userEmail = getEmailIdFromToken(userToken);
+    const createAccountResponse = yield createStratoUser(userToken, userEmail);
     assert.equal(createAccountResponse.status, 200, createAccountResponse.message);
-    return { account: createAccountResponse.address, username: createAccountResponse.userId };
+    return { account: createAccountResponse.address, username: userEmail };
   }
 
   function bindAssetManagerContractToUser(user, contract) {

@@ -5,6 +5,7 @@ const package = require('../../package.json');
 
 const authentication = require(`./authentication`);
 const user = require(`./users`)
+const assets = require(`./assets`);
 
 router.use(
   `/authentication`, 
@@ -16,6 +17,12 @@ router.use(
   authHandler.authorizeRequest(),
   user
 )
+
+router.use(
+  `/assets`,
+  authHandler.authorizeRequest(),
+  assets
+);
 
 // set health handler
 router.get(`/health`, (req, res) => {

@@ -24,7 +24,10 @@
     "deploy": "mocha dapp/dapp/dapp.deploy.js --config config/${SERVER:-localhost}.config.yaml && cp config/${SERVER:-localhost}.config.yaml config.yaml",
     "start": "node index.js",
     "token-getter": "PORT=${PORT:-443} node node_modules/blockapps-rest/oauth-token-getter/index.js",
-    "test:asset": "mocha dapp/asset/test --config config/${SERVER:-localhost}.config.yaml"
+    "test:asset": "mocha dapp/asset/test --config config/${SERVER:-localhost}.config.yaml",
+    "test:e2e": "mocha test/v1 --config config/${SERVER:-localhost}.config.yaml"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "chai-http": "^4.2.1"
+  }
 }

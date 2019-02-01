@@ -12,7 +12,9 @@ import { themeColor } from '../utils/roles.utils';
 class App extends Component {
 
   render() {
-    const { classes, role } = this.props;
+    const { classes, user } = this.props;
+    const { role } = user;
+    
     return (
       <ThemedComponent color={themeColor(role)} >
         <div className={classes.docRoot}>
@@ -28,7 +30,7 @@ class App extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    role: state.authentication.role
+    user: state.authentication.user
   };
 };
 

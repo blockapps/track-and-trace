@@ -7,11 +7,6 @@ import {
 } from '../actions/authentication.actions'
 
 const initialState = {
-  user: null,
-  loginUrl: null,
-  logoutUrl: null,
-  isGetUserComplete: false,
-  isAuthenticated: false,
   /* 
     Change the roles to see color based on roles Roles: 
     MANUFACTURER: 'MANUFACTURER',
@@ -22,7 +17,13 @@ const initialState = {
 
     TODO: Remove when API is ready to use
   */
-  role: 'ADMIN'
+  user: {
+    role: 'REGULATOR'
+  },
+  loginUrl: null,
+  logoutUrl: null,
+  isGetUserComplete: false,
+  isAuthenticated: false,
 }
 
 const reducer = (state = initialState, action) => {

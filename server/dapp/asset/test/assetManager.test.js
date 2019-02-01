@@ -1,3 +1,4 @@
+require('dotenv').config();
 require('co-mocha');
 
 const { common, rest6: rest } = require('blockapps-rest');
@@ -18,13 +19,14 @@ const assetFactory = require(`${process.cwd()}/${config.dappPath}/asset/asset.fa
 
 const adminToken = process.env.ADMIN_TOKEN;
 const masterToken = process.env.MASTER_TOKEN;
+const manufacturerToken = process.env.DISTRIBUTOR_TOKEN;
+const distributorToken = process.env.MANUFACTURER_TOKEN;
 
 const TEST_TIMEOUT = 60000;
 
 describe('Asset Manager Tests', function () {
   this.timeout(TEST_TIMEOUT);
 
-  let manufacturerToken, distributorToken;
   let assetManagerContract, manufacturerAssetManagerContract, distributorAssetManagerContract;
 
   function* createUser(userToken) {
@@ -41,11 +43,8 @@ describe('Asset Manager Tests', function () {
   }
 
   before(function* () {
-    if (!config.userTokenPreset) assert.fail('userTokenPreset is not defined');
-    const tokens = fsutil.yamlSafeLoadSync(config.userTokenPreset);
-
-    manufacturerToken = tokens.manufacturerToken;
-    distributorToken = tokens.distributorToken;
+    assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
+    assert.isDefined(distributorToken, 'distributor token is not defined');
 
     manufacturerUser = yield createUser(manufacturerToken);
     distributorUser = yield createUser(distributorToken);

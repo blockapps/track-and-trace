@@ -1,13 +1,15 @@
 
-import { 
-  fork, 
-  all 
+import {
+  fork,
+  all
 } from 'redux-saga/effects';
-import watchAuthActions from './authentication.saga'
+import watchAuthActions from './authentication.saga';
+import watchAssets from './asset.saga';
 
 const rootSaga = function* () {
   yield all([
-    fork (watchAuthActions)
+    fork(watchAuthActions),
+    fork(watchAssets)
   ])
 }
 

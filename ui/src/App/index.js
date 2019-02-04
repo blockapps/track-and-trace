@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import Header from '../header/';
-import Routes from '../../routes';
+import Header from '../components/header';
+import Routes from '../routes';
 import { withRouter } from 'react-router-dom'
 import { connect } from "react-redux";
 import { withStyles } from '@material-ui/core/styles';

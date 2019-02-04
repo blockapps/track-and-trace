@@ -3,18 +3,18 @@ import {
   takeLatest,
   put
 } from 'redux-saga/effects';
-import { 
-  GET_USER, 
-  getUserSuccessful, 
-  unauthorized 
+import {
+  GET_USER,
+  getUserSuccessful,
+  unauthorized
 } from '../actions/authentication.actions';
-import {apiUrl} from '../constants';
+import { apiUrl, HTTP_METHODS } from '../constants';
 
 const userUrl = `${apiUrl}/users/me`;
 // const authUrl = `${apiUrl}/authentication`;
 
 function fetchUser(params) {
-  return fetch(userUrl, { method: 'GET'})
+  return fetch(userUrl, { method: HTTP_METHODS.GET })
     .then((response) => {
       return response.json()
     })
@@ -23,16 +23,16 @@ function fetchUser(params) {
     });
 }
 
-function * getUser(action) {
+function* getUser(action) {
   try {
     const response = yield call(fetchUser);
     console.log(response);
-    if(response.success) {
+    if (response.success) {
       yield put(getUserSuccessful(response.data))
     } else {
       yield put(unauthorized(response.error.loginUrl))
     }
-  } catch(err) {
+  } catch (err) {
     // TODO: handle unexpected error
   }
 }

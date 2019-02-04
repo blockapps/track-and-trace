@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Header from '../components/header';
+import Header from '../components/Header';
 import Routes from '../routes';
 import { withRouter } from 'react-router-dom'
 import { connect } from "react-redux";
@@ -11,9 +11,11 @@ class App extends Component {
     const { classes } = this.props;
 
     return (
-      <div className={classes.docRoot}>
-        <Header />
-        <Grid container className={classes.root} spacing={8}>
+      <div>
+        <div className={classes.docRoot}>
+          <Header />
+        </div>
+        <Grid>
           <Routes />
         </Grid>
       </div>
@@ -27,8 +29,7 @@ const mapStateToProps = (state) => {
 
 const styles = theme => ({
   root: {
-    flexGrow: 1,
-    paddingTop: theme.spacing.unit * 8,
+    flexGrow: 1
   },
   docRoot:{
     top:0,

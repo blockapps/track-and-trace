@@ -7,7 +7,7 @@ const contractName = 'TtDapp';
 const contractFilename = `${config.dappPath}/dapp/contracts/ttDapp.sol`;
 const managersNames = ['userManager', 'assetManager', 'ttPermissionManager'];
 
-const userManagerJs = require(`${process.cwd()}/blockapps-sol/auth/user/userManager`);
+const userManagerJs = require(`${process.cwd()}/${config.libPath}/auth/user/userManager`);
 const assetManagerJs = require(`${process.cwd()}/${config.dappPath}/asset/assetManager`);
 const ttPermissionManagerJs = require(`${process.cwd()}/${config.dappPath}/ttPermission/ttPermissionManager`);
 
@@ -82,6 +82,14 @@ function* bind(admin, _contract) {
     const user = yield userManager.getUser(username);
     return user;
   };
+
+  contract.getAssets = function* (args) {
+    return yield assetManager.getAssets(args);
+  }
+
+  contract.createAsset = function* (args) {
+    return yield assetManager.createAsset(args);
+  }
 
   return contract;
 }

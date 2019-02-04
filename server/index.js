@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const { baseUrl } = require('./helpers/constants');
+const { baseUrl, deployParamName } = require('./helpers/constants');
 const routes = require('./api/v1/routes');
 const authHandler = require('./api/middleware/authHandler');
 const expressWinston = require('express-winston');
@@ -9,7 +9,14 @@ const winston = require('winston');
 const cors = require('cors');
 const errorHandler = require('./api/middleware/errorHandler');
 
+const { common } = require('blockapps-rest');
+const { config, fsutil } = common;
+
 const app = express();
+
+const deploy = fsutil.yamlSafeLoadSync(config.deployFilename);
+if (!deploy) throw new Error('Deploy config.deployFilename not found ', config.deployFilename);
+app.set(deployParamName, deploy);
 
 // remove x-powerd-by header
 app.disable('x-powered-by');

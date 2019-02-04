@@ -11,31 +11,24 @@ const ttPermissionManagerJs = require(`${process.cwd()}/${config.dappPath}/ttPer
 const assetJs = require(`${process.cwd()}/${config.dappPath}/asset/asset`);
 const assetFactory = require(`${process.cwd()}/${config.dappPath}/asset/asset.factory`);
 
+
+const adminToken = process.env.ADMIN_TOKEN;
+const masterToken = process.env.MASTER_TOKEN;
+
 const TEST_TIMEOUT = 60000;
-
-// TODO: TT-5 replace with predefined OAuth tokens
-const adminName = util.uid('Admin');
-const adminPassword = '1234';
-
-const masterName = util.uid('Master');
-const masterPassword = '1234';
 
 describe('Asset Tests', function () {
   this.timeout(TEST_TIMEOUT);
 
-  let adminUser, ttPermissionManagerContract;
+  let ttPermissionManagerContract;
 
   before(function* () {
-    adminUser = yield rest.createUser(adminName, adminPassword);
-    yield rest.fill(adminUser, true);
-
-    masterUser = yield rest.createUser(masterName, masterPassword);
-    ttPermissionManagerContract = yield ttPermissionManagerJs.uploadContract(adminUser, masterUser);
+    ttPermissionManagerContract = yield ttPermissionManagerJs.uploadContract(adminToken, masterToken);
   });
 
   it('Create Asset', function* () {
     const args = assetFactory.getAssertArgs();
-    const contract = yield assetJs.uploadContract(adminUser, ttPermissionManagerContract, args);
+    const contract = yield assetJs.uploadContract(adminToken, ttPermissionManagerContract, args);
 
     const state = yield contract.getState();
 
@@ -46,13 +39,13 @@ describe('Asset Tests', function () {
 
   it('Set Asset State', function* () {
     const assetArgs = assetFactory.getAssertArgs();
-    const contract = yield assetJs.uploadContract(adminUser, ttPermissionManagerContract, assetArgs);
+    const contract = yield assetJs.uploadContract(adminToken, ttPermissionManagerContract, assetArgs);
 
     const setAssetStateArgs = {
       assetState: AssetState.BIDS_REQUESTED
     };
 
-    const [restStatus, ttError, ] = yield rest.callMethod(adminUser, contract, 'setAssetState', util.usc(setAssetStateArgs));
+    const [restStatus, ttError, ] = yield rest.callMethod(adminToken, contract, 'setAssetState', util.usc(setAssetStateArgs));
     assert.equal(restStatus, RestStatus.OK, 'rest status');
     assert.equal(ttError, TtError.NULL, 'tt error');
 

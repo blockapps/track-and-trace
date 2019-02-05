@@ -25,7 +25,8 @@
     "start": "node index.js",
     "token-getter": "PORT=${PORT:-443} node node_modules/blockapps-rest/oauth-token-getter/index.js",
     "test:asset": "mocha dapp/asset/test --config config/${SERVER:-localhost}.config.yaml -b",
-    "test:e2e": "mocha test/v1 --config config/${SERVER:-localhost}.config.yaml"
+    "test:e2e": "mocha test/v1 --config config/${SERVER:-localhost}.config.yaml",
+    "test:permissions": "mocha dapp/ttPermission/test/ttPermissionManager.test.js --config config/${SERVER:-localhost}.config.yaml"
   },
   "devDependencies": {
     "chai-http": "^4.2.1"

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { TablePagination, Table, TableBody, TableHead, TableRow, TableCell, Paper } from '@material-ui/core';
+import { TablePagination, Table, TableBody, TableHead, TableRow, TableCell, Paper, Button } from '@material-ui/core';
 import CreateAssetModal from '../Create';
 
 import { getAssets } from "../../../actions/asset.actions";
@@ -60,38 +60,35 @@ class AssetsList extends Component {
     const { assets } = this.props;
 
     return (
-      <div>
-        <Paper className="assets-container">
-          <div className="asset-modal-button"> <CreateAssetModal /> </div>
-          <Table className="assets-table">
-            <TableHead>
-              <TableRow>
-                <TableCell align="left">Name</TableCell>
-                <TableCell align="left">Description</TableCell>
-                <TableCell align="left">Price</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody className="assets-table-body">
-              {this.renderRows(assets)}
-            </TableBody>
-          </Table>
-          <TablePagination
-            rowsPerPageOptions={[2]}
-            component="div"
-            count={assets.length}
-            rowsPerPage={this.state.rowsPerPage}
-            page={this.state.page}
-            backIconButtonProps={{
-              'aria-label': 'Previous Page',
-            }}
-            nextIconButtonProps={{
-              'aria-label': 'Next Page',
-            }}
-            onChangePage={this.handleChangePage}
-            onChangeRowsPerPage={this.handleChangeRowsPerPage}
-          />
-        </Paper>
-      </div>
+      <Paper className="assets-container">
+        <Table className="assets-table">
+          <TableHead>
+            <TableRow>
+              <TableCell align="left">Name</TableCell>
+              <TableCell align="left">Description</TableCell>
+              <TableCell align="left">Price</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody className="assets-table-body">
+            {this.renderRows(assets)}
+          </TableBody>
+        </Table>
+        <TablePagination
+          rowsPerPageOptions={[2]}
+          component="div"
+          count={assets.length}
+          rowsPerPage={this.state.rowsPerPage}
+          page={this.state.page}
+          backIconButtonProps={{
+            'aria-label': 'Previous Page',
+          }}
+          nextIconButtonProps={{
+            'aria-label': 'Next Page',
+          }}
+          onChangePage={this.handleChangePage}
+          onChangeRowsPerPage={this.handleChangeRowsPerPage}
+        />
+      </Paper>
     )
   }
 }

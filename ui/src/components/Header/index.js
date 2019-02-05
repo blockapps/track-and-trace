@@ -7,7 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 class Header extends Component {
   render() {
     return (
-      <AppBar>
+      <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" color="inherit">
             Track And Trace

@@ -2,23 +2,29 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import AssetsList from '../../scenes/Asset/List';
+import { Grid, AppBar, Typography, Toolbar } from '@material-ui/core';
 
+import CreateAssetModal from '../Asset/Create';
+import AssetsList from '../../scenes/Asset/List';
+import './Dashboard.css';
 class Dashboard extends Component {
+
   render() {
-    // const { classes } = this.props
     return (
-      <Grid item xs={12}>
-        <Paper>
-          <Typography variant="h5" component="h3">
-            Dashboard
-          </Typography>
-        </Paper>
-        <AssetsList />
-      </Grid>
+      <div className="dashboard">
+        <Grid container xs={12}>
+          <AppBar position="static" color="default">
+            <Toolbar>
+              <Typography variant="h6" color="inherit" className="appbar-container">
+                <CreateAssetModal />
+              </Typography>
+            </Toolbar>
+          </AppBar>
+        </Grid>
+        <Grid container xs={12}>
+          <AssetsList />
+        </Grid>
+      </div>
     )
   }
 }

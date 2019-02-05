@@ -1,7 +1,10 @@
+require('dotenv').config();
 require('co-mocha');
 
 const { common, rest6: rest } = require('blockapps-rest');
-const { assert, config, util } = common;
+const { assert, config, fsutil, util } = common;
+
+const { getEmailIdFromToken, createStratoUser } = require(`${process.cwd()}/helpers/oauth`);
 
 const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
 const TtError = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/TtError.sol`).TtError;
@@ -14,27 +17,24 @@ const assetJs = require(`${process.cwd()}/${config.dappPath}/asset/asset`);
 const assetFactory = require(`${process.cwd()}/${config.dappPath}/asset/asset.factory`);
 
 
+const adminToken = process.env.ADMIN_TOKEN;
+const masterToken = process.env.MASTER_TOKEN;
+const manufacturerToken = process.env.DISTRIBUTOR_TOKEN;
+const distributorToken = process.env.MANUFACTURER_TOKEN;
+
 const TEST_TIMEOUT = 60000;
-
-// TODO: TT-5 replace with predefined OAuth tokens
-const adminName = util.uid('Admin');
-const adminPassword = '1234';
-
-const masterName = util.uid('Master');
-const masterPassword = '1234';
-
-const manufacturerName = util.uid('Manufacturer');
-const manufacturerPassword = '1234';
-
-const distributorName = util.uid('Distributor');
-const distributorPassword = '1234';
-
 
 describe('Asset Manager Tests', function () {
   this.timeout(TEST_TIMEOUT);
 
-  let adminUser, masterUser, manufacturerUser, distributorUser;
   let assetManagerContract, manufacturerAssetManagerContract, distributorAssetManagerContract;
+
+  function* createUser(userToken) {
+    const userEmail = getEmailIdFromToken(userToken);
+    const createAccountResponse = yield createStratoUser(userToken, userEmail);
+    assert.equal(createAccountResponse.status, 200, createAccountResponse.message);
+    return { account: createAccountResponse.address, username: userEmail };
+  }
 
   function bindAssetManagerContractToUser(user, contract) {
     let copy = Object.assign({}, contract);
@@ -43,25 +43,20 @@ describe('Asset Manager Tests', function () {
   }
 
   before(function* () {
-    adminUser = yield rest.createUser(adminName, adminPassword);
-    yield rest.fill(adminUser, true);
+    assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
+    assert.isDefined(distributorToken, 'distributor token is not defined');
 
-    masterUser = yield rest.createUser(masterName, masterPassword);
+    manufacturerUser = yield createUser(manufacturerToken);
+    distributorUser = yield createUser(distributorToken);
 
-    manufacturerUser = yield rest.createUser(manufacturerName, manufacturerPassword);
-    yield rest.fill(manufacturerUser, true);
-
-    distributorUser = yield rest.createUser(distributorName, distributorPassword);
-    yield rest.fill(distributorUser, true);
-
-    const ttPermissionManager = yield ttPermissionManagerJs.uploadContract(adminUser, masterUser);
-    assetManagerContract = yield assetManagerJs.uploadContract(adminUser, ttPermissionManager);
+    const ttPermissionManager = yield ttPermissionManagerJs.uploadContract(adminToken, masterToken);
+    assetManagerContract = yield assetManagerJs.uploadContract(adminToken, ttPermissionManager);
 
     yield ttPermissionManager.grantManufacturerRole(manufacturerUser);
     yield ttPermissionManager.grantDistributorRole(distributorUser);
 
-    manufacturerAssetManagerContract = bindAssetManagerContractToUser(manufacturerUser, assetManagerContract);
-    distributorAssetManagerContract = bindAssetManagerContractToUser(distributorUser, assetManagerContract);
+    manufacturerAssetManagerContract = bindAssetManagerContractToUser(manufacturerToken, assetManagerContract);
+    distributorAssetManagerContract = bindAssetManagerContractToUser(distributorToken, assetManagerContract);
   });
 
   it('Does Asset Exist -- asset does not exist ', function* () {
@@ -110,7 +105,7 @@ describe('Asset Manager Tests', function () {
   it('Handle Asset Event', function* () {
     const assetArgs = assetFactory.getAssertArgs();
     const asset = yield manufacturerAssetManagerContract.createAsset(assetArgs);
-    const assetContract = assetJs.bindAddress(manufacturerUser, asset.address);
+    const assetContract = assetJs.bindAddress(manufacturerToken, asset.address);
 
     const assertHandleAssertEvent = function* (assetEvent, expectedState) {
       const handleAssetEventArgs = {

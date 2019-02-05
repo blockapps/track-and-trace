@@ -14,6 +14,8 @@ const oauthHelper = require(`${process.cwd()}/helpers/oauth`);
 
 const adminToken = process.env.ADMIN_TOKEN;
 const masterToken = process.env.MASTER_TOKEN;
+const manufacturerToken = process.env.MANUFACTURER_TOKEN;
+const distributorToken = process.env.DISTRIBUTOR_TOKEN;
 
 const bit = int => 1 << int;
 
@@ -24,79 +26,73 @@ const bit = int => 1 << int;
 
  describe('TTPermissionManager tests', function () {
   this.timeout(config.timeout)
-  let adminAddress;
+  let adminUser, masterUser, manufacturerUser, distributorUser;
 
   before(function* () {
-    const adminAddressResponse = yield rest.getKey(adminToken);
-    adminAddress = adminAddressResponse.address;
+    assert.isDefined(adminToken, 'manufacturer token is not defined');
+    assert.isDefined(masterToken, 'distributor token is not defined');
+    assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
+    assert.isDefined(distributorToken, 'distributor token is not defined');
+
+    adminUser = yield oauthHelper.createStratoUser(adminToken);
+    masterUser = yield oauthHelper.createStratoUser(masterToken);
+    manufacturerUser = yield oauthHelper.createStratoUser(manufacturerToken);
+    distributorUser = yield oauthHelper.createStratoUser(distributorToken);
   });
 
-  it('Grant admin with TtRole.ADMIN permissions on construction', function* () {
+  it('Grant Role - Admin', function* () {
     const contract = yield ttPermissionManagerJs.uploadContract(adminToken, masterToken);
-    const { permits, rolePermissions } = yield contract.getState();
-    const permit = permits[1];
-    assert.equal(permit.adrs, adminAddress, 'admin address in the array');
-    assert.equal(permit.permissions, rolePermissions[TtRole.ADMIN], ' admin has admin permissions');
-    assert.equal(permit.id, 'Admin', 'hardcoded id');
-  })
-
-  it('Grant basic permission', function* () {
-    const contract = yield ttPermissionManagerJs.uploadContract(adminToken, masterToken);
-    const username = oauthHelper.getEmailIdFromToken(masterToken);
-    const masterAddressResponse = yield rest.getKey(adminToken);
-    const address = masterAddressResponse.address;
-    // not yet permitted
+    const username = oauthHelper.getEmailIdFromToken(adminToken);
+    const address = adminUser.address;
+    Object.assign(adminUser , { username: username })
+    // permitted 
     {
-      const permissions = bit(ttPermission.CREATE_USER)
-      const args = { address, permissions }
-      const isPermitted = yield contract.check(args)
-      assert.equal(isPermitted, false, 'not permitted')
+      const canCreateUser = yield contract.canCreateUser(adminUser)
+      assert.equal(canCreateUser, true, 'permitted - canCreateUser')
     }
-    // grant
+    // check bit mask
     {
-      const permissions = bit(ttPermission.CREATE_USER)
-      const args = { address, id: username, permissions }
-      yield contract.grant(args)
-    }
-    // permitted now
-    {
-      const permissions = bit(ttPermission.CREATE_USER)
-      const args = { address, permissions }
-      const isPermitted = yield contract.check(args)
-      assert.equal(isPermitted, true, 'permitted')
+      const permissions = yield contract.getPermissions({ address: adminUser.address })
+      const { rolePermissions } = yield contract.getState()
+      const expected = rolePermissions[TtRole.ADMIN]
+      assert.equal(permissions, expected, 'admin permissions')
     }
   })
 
-  it.skip('Grant permission to transfer asset', function* () {
+  it('Grant Role - Asset Manager', function* () {
     const contract = yield ttPermissionManagerJs.uploadContract(adminToken, masterToken)
-    const manufacturerName = util.uid('Manufacturer');
-    const manufacturerPassword = '1234';
-    let manufacturerUser = yield rest.createUser(manufacturerName, manufacturerPassword);
-    yield rest.fill(manufacturerUser, true);
+    const username = oauthHelper.getEmailIdFromToken(masterToken);
+    const address = masterToken.address;
+    Object.assign(masterUser,{ username: username })
     // not yet permitted
     {
-      const isPermitted = yield contract.canTransferOwnershipMap(manufacturerUser);
-      assert.equal(isPermitted, false, 'not permitted');
+      const canModifyMap = yield contract.canModifyMap(masterUser)
+      assert.equal(canModifyMap, false, 'not permitted - canModifyMap')
+
     }
     // grant
     {
-      const permissions = bit(ttPermission.TRANSFER_OWNERSHIP_MAP);
-      const args = { address: manufacturerUser.address, id: manufacturerUser.name, permissions };
-      yield contract.grant(args);
+      yield contract.grantAssetManager(masterUser)
     }
     // permitted now
     {
-      const isPermitted = yield contract.canTransferOwnershipMap(manufacturerUser);
-      assert.equal(isPermitted, true, 'permitted');
+      const canModifyMap = yield contract.canModifyMap(masterUser)
+      assert.equal(canModifyMap, true, 'permitted - canModifyMap')
+    }
+    // check bit mask
+    {
+      const permissions = yield contract.getPermissions({ address: masterUser.address })
+      const { rolePermissions } = yield contract.getState()
+      const expected = rolePermissions[TtRole.ASSET_MANAGER]
+      assert.equal(permissions, expected, 'asset manager permissions')
     }
   })
 
   it('Grant Role - Manufacturer', function* () {
     const contract = yield ttPermissionManagerJs.uploadContract(adminToken, masterToken)
-    const manufacturerName = util.uid('Manufacturer');
-    const manufacturerPassword = '1234';
-    let manufacturerUser = yield rest.createUser(manufacturerName, manufacturerPassword);
-    yield rest.fill(manufacturerUser, true);
+    const username = oauthHelper.getEmailIdFromToken(manufacturerToken);
+    const address = manufacturerUser.address;
+    Object.assign(manufacturerUser,{ username: username })
     // not yet permitted
     {
       const canTransferOwnershipMap = yield contract.canTransferOwnershipMap(manufacturerUser)
@@ -121,6 +117,35 @@ const bit = int => 1 << int;
       const { rolePermissions } = yield contract.getState()
       const expected = rolePermissions[TtRole.MANUFACTURER]
       assert.equal(permissions, expected, 'manufacturer permissions')
+    }
+  })
+
+  it('Grant Role - Distributor', function* () {
+    const contract = yield ttPermissionManagerJs.uploadContract(adminToken, masterToken)
+    const username = oauthHelper.getEmailIdFromToken(distributorToken);
+    const address = distributorUser.address;
+        Object.assign(distributorUser,{ username: username })
+    // not yet permitted
+    {
+      const canTransferOwnershipMap = yield contract.canTransferOwnershipMap(distributorUser)
+      assert.equal(canTransferOwnershipMap, false, 'not permitted - canTransferOwnershipMap')
+
+    }
+    // grant
+    {
+      yield contract.grantDistributorRole(distributorUser)
+    }
+    // permitted now
+    {
+      const canTransferOwnershipMap = yield contract.canTransferOwnershipMap(distributorUser)
+      assert.equal(canTransferOwnershipMap, true, 'permitted - canTransferOwnershipMap')
+    }
+    // check bit mask
+    {
+      const permissions = yield contract.getPermissions({ address: distributorUser.address })
+      const { rolePermissions } = yield contract.getState()
+      const expected = rolePermissions[TtRole.DISTRIBUTOR]
+      assert.equal(permissions, expected, 'distributor permissions')
     }
   })
 })

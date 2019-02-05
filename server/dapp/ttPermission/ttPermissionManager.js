@@ -38,6 +38,9 @@ function bind(admin, _contract) {
   contract.canCreateUser = function* (user) {
     return yield canCreateUser(admin, contract, user);
   }
+  contract.grantAdminRole = function* (user) {
+    return yield grantRole(admin, contract, user, TtRole.ADMIN);
+  }
   contract.grantManufacturerRole = function* (user) {
     return yield grantRole(admin, contract, user, TtRole.MANUFACTURER);
   }

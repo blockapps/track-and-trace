@@ -2,11 +2,10 @@ require('dotenv').config();
 require('co-mocha');
 const ba = require('blockapps-rest');
 const rest = ba.rest6;
-const { config, assert, cwd, util } = ba.common;
+const { config, assert, cwd } = ba.common;
 
 const ttPermissionManagerJs = require('../ttPermissionManager');
 
-const ttPermission = rest.getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtPermission.sol`);
 const { TtRole } = rest.getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`);
 
 const oauthHelper = require(`${process.cwd()}/helpers/oauth`);

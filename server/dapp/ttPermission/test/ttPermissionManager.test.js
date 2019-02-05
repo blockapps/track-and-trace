@@ -5,7 +5,6 @@ const rest = ba.rest6;
 const { config, assert, cwd, util } = ba.common;
 
 const ttPermissionManagerJs = require('../ttPermissionManager');
-const userManager = require(`${process.cwd()}/${config.libPath}/auth/user/userManager`);
 
 const ttPermission = rest.getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtPermission.sol`);
 const { TtRole } = rest.getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`);
@@ -45,7 +44,7 @@ const bit = int => 1 << int;
     const username = oauthHelper.getEmailIdFromToken(adminToken);
     const address = adminUser.address;
     Object.assign(adminUser , { username: username })
-    // permitted 
+    // permitted
     {
       const canCreateUser = yield contract.canCreateUser(adminUser)
       assert.equal(canCreateUser, true, 'permitted - canCreateUser')

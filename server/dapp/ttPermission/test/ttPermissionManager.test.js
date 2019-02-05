@@ -119,7 +119,7 @@ const distributorToken = process.env.DISTRIBUTOR_TOKEN;
     const contract = yield ttPermissionManagerJs.uploadContract(adminToken, masterToken)
     const username = oauthHelper.getEmailIdFromToken(distributorToken);
     const address = distributorUser.address;
-        Object.assign(distributorUser,{ username: username })
+    Object.assign(distributorUser,{ username: username })
     // not yet permitted
     {
       const canTransferOwnershipMap = yield contract.canTransferOwnershipMap(distributorUser)

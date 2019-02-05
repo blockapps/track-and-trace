@@ -15,9 +15,6 @@ const masterToken = process.env.MASTER_TOKEN;
 const manufacturerToken = process.env.MANUFACTURER_TOKEN;
 const distributorToken = process.env.DISTRIBUTOR_TOKEN;
 
-const bit = int => 1 << int;
-
-
 /**
  * @see PermissionManager tests
  */

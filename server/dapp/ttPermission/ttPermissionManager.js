@@ -10,11 +10,9 @@ const contractName = 'TtPermissionManager';
 const contractFilename = `${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtPermissionManager.sol`;
 
 function* uploadContract(admin, master) {
-
   const adminAddressResponse = yield rest.getKey(admin);
   const masterAddressResponse = yield rest.getKey(master);
   const args = { admin: adminAddressResponse.address, master: masterAddressResponse.address };
-
   const contract = yield rest.uploadContract(admin, contractName, contractFilename, util.usc(args));
   contract.src = 'removed';
   return bind(admin, contract);

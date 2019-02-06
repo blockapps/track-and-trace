@@ -1,4 +1,5 @@
 require('co-mocha');
+require('dotenv').config();
 
 const { rest6: rest, common } = require('blockapps-rest');
 const { assert, config, util } = common;

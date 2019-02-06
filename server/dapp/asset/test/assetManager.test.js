@@ -112,7 +112,7 @@ describe('Asset Manager Tests', function () {
         uid: assetArgs.uid,
         assetEvent,
       };
-      
+
       const newState = yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
       assert.equal(newState, expectedState, 'returned new state');
 

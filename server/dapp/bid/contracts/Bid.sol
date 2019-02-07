@@ -11,13 +11,15 @@ contract Bid is BidState, BidEvent, RestStatus {
   address initiator;
   address asset;
   BidState bidState;
+  uint value;
 
-  constructor(address _asset, address _assetOwner) {
+  constructor(address _asset, address _assetOwner, uint _value) {
     asset = _asset;
     assetOwner = _assetOwner;
     initiator = msg.sender;
     bidFSM = new BidFSM(); 
     bidState = BidState.ENTERED;
+    value = _value;
   }
 
   function handleBidEvent(BidEvent _bidEvent) public returns (uint, BidState) {

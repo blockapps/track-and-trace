@@ -13,10 +13,10 @@ class App extends Component {
 
   render() {
     const { classes, user } = this.props;
-    const { role } = user;
+    let userRole = user && user['role'];
 
     return (
-      <ThemedComponent color={themeColor(role)} >
+      <ThemedComponent color={themeColor(userRole)} >
         <div className={classes.docRoot}>
           <Header />
         </div>

@@ -10,11 +10,9 @@ const contractName = 'TtPermissionManager';
 const contractFilename = `${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtPermissionManager.sol`;
 
 function* uploadContract(admin, master) {
-
   const adminAddressResponse = yield rest.getKey(admin);
   const masterAddressResponse = yield rest.getKey(master);
   const args = { admin: adminAddressResponse.address, master: masterAddressResponse.address };
-
   const contract = yield rest.uploadContract(admin, contractName, contractFilename, util.usc(args));
   contract.src = 'removed';
   return bind(admin, contract);
@@ -37,6 +35,9 @@ function bind(admin, _contract) {
   }
   contract.canCreateUser = function* (user) {
     return yield canCreateUser(admin, contract, user);
+  }
+  contract.grantAdminRole = function* (user) {
+    return yield grantRole(admin, contract, user, TtRole.ADMIN);
   }
   contract.grantManufacturerRole = function* (user) {
     return yield grantRole(admin, contract, user, TtRole.MANUFACTURER);

@@ -3,14 +3,14 @@ import "/blockapps-sol/rest/contracts/RestStatus.sol";
 import "/blockapps-sol/meta/searchable/contracts/Searchable.sol";
 
 import "/dapp/ttPermission/contracts/TtPermissionManager.sol";
-import "/dapp/asset/TtError.sol";
+import "./AssetError.sol";
 
 import "./AssetState.sol";
 
 /**
  * Asset data container
  */
-contract Asset is Util, RestStatus, Searchable, AssetState, TtError {
+contract Asset is Util, RestStatus, Searchable, AssetState, AssetError {
   TtPermissionManager public ttPermissionManager;
 
   string public uid;
@@ -29,11 +29,11 @@ contract Asset is Util, RestStatus, Searchable, AssetState, TtError {
     /* timestamp           = block.timestamp; */
   }
 
-  function setAssetState(AssetState _assetState) returns (uint, TtError, uint) {
+  function setAssetState(AssetState _assetState) returns (uint, AssetError, uint) {
     // check permissions
     //if (!ttPermissionManager.canModifyAsset(msg.sender)) return (RestStatus.UNAUTHORIZED, AssetState.NULL, 0);
 
     assetState = _assetState;
-    return (RestStatus.OK, TtError.NULL, searchable());
+    return (RestStatus.OK, AssetError.NULL, searchable());
   }
 }

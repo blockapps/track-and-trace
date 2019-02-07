@@ -5,21 +5,22 @@ const { config, util } = common;
 
 const dappJs = require(`${process.cwd()}/${config.dappPath}/dapp/dapp`);
 
-const userController = {
-  me: (req, res, next) => {
-    const { app, accessToken, decodedToken } = req;
+const assetsController = {
+  getAssets: (req, res, next) => {
+    const { app, accessToken, query } = req;
+    const args = { ...query };
+
     const deploy = app.get('deploy');
-    const username = decodedToken['email'];
 
     co(function* () {
       const dapp = yield dappJs.bind(accessToken, deploy.contract);
-      const user = yield dapp.getUser(username);
-      util.response.status200(res, user);
+      const assets = yield dapp.getAssets(args);
+      util.response.status200(res, assets);
     })
     .catch(next);
   },
 
-  createUser(req, res, next) {
+  createAsset: (req, res, next) => {
     const { app, accessToken, body } = req;
     const args = { ...body };
 
@@ -27,11 +28,11 @@ const userController = {
 
     co(function* () {
       const dapp = yield dappJs.bind(accessToken, deploy.contract);
-      const asset = yield dapp.createUser(args);
+      const asset = yield dapp.createAsset(args);
       util.response.status200(res, asset);
     })
     .catch(next);
-  },
+  }
 }
 
-module.exports = userController;
+module.exports = assetsController;

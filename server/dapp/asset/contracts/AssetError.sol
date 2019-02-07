@@ -1,6 +1,6 @@
-contract TtError {
+contract AssetError {
 
-  enum TtError {
+  enum AssetError {
     NULL,
     UID_EMPTY,
     UID_EXISTS,

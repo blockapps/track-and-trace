@@ -1,6 +1,8 @@
 const { rest6: rest, common } = require('blockapps-rest');
 const { util, config } = common;
 
+const permissionHashmapJs = require(`${process.cwd()}/${config.libPath}/auth/permission/permissionedHashmap`);
+
 const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
 
 const assetJs = require(`${process.cwd()}/${config.dappPath}/asset/asset`);
@@ -48,6 +50,10 @@ function bind(user, contract) {
     return yield handleAssetEvent(user, contract, args);
   }
 
+  contract.getAssets = function* (args) {
+    return yield getAssets(user, contract, args);
+  }
+
   return contract;
 }
 
@@ -66,9 +72,9 @@ function* createAssert(user, contract, args) {
   rest.verbose('createAsset', args);
 
   const method = 'createAsset';
-  const [restStatus, ttError, assetAddress] = yield rest.callMethod(user, contract, method, util.usc(args));
+  const [restStatus, assetError, assetAddress] = yield rest.callMethod(user, contract, method, util.usc(args));
 
-  if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, ttError, { method, args });
+  if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, assetError, { method, args });
 
   const asset = yield contractUtils.waitForAddress(assetJs.contractName, assetAddress);
 
@@ -79,13 +85,35 @@ function* handleAssetEvent(user, contract, args) {
   rest.verbose('handleAssetEvent', args);
 
   const method = 'handleAssetEvent';
-  const [restStatus, ttError, searchCounter, newState] = yield rest.callMethod(user, contract, method, util.usc(args));
+  const [restStatus, assetError, searchCounter, newState] = yield rest.callMethod(user, contract, method, util.usc(args));
 
-  if (restStatus != RestStatus.OK) throw new rest.RestError(restStatus, ttError, { method, args });
+  if (restStatus != RestStatus.OK) throw new rest.RestError(restStatus, assetError, { method, args });
 
   yield assetJs.waitForRequiredUpdate(args.uid, searchCounter);
 
   return newState;
+}
+
+function* getAssets(user, contract, args) {
+  rest.verbose('getAssets', args);
+
+  const { assets: assetsHashMap } = yield rest.getState(contract);
+  const hashmap = permissionHashmapJs.bindAddress(user, assetsHashMap);
+
+  const { values } = yield hashmap.getState();
+  const addresses = values.slice(1);
+
+  const results = yield rest.query(`${assetJs.contractName}?${genAddressString(addresses, '&')}`);
+  return results;
+}
+
+function genAddressString(addresses, prefix = '?') {
+  if (!addresses || addresses.length == 0) return '';
+
+  const csv = util.toCsv(addresses);
+  const res = `${prefix}address=in.${csv}`;
+
+  return res;
 }
 
 module.exports = {

@@ -72,9 +72,9 @@ function* createAssert(user, contract, args) {
   rest.verbose('createAsset', args);
 
   const method = 'createAsset';
-  const [restStatus, ttError, assetAddress] = yield rest.callMethod(user, contract, method, util.usc(args));
+  const [restStatus, assetError, assetAddress] = yield rest.callMethod(user, contract, method, util.usc(args));
 
-  if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, ttError, { method, args });
+  if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, assetError, { method, args });
 
   const asset = yield contractUtils.waitForAddress(assetJs.contractName, assetAddress);
 
@@ -85,9 +85,9 @@ function* handleAssetEvent(user, contract, args) {
   rest.verbose('handleAssetEvent', args);
 
   const method = 'handleAssetEvent';
-  const [restStatus, ttError, searchCounter, newState] = yield rest.callMethod(user, contract, method, util.usc(args));
+  const [restStatus, assetError, searchCounter, newState] = yield rest.callMethod(user, contract, method, util.usc(args));
 
-  if (restStatus != RestStatus.OK) throw new rest.RestError(restStatus, ttError, { method, args });
+  if (restStatus != RestStatus.OK) throw new rest.RestError(restStatus, assetError, { method, args });
 
   yield assetJs.waitForRequiredUpdate(args.uid, searchCounter);
 

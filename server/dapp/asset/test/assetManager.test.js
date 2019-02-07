@@ -7,7 +7,7 @@ const { assert, config, fsutil, util } = common;
 const { getEmailIdFromToken, createStratoUser } = require(`${process.cwd()}/helpers/oauth`);
 
 const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
-const TtError = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/TtError.sol`).TtError;
+const AssetError = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`).AssetError;
 const AssetState = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`).AssetState;
 const AssetEvent = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`).AssetEvent;
 
@@ -71,7 +71,7 @@ describe('Asset Manager Tests', function () {
 
     yield assert.shouldThrowRest(function* () {
       yield distributorAssetManagerContract.createAsset(assetArgs);
-    }, RestStatus.UNAUTHORIZED, TtError.NULL);
+    }, RestStatus.UNAUTHORIZED, AssetError.NULL);
   });
 
   it('Create Asset', function* () {
@@ -89,7 +89,7 @@ describe('Asset Manager Tests', function () {
 
     yield assert.shouldThrowRest(function* () {
       yield manufacturerAssetManagerContract.createAsset(assetArgs);
-    }, RestStatus.BAD_REQUEST, TtError.UID_EMPTY);
+    }, RestStatus.BAD_REQUEST, AssetError.UID_EMPTY);
   });
 
   it('Create Asset -- already exists', function* () {
@@ -99,7 +99,7 @@ describe('Asset Manager Tests', function () {
 
     yield assert.shouldThrowRest(function* () {
       yield manufacturerAssetManagerContract.createAsset(assetArgs);
-    }, RestStatus.BAD_REQUEST, TtError.UID_EXISTS);
+    }, RestStatus.BAD_REQUEST, AssetError.UID_EXISTS);
   });
 
   it('Handle Asset Event', function* () {
@@ -135,7 +135,7 @@ describe('Asset Manager Tests', function () {
 
     yield assert.shouldThrowRest(function* () {
       yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
-    }, RestStatus.BAD_REQUEST, TtError.NULL);
+    }, RestStatus.BAD_REQUEST, AssetError.NULL);
   });
 
   it('Handle Asset Event -- asset not fonund', function* () {
@@ -147,6 +147,6 @@ describe('Asset Manager Tests', function () {
 
     yield assert.shouldThrowRest(function* () {
       yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
-    }, RestStatus.NOT_FOUND, TtError.UID_NOT_FOUND);
+    }, RestStatus.NOT_FOUND, AssetError.UID_NOT_FOUND);
   });
 });

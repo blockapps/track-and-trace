@@ -20,9 +20,10 @@ const assetsController = {
     .catch(next);
   },
 
+  // TODO: throw errors correctly from dapp
   createAsset: (req, res, next) => {
     const { app, accessToken, body } = req;
-    const args = { ...body };
+    const args = { ...body.asset };
 
     const deploy = app.get('deploy');
 

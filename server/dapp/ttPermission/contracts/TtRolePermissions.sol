@@ -16,14 +16,15 @@ contract TtRolePermissions is TtRole, TtPermission {
       (1 << uint(TtPermission.CREATE_USER)) ;
 
     rolePermissions[uint(TtRole.ASSET_MANAGER)] =
-      (1 << uint(TtPermission.MODIFY_ASSET_MAP));
+      (1 << uint(TtPermission.MODIFY_ASSET)) |
+      (1 << uint(TtPermission.MODIFY_MAP));
 
     rolePermissions[uint(TtRole.MANUFACTURER)] =
-      (1 << uint(TtPermission.TRANSFER_OWNERSHIP_MAP)) |
+      (1 << uint(TtPermission.TRANSFER_OWNERSHIP)) |
       (1 << uint(TtPermission.CREATE_ASSET)) ;
 
     rolePermissions[uint(TtRole.DISTRIBUTOR)] =
-      (1 << uint(TtPermission.TRANSFER_OWNERSHIP_MAP)) ;
+      (1 << uint(TtPermission.TRANSFER_OWNERSHIP)) ;
 
     rolePermissions[uint(TtRole.RETAILER)] = 0;
 

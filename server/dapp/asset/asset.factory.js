@@ -4,7 +4,10 @@ const { util } = common;
 const factory = {
   getAssertArgs(overrideArgs = {}) {
     const defaultArgs = {
-      uid: util.iuid(),
+      sku: `${util.iuid()}`,
+      name: `Name_${Math.random().toString(36).substring(7)}`,
+      description: `Description_${Math.random().toString(36).substring(7)}`,
+      price: Math.floor((Math.random() * 100) + 1)
     };
 
     return Object.assign({}, defaultArgs, overrideArgs);

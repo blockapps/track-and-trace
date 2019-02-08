@@ -27,8 +27,11 @@ function bind(admin, _contract) {
   contract.canCreateAsset = function* (user) {
     return yield canCreateAsset(admin, contract, user);
   }
-  contract.canTransferOwnershipMap = function* (user) {
-    return yield canTransferOwnershipMap(admin, contract, user);
+  contract.canTransferOwnership = function* (user) {
+    return yield canTransferOwnership(admin, contract, user);
+  }
+  contract.canModifyAsset = function* (user) {
+    return yield canModifyAsset(admin, contract, user);
   }
   contract.canModifyMap = function* (user) {
     return yield canModifyMap(admin, contract, user);
@@ -77,9 +80,17 @@ function* canCreateAsset(admin, contract, user) {
   return isPermitted;
 }
 
-function* canTransferOwnershipMap(admin, contract, user) {
-  // function canCreateTransferOwnershipMap() returns (address)
-  const method = 'canTransferOwnershipMap';
+function* canTransferOwnership(admin, contract, user) {
+  // function canCreateTransferOwnership() returns (address)
+  const method = 'canTransferOwnership';
+  const args = {address: user.address};
+  const [isPermitted] = yield rest.callMethod(admin, contract, method, util.usc(args));
+  return isPermitted;
+}
+
+function* canModifyAsset(admin, contract, user) {
+  // function canModifyAsset() returns (address)
+  const method = 'canModifyAsset';
   const args = {address: user.address};
   const [isPermitted] = yield rest.callMethod(admin, contract, method, util.usc(args));
   return isPermitted;

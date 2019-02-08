@@ -13,27 +13,38 @@ import "./AssetState.sol";
 contract Asset is Util, RestStatus, Searchable, AssetState, AssetError {
   TtPermissionManager public ttPermissionManager;
 
-  string public uid;
-  AssetState public assetState;
-
+  string public sku;
   string name;
   string description;
   uint price;
   address owner;
+  AssetState public assetState;
 
-  constructor(address _ttPermissionManager, string _uid) {
+  constructor(
+    address _ttPermissionManager, 
+    string _sku,
+    string _name,
+    string _description,
+    uint _price,
+    address _owner
+  ) {
     ttPermissionManager = TtPermissionManager(_ttPermissionManager);
 
-    uid = _uid;
+    sku = _sku;
+    name = _name;
+    description = _description;
+    price = _price;
+    owner = _owner;
     assetState = AssetState.CREATED;
     /* timestamp           = block.timestamp; */
   }
 
   function setAssetState(AssetState _assetState) returns (uint, AssetError, uint) {
     // check permissions
-    //if (!ttPermissionManager.canModifyAsset(msg.sender)) return (RestStatus.UNAUTHORIZED, AssetState.NULL, 0);
+    if (!ttPermissionManager.canModifyAsset(msg.sender)) return (RestStatus.FORBIDDEN, AssetError.NULL, 0);
 
     assetState = _assetState;
     return (RestStatus.OK, AssetError.NULL, searchable());
   }
+
 }

@@ -34,7 +34,7 @@ describe('Asset Tests', function () {
     const state = yield contract.getState();
 
     assert.equal(state.ttPermissionManager, ttPermissionManagerContract.address, 'permission manager address');
-    assert.equal(state.uid, args.uid, 'uid');
+    assert.equal(state.sku, args.sku, 'sku');
     assert.equal(state.assetState, AssetState.CREATED, 'asset state');
   });
 
@@ -47,10 +47,9 @@ describe('Asset Tests', function () {
     };
 
     const [restStatus, assetError, ] = yield rest.callMethod(adminToken, contract, 'setAssetState', util.usc(setAssetStateArgs));
-    assert.equal(restStatus, RestStatus.OK, 'rest status');
+    assert.equal(restStatus, RestStatus.FORBIDDEN, 'rest status');
     assert.equal(assetError, AssetError.NULL, 'tt error');
 
-    const state = yield contract.getState();
-    assert.equal(state.assetState, setAssetStateArgs.assetState, 'asset state');
+    
   });
 });

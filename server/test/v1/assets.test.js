@@ -44,7 +44,7 @@ describe('Assets End-To-End Tests', function () {
 
   it('Get Assets', function* () {
     const createAssetArgs = assetFactory.getAssertArgs();
-    yield post(endpoints.Assets.assets, createAssetArgs, manufacturerToken);
+    yield post(endpoints.Assets.assets, {asset: createAssetArgs} , manufacturerToken);
 
     const assets = yield get(endpoints.Assets.assets, manufacturerToken);
     assert.isAtLeast(assets.length, 1, 'assets list non-empty');
@@ -53,7 +53,7 @@ describe('Assets End-To-End Tests', function () {
   it('Create Asset', function* () {
     const createAssetArgs = assetFactory.getAssertArgs();
 
-    const asset = yield post(endpoints.Assets.assets, createAssetArgs, manufacturerToken);
-    assert.equal(asset.uid, createAssetArgs.uid);
+    const asset = yield post(endpoints.Assets.assets, {asset: createAssetArgs}, manufacturerToken);
+    assert.equal(asset.sku, createAssetArgs.sku);
   });
 });

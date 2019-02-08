@@ -38,12 +38,12 @@ function* compileSearch(contract) {
 }
 
 function bind(user, contract) {
-  contract.exists = function* (uid) {
-    return yield exists(user, contract, uid);
+  contract.exists = function* (sku) {
+    return yield exists(user, contract, sku);
   }
 
   contract.createAsset = function* (args) {
-    return yield createAssert(user, contract, args);
+    return yield createAsset(user, contract, args);
   }
 
   contract.handleAssetEvent = function* (args) {
@@ -57,19 +57,19 @@ function bind(user, contract) {
   return contract;
 }
 
-function* exists(user, contract, uid) {
-  rest.verbose('exists', uid);
+function* exists(user, contract, sku) {
+  rest.verbose('exists', sku);
 
   const method = 'exists';
-  const args = { uid };
+  const args = { sku: sku };
 
   const result = yield rest.callMethod(user, contract, method, util.usc(args));
 
   return result[0] === true;
 }
 
-function* createAssert(user, contract, args) {
-  rest.verbose('createAsset', args);
+function* createAsset(user, contract, args) {
+  rest.verbose('createAsset', args);  
 
   const method = 'createAsset';
   const [restStatus, assetError, assetAddress] = yield rest.callMethod(user, contract, method, util.usc(args));
@@ -89,7 +89,7 @@ function* handleAssetEvent(user, contract, args) {
 
   if (restStatus != RestStatus.OK) throw new rest.RestError(restStatus, assetError, { method, args });
 
-  yield assetJs.waitForRequiredUpdate(args.uid, searchCounter);
+  yield assetJs.waitForRequiredUpdate(args.sku, searchCounter);
 
   return newState;
 }

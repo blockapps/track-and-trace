@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { TablePagination, Table, TableBody, TableHead, TableRow, TableCell, Paper } from '@material-ui/core';
 
 import { getAssets } from "../../../actions/asset.actions";
-import './List.css';
+import './list.css';
 
 class AssetsList extends Component {
 
@@ -13,7 +13,7 @@ class AssetsList extends Component {
 
     this.state = {
       page: 0,
-      rowsPerPage: 2
+      rowsPerPage: 5
     }
   }
 

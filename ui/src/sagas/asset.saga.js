@@ -4,7 +4,14 @@ import {
   put
 } from 'redux-saga/effects';
 import { apiUrl, HTTP_METHODS } from '../constants';
-import { GET_ASSETS, getAssetsSuccess, getAssetsFailure, CREATE_ASSET, createAssetSuccess, createAssetFailure } from '../actions/asset.actions';
+import { 
+  GET_ASSETS, 
+  getAssetsSuccess, 
+  getAssetsFailure, 
+  CREATE_ASSET, 
+  createAssetSuccess, 
+  createAssetFailure 
+} from '../actions/asset.actions';
 
 const assetsUrl = `${apiUrl}/assets`;
 const createAssetUrl = `${apiUrl}/assets`;
@@ -27,7 +34,14 @@ function createAssetApiCall(asset) {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ _SKU: asset.SKU, _description: asset.description, _name: asset.name, _price: asset.price })
+      body: JSON.stringify({ 
+        asset: {
+          sku: asset.SKU, 
+          description:asset.description, 
+          name: asset.name, 
+          price: asset.price 
+        }
+      })
     })
     .then(function (response) {
       return response.json()
@@ -43,6 +57,7 @@ function* getAssets() {
     if (response.success) {
       yield put(getAssetsSuccess(response.data));
     } else {
+      console.log(response);
       yield put(getAssetsFailure());
     }
   } catch (err) {
@@ -53,12 +68,14 @@ function* getAssets() {
 function* createAsset(action) {
   try {
     const response = yield call(createAssetApiCall, action.asset);
+    console.log(response);
     if (response.success) {
       yield put(createAssetSuccess(response.assets));
     } else {
-      yield put(createAssetFailure());
+      yield put(createAssetFailure(response.data));
     }
   } catch (err) {
+    console.log(err);
     // TODO: handle unexpected error
     yield put(createAssetFailure(err));
   }

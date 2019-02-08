@@ -26,7 +26,6 @@ function fetchUser(params) {
 function* getUser(action) {
   try {
     const response = yield call(fetchUser);
-    console.log(response);
     if (response.success) {
       yield put(getUserSuccessful(response.data))
     } else {

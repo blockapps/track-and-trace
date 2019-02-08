@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { TablePagination, Table, TableBody, TableHead, TableRow, TableCell, Paper, Button } from '@material-ui/core';
-import CreateAssetModal from '../Create';
+import { TablePagination, Table, TableBody, TableHead, TableRow, TableCell, Paper } from '@material-ui/core';
 
 import { getAssets } from "../../../actions/asset.actions";
 import './List.css';

@@ -22,7 +22,7 @@ const assetsController = {
 
   createAsset: (req, res, next) => {
     const { app, accessToken, body } = req;
-    const args = { ...body };
+    const args = { ...body.asset };
 
     const deploy = app.get('deploy');
 

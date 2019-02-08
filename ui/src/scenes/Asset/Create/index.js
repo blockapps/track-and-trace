@@ -17,7 +17,10 @@ class CreateAssetModal extends Component {
 
     return (
       <div>
-        <Button variant="contained" color="primary" onClick={openCreateAssetOverlay}>
+        <Button variant="contained" color="primary" onClick={() => {
+          openCreateAssetOverlay();
+          this.props.reset();
+        }}>
           Create asset
         </Button>
         <Dialog

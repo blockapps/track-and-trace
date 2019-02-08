@@ -12,7 +12,7 @@ class Dashboard extends Component {
   render() {
     return (
       <div className="dashboard">
-        <Grid container xs={12}>
+        <Grid container>
           <AppBar position="static" color="default">
             <Toolbar>
               <Typography variant="h6" color="inherit" className="appbar-container">
@@ -21,7 +21,7 @@ class Dashboard extends Component {
             </Toolbar>
           </AppBar>
         </Grid>
-        <Grid container xs={12}>
+        <Grid container>
           <AssetsList />
         </Grid>
       </div>

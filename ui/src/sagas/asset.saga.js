@@ -6,13 +6,11 @@ import {
 import { apiUrl, HTTP_METHODS } from '../constants';
 import { GET_ASSETS, getAssetsSuccess, getAssetsFailure, CREATE_ASSET, createAssetSuccess, createAssetFailure } from '../actions/asset.actions';
 
-// TODO: create an API to list the assets
 const assetsUrl = `${apiUrl}/assets`;
-// TODO: replace with the url created for this
-const createAssetUrl = `${apiUrl}/asset/create`;
+const createAssetUrl = `${apiUrl}/assets`;
 
 function fetchAssets() {
-  return fetch(assetsUrl, { method: 'GET' })
+  return fetch(assetsUrl, { method: HTTP_METHODS.GET })
     .then((response) => {
       return response.json()
     })
@@ -29,7 +27,7 @@ function createAssetApiCall(asset) {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ asset })
+      body: JSON.stringify({ _uid: 1, _SKU: asset.SKU, _description: asset.description, _name: asset.name, _price: asset.price })
     })
     .then(function (response) {
       return response.json()
@@ -43,14 +41,11 @@ function* getAssets() {
   try {
     const response = yield call(fetchAssets);
     if (response.success) {
-      yield put(getAssetsSuccess(response.assets));
+      yield put(getAssetsSuccess(response.data));
     } else {
       yield put(getAssetsFailure());
     }
   } catch (err) {
-    /* Remove when API is ready */
-    yield put(getAssetsSuccess());
-    // TODO: handle unexpected error
     yield put(getAssetsFailure(err));
   }
 }

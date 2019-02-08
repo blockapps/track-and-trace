@@ -5,7 +5,7 @@ const { rest6: rest, common } = require('blockapps-rest');
 const { assert, config, util } = common;
 
 const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
-const TtError = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/TtError.sol`).TtError;
+const AssetError = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`).AssetError;
 const AssetState = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`).AssetState;
 
 const ttPermissionManagerJs = require(`${process.cwd()}/${config.dappPath}/ttPermission/ttPermissionManager`);
@@ -46,9 +46,9 @@ describe('Asset Tests', function () {
       assetState: AssetState.BIDS_REQUESTED
     };
 
-    const [restStatus, ttError, ] = yield rest.callMethod(adminToken, contract, 'setAssetState', util.usc(setAssetStateArgs));
+    const [restStatus, assetError, ] = yield rest.callMethod(adminToken, contract, 'setAssetState', util.usc(setAssetStateArgs));
     assert.equal(restStatus, RestStatus.OK, 'rest status');
-    assert.equal(ttError, TtError.NULL, 'tt error');
+    assert.equal(assetError, AssetError.NULL, 'tt error');
 
     const state = yield contract.getState();
     assert.equal(state.assetState, setAssetStateArgs.assetState, 'asset state');

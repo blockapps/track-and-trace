@@ -27,7 +27,7 @@ function createAssetApiCall(asset) {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ _uid: 1, _SKU: asset.SKU, _description: asset.description, _name: asset.name, _price: asset.price })
+      body: JSON.stringify({ _SKU: asset.SKU, _description: asset.description, _name: asset.name, _price: asset.price })
     })
     .then(function (response) {
       return response.json()

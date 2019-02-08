@@ -30,7 +30,7 @@ contract TtPermissionManager is PermissionManager, TtPermission, TtRolePermissio
     return check(_address, permissions) == RestStatus.OK;
   }
 
-  function canModiyMap(address _address) returns (bool) {
+  function canModifyMap(address _address) returns (bool) {
     uint permissions = 1 << uint(TtPermission.MODIFY_MAP);
     return check(_address, permissions) == RestStatus.OK;
   }

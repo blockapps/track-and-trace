@@ -16,7 +16,6 @@ const createStratoUser = function* (accessToken, userIdOptional = null) {
       return { status: 404, message: 'user address not found' };
     }
   } catch (getKeyErr) {
-    console.log(getKeyErr);
     if (getKeyErr.status == 400) {
       try {
         const createKeyResponse = yield rest.createKey(accessToken);

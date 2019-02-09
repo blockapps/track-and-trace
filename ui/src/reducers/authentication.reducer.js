@@ -7,18 +7,8 @@ import {
 } from '../actions/authentication.actions'
 
 const initialState = {
-  /* 
-    Change the roles to see color based on roles Roles: 
-    MANUFACTURER: 'MANUFACTURER',
-    DISTRIBUTOR: 'DISTRIBUTOR',
-    RETAILER: 'RETAILER',
-    REGULATOR: 'REGULATOR',
-    ADMIN: 'ADMIN' 
-
-    TODO: Remove when API is ready to use
-  */
   user: {
-    role: 'REGULATOR'
+    role: 0
   },
   loginUrl: null,
   logoutUrl: null,

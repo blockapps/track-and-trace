@@ -28,7 +28,7 @@ describe('Asset Tests', function () {
   });
 
   it('Create Asset', function* () {
-    const args = assetFactory.getAssertArgs();
+    const args = assetFactory.getAssetArgs();
     const contract = yield assetJs.uploadContract(adminToken, ttPermissionManagerContract, args);
 
     const state = yield contract.getState();
@@ -39,7 +39,7 @@ describe('Asset Tests', function () {
   });
 
   it('Set Asset State', function* () {
-    const assetArgs = assetFactory.getAssertArgs();
+    const assetArgs = assetFactory.getAssetArgs();
     const contract = yield assetJs.uploadContract(adminToken, ttPermissionManagerContract, assetArgs);
 
     const setAssetStateArgs = {
@@ -50,6 +50,6 @@ describe('Asset Tests', function () {
     assert.equal(restStatus, RestStatus.FORBIDDEN, 'rest status');
     assert.equal(assetError, AssetError.NULL, 'tt error');
 
-    
+
   });
 });

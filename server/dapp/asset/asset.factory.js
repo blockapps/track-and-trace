@@ -2,7 +2,7 @@ const { common } = require('blockapps-rest');
 const { util } = common;
 
 const factory = {
-  getAssertArgs(overrideArgs = {}) {
+  getAssetArgs(overrideArgs = {}) {
     const defaultArgs = {
       sku: `${util.iuid()}`,
       name: `Name_${Math.random().toString(36).substring(7)}`,

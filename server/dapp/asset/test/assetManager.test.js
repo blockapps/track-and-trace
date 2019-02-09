@@ -68,7 +68,7 @@ describe('Asset Manager Tests', function () {
   });
 
   it('Create Asset -- unauthorized', function* () {
-    const assetArgs = assetFactory.getAssertArgs();
+    const assetArgs = assetFactory.getAssetArgs();
 
     yield assert.shouldThrowRest(function* () {
       yield distributorAssetManagerContract.createAsset(assetArgs);
@@ -76,7 +76,7 @@ describe('Asset Manager Tests', function () {
   });
 
   it('Create Asset', function* () {
-    const assetArgs = assetFactory.getAssertArgs();
+    const assetArgs = assetFactory.getAssetArgs();
 
     const asset = yield manufacturerAssetManagerContract.createAsset(assetArgs);
 
@@ -86,8 +86,8 @@ describe('Asset Manager Tests', function () {
 
   });
 
-  it.skip('Create Asset -- empty sku', function* () {
-    const assetArgs = assetFactory.getAssertArgs({
+  it('Create Asset -- empty sku', function* () {
+    const assetArgs = assetFactory.getAssetArgs({
       sku: ''
     });
 
@@ -97,23 +97,17 @@ describe('Asset Manager Tests', function () {
   });
 
   // TODO: fix permissioned hash map issues
-  it.skip('Create Asset -- already exists', function* () {
-    const assetArgs = assetFactory.getAssertArgs();
-
+  it('Create Asset -- already exists', function* () {
+    const assetArgs = assetFactory.getAssetArgs();
     assetArgs.sku = existingSku;
 
-    console.log('2222222222222222222222222222222')
-    console.log(assetArgs.sku);
-
-    const r = yield manufacturerAssetManagerContract.createAsset(assetArgs);
-    console.log(r);
     yield assert.shouldThrowRest(function* () {
       yield manufacturerAssetManagerContract.createAsset(assetArgs);
     }, RestStatus.BAD_REQUEST, AssetError.SKU_EXISTS);
   });
 
-  it.skip('Handle Asset Event', function* () {
-    const assetArgs = assetFactory.getAssertArgs();
+  it('Handle Asset Event', function* () {
+    const assetArgs = assetFactory.getAssetArgs();
     const asset = yield manufacturerAssetManagerContract.createAsset(assetArgs);
     const assetContract = assetJs.bindAddress(manufacturerToken, asset.address);
 
@@ -134,8 +128,8 @@ describe('Asset Manager Tests', function () {
     yield assertHandleAssertEvent(AssetEvent.CHANGE_OWNER, AssetState.OWNER_UPDATED);
   });
 
-  it.skip('Handle Asset Event -- invalid event', function* () {
-    const assetArgs = assetFactory.getAssertArgs();
+  it('Handle Asset Event -- invalid event', function* () {
+    const assetArgs = assetFactory.getAssetArgs();
     yield manufacturerAssetManagerContract.createAsset(assetArgs);
 
     const handleAssetEventArgs = {
@@ -148,8 +142,8 @@ describe('Asset Manager Tests', function () {
     }, RestStatus.BAD_REQUEST, AssetError.NULL);
   });
 
-  it.skip('Handle Asset Event -- asset not fonund', function* () {
-    const assetArgs = assetFactory.getAssertArgs();
+  it('Handle Asset Event -- asset not fonund', function* () {
+    const assetArgs = assetFactory.getAssetArgs();
     const handleAssetEventArgs = {
       sku: assetArgs.sku,
       assetEvent: AssetEvent.REQUEST_BIDS,

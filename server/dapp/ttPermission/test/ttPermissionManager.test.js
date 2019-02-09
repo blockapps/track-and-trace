@@ -54,7 +54,7 @@ const distributorToken = process.env.DISTRIBUTOR_TOKEN;
     }
   })
 
-  it.skip('Grant Role - Asset Manager', function* () {
+  it('Grant Role - Asset Manager', function* () {
     const contract = yield ttPermissionManagerJs.uploadContract(adminToken, masterToken)
     const username = oauthHelper.getEmailIdFromToken(masterToken);
     const address = masterToken.address;
@@ -63,6 +63,8 @@ const distributorToken = process.env.DISTRIBUTOR_TOKEN;
     {
       const canModifyAsset = yield contract.canModifyAsset(masterUser)
       assert.equal(canModifyAsset, false, 'not permitted - canModifyAsset')
+      const canModifyMap = yield contract.canModifyMap(masterUser)
+      assert.equal(canModifyMap, false, 'not permitted - canModifyMap')
 
     }
     // grant
@@ -73,8 +75,6 @@ const distributorToken = process.env.DISTRIBUTOR_TOKEN;
     {
       const canModifyAsset = yield contract.canModifyAsset(masterUser)
       assert.equal(canModifyAsset, true, 'permitted - canModifyAsset')
-      // TODO: fix this. This currently fails. 
-      // Probably also the reason for asset manager issues
       const canModifyMap = yield contract.canModifyMap(masterUser)
       assert.equal(canModifyMap, true, 'permitted - canModifyMap')
     }

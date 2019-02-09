@@ -26,6 +26,7 @@ const reducer = (state = initialState, action) => {
         break;
       case CREATE_ASSET_SUCCESS:
         draft.isCreateAssetModalOpen = false;
+        draft.error = null;
         break;
       case CREATE_ASSET_FAILURE:
         draft.error = action.error;

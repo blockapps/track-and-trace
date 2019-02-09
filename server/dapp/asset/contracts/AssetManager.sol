@@ -35,34 +35,46 @@ contract AssetManager is Util, RestStatus, AssetState, AssetEvent, AssetError {
       assetFSM = new AssetFSM();
     }
 
-    function exists(string _uid) public view returns (bool) {
-      return assets.contains(_uid);
+    function exists(string _sku) public view returns (bool) {
+      return assets.contains(_sku);
     }
 
-    function createAsset(string _uid) public returns (uint, AssetError, address) {
+    function createAsset(
+      string _sku,
+      string _name,
+      string _description,
+      uint _price
+    ) public returns (uint, AssetError, address) {
       if (!ttPermissionManager.canCreateAsset(msg.sender)) return (RestStatus.UNAUTHORIZED, AssetError.NULL, 0);
 
-      if (bytes(_uid).length == 0) return (RestStatus.BAD_REQUEST, AssetError.UID_EMPTY, 0);
+      if (bytes(_sku).length == 0) return (RestStatus.BAD_REQUEST, AssetError.SKU_EMPTY, 0);
 
-      if (exists(_uid)) return (RestStatus.BAD_REQUEST, AssetError.UID_EXISTS, 0);
+      if (exists(_sku)) return (RestStatus.BAD_REQUEST, AssetError.SKU_EXISTS, 0);
 
-      Asset asset = new Asset(ttPermissionManager, _uid);
-      assets.put(_uid, asset);
+      Asset asset = new Asset(
+        ttPermissionManager, 
+        _sku,
+        _name,
+        _description,
+        _price,
+        msg.sender
+      );
+      assets.put(_sku, asset);
 
       return (RestStatus.CREATED, AssetError.NULL, asset);
     }
 
-    function getAsset(string _uid) public view returns (address) {
-      return assets.get(_uid);
+    function getAsset(string _sku) public view returns (address) {
+      return assets.get(_sku);
     }
 
-    function handleAssetEvent(string _uid, AssetEvent _assetEvent) public returns (uint, AssetError, uint, AssetState) {
+    function handleAssetEvent(string _sku, AssetEvent _assetEvent) public returns (uint, AssetError, uint, AssetState) {
       //  check permissions
       //if (!ttPermissionManager.canModifyAsset(msg.sender)) return (RestStatus.UNAUTHORIZED, AssetState.NULL, 0);
 
-      if (!exists(_uid)) return (RestStatus.NOT_FOUND, AssetError.UID_NOT_FOUND, 0, AssetState.NULL);
+      if (!exists(_sku)) return (RestStatus.NOT_FOUND, AssetError.SKU_NOT_FOUND, 0, AssetState.NULL);
 
-      Asset asset = Asset(assets.get(_uid));
+      Asset asset = Asset(assets.get(_sku));
       AssetState newState = assetFSM.handleEvent(asset.assetState(), _assetEvent);
       
       if (newState == AssetState.NULL) return (RestStatus.BAD_REQUEST, AssetError.NULL, 0, AssetState.NULL);

@@ -6,33 +6,40 @@ import { connect } from "react-redux";
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 
+import ThemedComponent from './Theme';
+import { themeColor } from '../utils/roles.utils';
+
 class App extends Component {
+
   render() {
-    const { classes } = this.props;
+    const { classes, user } = this.props;
+    let userRole = user && user['role'];
 
     return (
-      <div>
+      <ThemedComponent color={themeColor(userRole)} >
         <div className={classes.docRoot}>
           <Header />
         </div>
         <Grid>
           <Routes />
         </Grid>
-      </div>
+      </ThemedComponent>
     );
   }
 }
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+    user: state.authentication.user
+  };
 };
 
 const styles = theme => ({
   root: {
     flexGrow: 1
   },
-  docRoot:{
-    top:0,
+  docRoot: {
+    top: 0,
     bottom: 0
   }
 });

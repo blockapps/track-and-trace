@@ -43,17 +43,17 @@ describe('Assets End-To-End Tests', function () {
   });
 
   it('Get Assets', function* () {
-    const createAssetArgs = assetFactory.getAssertArgs();
-    yield post(endpoints.Assets.assets, createAssetArgs, manufacturerToken);
+    const createAssetArgs = assetFactory.getAssetArgs();
+    yield post(endpoints.Assets.assets, {asset: createAssetArgs} , manufacturerToken);
 
     const assets = yield get(endpoints.Assets.assets, manufacturerToken);
     assert.isAtLeast(assets.length, 1, 'assets list non-empty');
   });
 
   it('Create Asset', function* () {
-    const createAssetArgs = assetFactory.getAssertArgs();
+    const createAssetArgs = assetFactory.getAssetArgs();
 
-    const asset = yield post(endpoints.Assets.assets, createAssetArgs, manufacturerToken);
-    assert.equal(asset.uid, createAssetArgs.uid);
+    const asset = yield post(endpoints.Assets.assets, {asset: createAssetArgs}, manufacturerToken);
+    assert.equal(asset.sku, createAssetArgs.sku);
   });
 });

@@ -4,7 +4,12 @@ import { connect } from "react-redux";
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Icon, IconButton } from '@material-ui/core';
 import { Field, reduxForm, Form, FieldArray } from 'redux-form'
 import ReduxedTextField from "../../../components/ReduxedTextField";
-import { openCreateAssetOverlay, closeCreateAssetOverlay, createAsset } from "../../../actions/asset.actions";
+import {
+  openCreateAssetOverlay,
+  closeCreateAssetOverlay,
+  createAsset,
+  getAssets
+} from "../../../actions/asset.actions";
 import './Create.css'
 
 class CreateAssetModal extends Component {
@@ -67,6 +72,12 @@ class CreateAssetModal extends Component {
     )
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.isOpen && !this.props.isOpen && !this.props.error) {
+      this.props.getAssets();
+    }
+  }
+
   render() {
     const { handleSubmit, isOpen, openCreateAssetOverlay, closeCreateAssetOverlay } = this.props;
 
@@ -122,6 +133,11 @@ class CreateAssetModal extends Component {
                 fullWidth
                 required
               />
+              {
+                this.props.error && (
+                  <div>error</div>
+                )
+              }
               <FieldArray name="specs" component={this.renderSpec} />
             </DialogContent>
             <DialogActions>
@@ -137,7 +153,8 @@ class CreateAssetModal extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    isOpen: state.asset.isCreateAssetModalOpen
+    isOpen: state.asset.isCreateAssetModalOpen,
+    error: state.asset.error,
   };
 };
 
@@ -145,7 +162,8 @@ const formed = reduxForm({ form: 'create-asset' })(CreateAssetModal);
 const connected = connect(mapStateToProps, {
   openCreateAssetOverlay,
   closeCreateAssetOverlay,
-  createAsset
+  createAsset,
+  getAssets
 })(formed);
 
 export default withRouter(connected);

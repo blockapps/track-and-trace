@@ -61,6 +61,8 @@ const distributorToken = process.env.DISTRIBUTOR_TOKEN;
     Object.assign(masterUser,{ username: username })
     // not yet permitted
     {
+      const canModifyAsset = yield contract.canModifyAsset(masterUser)
+      assert.equal(canModifyAsset, false, 'not permitted - canModifyAsset')
       const canModifyMap = yield contract.canModifyMap(masterUser)
       assert.equal(canModifyMap, false, 'not permitted - canModifyMap')
 
@@ -71,6 +73,8 @@ const distributorToken = process.env.DISTRIBUTOR_TOKEN;
     }
     // permitted now
     {
+      const canModifyAsset = yield contract.canModifyAsset(masterUser)
+      assert.equal(canModifyAsset, true, 'permitted - canModifyAsset')
       const canModifyMap = yield contract.canModifyMap(masterUser)
       assert.equal(canModifyMap, true, 'permitted - canModifyMap')
     }
@@ -90,8 +94,8 @@ const distributorToken = process.env.DISTRIBUTOR_TOKEN;
     Object.assign(manufacturerUser,{ username: username })
     // not yet permitted
     {
-      const canTransferOwnershipMap = yield contract.canTransferOwnershipMap(manufacturerUser)
-      assert.equal(canTransferOwnershipMap, false, 'not permitted - canTransferOwnershipMap')
+      const canTransferOwnership = yield contract.canTransferOwnership(manufacturerUser)
+      assert.equal(canTransferOwnership, false, 'not permitted - canTransferOwnership')
       const canCreateAsset = yield contract.canCreateAsset(manufacturerUser)
       assert.equal(canCreateAsset, false, 'not permitted - canCreateAsset')
     }
@@ -101,8 +105,8 @@ const distributorToken = process.env.DISTRIBUTOR_TOKEN;
     }
     // permitted now
     {
-      const canTransferOwnershipMap = yield contract.canTransferOwnershipMap(manufacturerUser)
-      assert.equal(canTransferOwnershipMap, true, 'permitted - canTransferOwnershipMap')
+      const canTransferOwnership = yield contract.canTransferOwnership(manufacturerUser)
+      assert.equal(canTransferOwnership, true, 'permitted - canTransferOwnership')
       const canCreateAsset = yield contract.canCreateAsset(manufacturerUser)
       assert.equal(canCreateAsset, true, 'permitted - canCreateAsset')
     }
@@ -122,8 +126,8 @@ const distributorToken = process.env.DISTRIBUTOR_TOKEN;
     Object.assign(distributorUser,{ username: username })
     // not yet permitted
     {
-      const canTransferOwnershipMap = yield contract.canTransferOwnershipMap(distributorUser)
-      assert.equal(canTransferOwnershipMap, false, 'not permitted - canTransferOwnershipMap')
+      const canTransferOwnership = yield contract.canTransferOwnership(distributorUser)
+      assert.equal(canTransferOwnership, false, 'not permitted - canTransferOwnership')
 
     }
     // grant
@@ -132,8 +136,8 @@ const distributorToken = process.env.DISTRIBUTOR_TOKEN;
     }
     // permitted now
     {
-      const canTransferOwnershipMap = yield contract.canTransferOwnershipMap(distributorUser)
-      assert.equal(canTransferOwnershipMap, true, 'permitted - canTransferOwnershipMap')
+      const canTransferOwnership = yield contract.canTransferOwnership(distributorUser)
+      assert.equal(canTransferOwnership, true, 'permitted - canTransferOwnership')
     }
     // check bit mask
     {

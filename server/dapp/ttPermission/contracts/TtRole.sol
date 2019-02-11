@@ -10,7 +10,6 @@ contract TtRole {
     DISTRIBUTOR,
     RETAILER,
     REGULATOR,
-    OFFICER,
     MAX
   }
 }

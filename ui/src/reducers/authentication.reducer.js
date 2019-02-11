@@ -7,11 +7,13 @@ import {
 } from '../actions/authentication.actions'
 
 const initialState = {
-  user: null,
+  user: {
+    role: 0
+  },
   loginUrl: null,
   logoutUrl: null,
   isGetUserComplete: false,
-  isAuthenticated: false
+  isAuthenticated: false,
 }
 
 const reducer = (state = initialState, action) => {

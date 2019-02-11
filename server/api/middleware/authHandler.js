@@ -12,7 +12,7 @@ const authHandler = {
       try  {
         await req.app.oauth.validateAndGetNewToken(req, res);
       } catch(err) {
-        return util.response.status('401', res, { loginUrl: req.app.oauth.getLogOutUrl() });
+        return util.response.status('401', res, { loginUrl: req.app.oauth.oauthGetSigninURL() });
       }
       req.accessToken = accessTokenFromCookie;
       req.decodedToken = jwtDecode(accessTokenFromCookie);

@@ -6,7 +6,7 @@ import { Grid, AppBar, Typography, Toolbar } from '@material-ui/core';
 
 import CreateAssetModal from '../Asset/Create';
 import AssetsList from '../../scenes/Asset/List';
-import './Dashboard.css';
+import './dashboard.css';
 class Dashboard extends Component {
 
   render() {

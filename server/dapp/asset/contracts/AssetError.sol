@@ -2,8 +2,8 @@ contract AssetError {
 
   enum AssetError {
     NULL,
-    UID_EMPTY,
-    UID_EXISTS,
-    UID_NOT_FOUND
+    SKU_EMPTY,
+    SKU_EXISTS,
+    SKU_NOT_FOUND
   }
 }

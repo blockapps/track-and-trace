@@ -6,8 +6,11 @@ const contractFilename = `${process.cwd()}/${config.dappPath}/asset/contracts/As
 
 
 function* uploadContract(user, ttPermissionManagerContract, args) {
+  const getKeyResponse = yield rest.getKey(user);
+  
   const contractArgs = Object.assign({}, args, {
-    ttPermissionManager: ttPermissionManagerContract.address
+    ttPermissionManager: ttPermissionManagerContract.address,
+    owner: getKeyResponse.address
   });
 
   const contract = yield rest.uploadContract(user, contractName, contractFilename, util.usc(contractArgs));
@@ -43,8 +46,8 @@ function bindAddress(user, address) {
   return bind(user, contract);
 }
 
-function* waitForRequiredUpdate(uid, searchCounter) {
-  const queryString = `${contractName}?and=(uid.eq.${uid},searchCounter.gte.${searchCounter})`;
+function* waitForRequiredUpdate(sku, searchCounter) {
+  const queryString = `${contractName}?and=(sku.eq.${sku},searchCounter.gte.${searchCounter})`;
   const results = yield rest.waitQuery(queryString, 1);
 
   return results[0];

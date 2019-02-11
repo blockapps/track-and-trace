@@ -25,13 +25,18 @@ contract TtPermissionManager is PermissionManager, TtPermission, TtRolePermissio
     return check(_address, permissions) == RestStatus.OK;
   }
 
-  function canModifyMap(address _address) returns (bool) {
-    uint permissions = 1 << uint(TtPermission.MODIFY_ASSET_MAP);
+  function canModifyAsset(address _address) returns (bool) {
+    uint permissions = 1 << uint(TtPermission.MODIFY_ASSET);
     return check(_address, permissions) == RestStatus.OK;
   }
 
-  function canTransferOwnershipMap(address _address) returns (bool) {
-    uint permissions = 1 << uint(TtPermission.TRANSFER_OWNERSHIP_MAP);
+  function canModifyMap(address _address) returns (bool) {
+    uint permissions = 1 << uint(TtPermission.MODIFY_MAP);
+    return check(_address, permissions) == RestStatus.OK;
+  }
+
+  function canTransferOwnership(address _address) returns (bool) {
+    uint permissions = 1 << uint(TtPermission.TRANSFER_OWNERSHIP);
     return check(_address, permissions) == RestStatus.OK;
   }
 

@@ -4,11 +4,11 @@ import {
   put
 } from 'redux-saga/effects';
 import {
-  GET_USER,
+  GET_USER_REQUEST,
   getUserSuccessful,
   unauthorized,
-  LOGOUT,
-  logoutSuccessful
+  logoutSuccessful,
+  LOGOUT_REQUEST
 } from '../actions/authentication.actions';
 import { apiUrl, HTTP_METHODS } from '../constants';
 
@@ -60,6 +60,6 @@ function* getLogout() {
 }
 
 export default function* () {
-  yield takeLatest(GET_USER, getUser)
-  yield takeLatest(LOGOUT, getLogout)
+  yield takeLatest(GET_USER_REQUEST, getUser)
+  yield takeLatest(LOGOUT_REQUEST, getLogout)
 }

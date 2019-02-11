@@ -8,6 +8,7 @@ import CreateAssetModal from '../Asset/Create';
 import AssetsList from '../../scenes/Asset/List';
 import { ROLES_INDEX } from "../../utils/roles.utils";
 import './dashboard.css';
+import SnackbarMessage from "../../components/SnackbarMessage";
 class Dashboard extends Component {
 
   get isManufacturer() {
@@ -29,6 +30,7 @@ class Dashboard extends Component {
         <Grid container>
           <AssetsList />
         </Grid>
+        <SnackbarMessage />
       </div>
     )
   }

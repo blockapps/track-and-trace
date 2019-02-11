@@ -4,14 +4,15 @@ import {
   put
 } from 'redux-saga/effects';
 import { apiUrl, HTTP_METHODS } from '../constants';
-import { 
-  GET_ASSETS, 
-  getAssetsSuccess, 
-  getAssetsFailure, 
-  CREATE_ASSET, 
-  createAssetSuccess, 
-  createAssetFailure 
+import {
+  GET_ASSETS,
+  getAssetsSuccess,
+  getAssetsFailure,
+  CREATE_ASSET,
+  createAssetSuccess,
+  createAssetFailure
 } from '../actions/asset.actions';
+import { setUserMessage } from '../actions/user-message.actions';
 
 const assetsUrl = `${apiUrl}/assets`;
 const createAssetUrl = `${apiUrl}/assets`;
@@ -34,12 +35,12 @@ function createAssetApiCall(asset) {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         asset: {
-          sku: asset.SKU, 
-          description:asset.description, 
-          name: asset.name, 
-          price: asset.price 
+          sku: asset.SKU,
+          description: asset.description,
+          name: asset.name,
+          price: asset.price
         }
       })
     })
@@ -68,11 +69,12 @@ function* getAssets() {
 function* createAsset(action) {
   try {
     const response = yield call(createAssetApiCall, action.asset);
-    console.log(response);
     if (response.success) {
       yield put(createAssetSuccess(response.assets));
+      yield put(setUserMessage('Asset Created Successfully'))
     } else {
-      yield put(createAssetFailure(response.data));
+      yield put(createAssetFailure(response.error));
+      yield put(setUserMessage(response.error))
     }
   } catch (err) {
     console.log(err);

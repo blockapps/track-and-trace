@@ -1,4 +1,4 @@
-apiDebug: false
+apiDebug: true
 restVersion: 6
 timeout: 120000
 dappPath: ./dapp

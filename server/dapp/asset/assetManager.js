@@ -12,67 +12,55 @@ const contractName = 'AssetManager';
 const contractFilename = `${process.cwd()}/${config.dappPath}/asset/contracts/AssetManager.sol`;
 
 
-function* uploadContract(user, ttPermissionManagerContract) {
+function* uploadContract(token, ttPermissionManagerContract) {
   const contractArgs = {
     ttPermissionManager: ttPermissionManagerContract.address
   };
 
-  const contract = yield rest.uploadContract(user, contractName, contractFilename, util.usc(contractArgs));
-  yield compileSearch(contract);
+  const contract = yield rest.uploadContract(token, contractName, contractFilename, util.usc(contractArgs));
   contract.src = 'removed';
 
   yield ttPermissionManagerContract.grantAssetManager(contract);
 
-  return bind(user, contract);
+  return bind(token, contract);
 }
 
-function* compileSearch(contract) {
-  rest.verbose('compileSearch', contractName);
-
-  const isSearchable = yield rest.isSearchable(contract.codeHash);
-  if (isSearchable) return;
-
-  // compile + dependencies
-  const searchable = [assetJs.contractName, contractName];
-  yield rest.compileSearch(searchable, contractName, contractFilename);
-}
-
-function bind(user, contract) {
+function bind(token, contract) {
   contract.exists = function* (sku) {
-    return yield exists(user, contract, sku);
+    return yield exists(token, contract, sku);
   }
 
   contract.createAsset = function* (args) {
-    return yield createAsset(user, contract, args);
+    return yield createAsset(token, contract, args);
   }
 
   contract.handleAssetEvent = function* (args) {
-    return yield handleAssetEvent(user, contract, args);
+    return yield handleAssetEvent(token, contract, args);
   }
 
   contract.getAssets = function* (args) {
-    return yield getAssets(user, contract, args);
+    return yield getAssets(token, contract, args);
   }
 
   return contract;
 }
 
-function* exists(user, contract, sku) {
+function* exists(token, contract, sku) {
   rest.verbose('exists', sku);
 
   const method = 'exists';
   const args = { sku: sku };
 
-  const result = yield rest.callMethod(user, contract, method, util.usc(args));
+  const result = yield rest.callMethod(token, contract, method, util.usc(args));
 
   return result[0] === true;
 }
 
-function* createAsset(user, contract, args) {
+function* createAsset(token, contract, args) {
   rest.verbose('createAsset', args);  
 
   const method = 'createAsset';
-  const [restStatus, assetError, assetAddress] = yield rest.callMethod(user, contract, method, util.usc(args));
+  const [restStatus, assetError, assetAddress] = yield rest.callMethod(token, contract, method, util.usc(args));
 
   if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, assetError, { method, args });
 
@@ -81,11 +69,11 @@ function* createAsset(user, contract, args) {
   return asset;
 }
 
-function* handleAssetEvent(user, contract, args) {
+function* handleAssetEvent(token, contract, args) {
   rest.verbose('handleAssetEvent', args);
 
   const method = 'handleAssetEvent';
-  const [restStatus, assetError, searchCounter, newState] = yield rest.callMethod(user, contract, method, util.usc(args));
+  const [restStatus, assetError, searchCounter, newState] = yield rest.callMethod(token, contract, method, util.usc(args));
 
   if (restStatus != RestStatus.OK) throw new rest.RestError(restStatus, assetError, { method, args });
 
@@ -94,11 +82,11 @@ function* handleAssetEvent(user, contract, args) {
   return newState;
 }
 
-function* getAssets(user, contract, args) {
+function* getAssets(token, contract, args) {
   rest.verbose('getAssets', args);
 
   const { assets: assetsHashMap } = yield rest.getState(contract);
-  const hashmap = permissionHashmapJs.bindAddress(user, assetsHashMap);
+  const hashmap = permissionHashmapJs.bindAddress(token, assetsHashMap);
 
   const { values } = yield hashmap.getState();
   const addresses = values.slice(1);

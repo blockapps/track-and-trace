@@ -34,7 +34,7 @@ describe('Asset Manager Tests', function () {
     const userEmail = getEmailIdFromToken(userToken);
     const createAccountResponse = yield createStratoUser(userToken, userEmail);
     assert.equal(createAccountResponse.status, 200, createAccountResponse.message);
-    return { account: createAccountResponse.address, username: userEmail };
+    return { address: createAccountResponse.address, username: userEmail };
   }
 
   function bindAssetManagerContractToUser(user, contract) {

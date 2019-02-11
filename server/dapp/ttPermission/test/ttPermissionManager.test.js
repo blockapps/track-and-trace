@@ -57,7 +57,6 @@ const distributorToken = process.env.DISTRIBUTOR_TOKEN;
   it('Grant Role - Asset Manager', function* () {
     const contract = yield ttPermissionManagerJs.uploadContract(adminToken, masterToken)
     const username = oauthHelper.getEmailIdFromToken(masterToken);
-    const address = masterToken.address;
     Object.assign(masterUser,{ username: username })
     // not yet permitted
     {

@@ -3,7 +3,7 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Paper, Grid, AppBar, Typography, Toolbar, Button } from '@material-ui/core';
 import { getAssets } from "../../../actions/asset.actions";
-import './detail.css';
+import './Detail.css';
 import AuditLog from "../AuditLog";
 
 class AssetDetail extends Component {

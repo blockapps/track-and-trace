@@ -1,22 +1,28 @@
 const { rest6: rest, common } = require('blockapps-rest');
+const { config, util } = common;
 
 const contractName = 'Bid';
 const contractFilename = `${process.cwd()}/${config.dappPath}/bid/contracts/Bid.sol`;
 
 const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
-const bidChain = require(`${process.cwd()}/${config.dappPath}/bidChain/bidChain`);
+const bidChainJs = require(`${process.cwd()}/${config.dappPath}/bidChain/bidChain`);
 
-function* createBid(token, chainId, assetAddress, ownerAddress, bidValue) {
+// TODO: prevent bid from getting created if the asset is not in BIDS_REQUESTED state
+function* createBid(token, assetAddress, ownerAddress, bidValue) {
+  const chainId = yield bidChainJs.createChain(token, ownerAddress)
+
   const bid = yield uploadContract(
     token,
     chainId,
     {
-      _asset: assetAddress,
-      _assetOwner: ownerAddress,
-      _value: bidValue
+      asset: assetAddress,
+      assetOwner: ownerAddress,
+      value: bidValue
     }
   );
-  return bid;
+
+  const result = yield rest.waitQuery(`${contractName}?address=eq.${bid.address}&chainId=eq.${chainId}`, 1);
+  return result[0];
 }
 
 function* uploadContract(token, chainId, args) {
@@ -26,7 +32,7 @@ function* uploadContract(token, chainId, args) {
     contractFilename,
     util.usc(args),
     {
-      chainid: chainId
+      chainId
     }
   );
 
@@ -42,20 +48,21 @@ function bind(token, chainId, contract) {
 }
 
 function* handleBidEvent(token, chainId, contract, bidEvent) {
-  rest.verbose('handleBidEvent', event)
+  rest.verbose('handleBidEvent', bidEvent)
 
   const method = 'handleBidEvent';
+  
   const args = {
     bidEvent
   }
-  
+
   const [restStatus, newState] = yield rest.callMethod(
     token, 
     contract, 
     method,
     util.usc(args),
     {
-      chainid: chainId
+      chainId
     } 
   );
 
@@ -71,34 +78,40 @@ function* handleBidEvent(token, chainId, contract, bidEvent) {
 }
 
 function* getBids(token, searchParams) {
-  const chains = yield bidChain.getChains(token);
+  const chains = yield bidChainJs.getChains(token);
 
   const queryParams = {
     ...searchParams,
-    chainid: chains.map(c => c.id)
+    chainId: chains.map(c => c.id)
   }
 
   const results = yield rest.query(`${contractName}?${getPostgrestQueryString(queryParams)}`)
+  return results;
 }
 
 function getPostgrestQueryString(params) {
   const queryString = Object.getOwnPropertyNames(params).reduce((qs, prop) => {
-    if(typeof params[prop] === 'object') {
-      return qs;
-    }
     if(Array.isArray(params[prop])) {
       qs += `${qs.length === 0 ? '' : '&'}${prop}=in.${arrayToCsv(params[prop])}`;
       return qs;
     }
+    if(typeof params[prop] === 'object') {
+      return qs;
+    }
     qs +=  `${qs.length === 0 ? '' : '&'}${prop}=eq.${params[prop]}`
   }, '')
+
   return queryString;
 }
 
 function arrayToCsv(array, delimiter = ',') {
-  array.reduce((csv, element) => {
-    csv += `${csv.length === 0 ? '' : delimiter}${element}`
-  }, '')
+  return array.reduce(
+    (csv, element) => {
+      csv += `${csv.length === 0 ? '' : delimiter}${element}`
+      return csv;
+    }, 
+    ''
+  )
 }
 
 module.exports = {

@@ -96,7 +96,6 @@ describe('Asset Manager Tests', function () {
     }, RestStatus.BAD_REQUEST, AssetError.SKU_EMPTY);
   });
 
-  // TODO: fix permissioned hash map issues
   it('Create Asset -- already exists', function* () {
     const assetArgs = assetFactory.getAssetArgs();
     assetArgs.sku = existingSku;
@@ -153,4 +152,6 @@ describe('Asset Manager Tests', function () {
       yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
     }, RestStatus.NOT_FOUND, AssetError.SKU_NOT_FOUND);
   });
+
+  // TODO: test transfer ownership call
 });

@@ -104,11 +104,12 @@ function* getChainById(chainId) {
   return chainInfo;
 }
 
+// only return chains where current user is a member
 function* getChains(token) {
   const keyResponse = yield rest.getKey(token);
   const chains = yield rest.getChainInfos();
 
-  return chains.reduce((acc, c) => {
+  const filtered = chains.reduce((acc, c) => {
     const member = c.info.members.find((m) => {
       return m.address === keyResponse.address
     })
@@ -117,6 +118,8 @@ function* getChains(token) {
     }
     return acc;
   }, [])
+
+  return filtered;
 }
 
 module.exports = {

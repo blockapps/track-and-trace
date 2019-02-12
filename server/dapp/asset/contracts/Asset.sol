@@ -17,7 +17,7 @@ contract Asset is Util, RestStatus, Searchable, AssetState, AssetError {
   string name;
   string description;
   uint price;
-  address owner;
+  address public owner;
   AssetState public assetState;
 
   constructor(
@@ -44,6 +44,14 @@ contract Asset is Util, RestStatus, Searchable, AssetState, AssetError {
     if (!ttPermissionManager.canModifyAsset(msg.sender)) return (RestStatus.FORBIDDEN, AssetError.NULL, 0);
 
     assetState = _assetState;
+    return (RestStatus.OK, AssetError.NULL, searchable());
+  }
+
+  function setOwner(address _newOwner) returns (uint, AssetError, uint) {
+    // check permissions
+    if (!ttPermissionManager.canModifyAsset(msg.sender)) return (RestStatus.FORBIDDEN, AssetError.NULL, 0);
+
+    owner = _newOwner;
     return (RestStatus.OK, AssetError.NULL, searchable());
   }
 

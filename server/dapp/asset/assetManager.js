@@ -42,6 +42,10 @@ function bind(token, contract) {
     return yield getAssets(token, contract, args);
   }
 
+  contract.transferOwnership = function* (args) {
+    return yield transferOwnership(token, contract, args);
+  }
+
   return contract;
 }
 
@@ -93,6 +97,20 @@ function* getAssets(token, contract) {
 
   const results = yield rest.query(`${assetJs.contractName}?${genAddressString(addresses, '&')}`);
   return results;
+}
+
+function* transferOwnership(token, contract, args) {
+  rest.verbose('transferOwnership', args);
+
+  const method = 'transferOwnership';
+  const [restStatus, assetError, searchCounter, newState] = 
+    yield rest.callMethod(token, contract, method, util.usc(args));
+  
+  if (restStatus != RestStatus.OK) throw new rest.RestError(restStatus, assetError, { method, args });
+
+  yield assetJs.waitForRequiredUpdate(args.sku, searchCounter);
+
+  return newState;
 }
 
 function genAddressString(addresses, prefix = '?') {

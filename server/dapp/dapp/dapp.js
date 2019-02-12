@@ -11,25 +11,25 @@ const userManagerJs = require(`${process.cwd()}/${config.libPath}/auth/user/user
 const assetManagerJs = require(`${process.cwd()}/${config.dappPath}/asset/assetManager`);
 const ttPermissionManagerJs = require(`${process.cwd()}/${config.dappPath}/ttPermission/ttPermissionManager`);
 
-rest.calllistBatch = function* (admin, txs) {
+rest.calllistBatch = function* (token, txs) {
   const batchSize = 60;
   const results = [];
   for (let i = 0; i < txs.length; i += batchSize) {
     const slice = txs.slice(i, i + batchSize);
-    const batchResults = yield rest.callList(admin, slice);
+    const batchResults = yield rest.callList(token, slice);
     results.push(...batchResults);
   }
   return results;
 }
 
-function* uploadContract(admin, ttPermissionManager) {
+function* uploadContract(token, ttPermissionManager) {
   const args = {
     ttPermissionManager: ttPermissionManager.address,
   };
-  const contract = yield rest.uploadContract(admin, contractName, contractFilename, util.usc(args));
+  const contract = yield rest.uploadContract(token, contractName, contractFilename, util.usc(args));
   contract.src = 'removed';
   yield util.sleep(5 * 1000);
-  return yield bind(admin, contract);
+  return yield bind(token, contract);
 }
 
 function* getManagers(contract) {
@@ -47,14 +47,14 @@ function* getManagers(contract) {
   return managers;
 }
 
-function* bind(admin, _contract) {
-  rest.verbose('bind', { admin, _contract });
+function* bind(token, _contract) {
+  rest.verbose('bind', { admin: token, _contract });
   const contract = _contract;
   // set the managers
   const unboundManagers = yield getManagers(contract);
-  const userManager = userManagerJs.bind(admin, unboundManagers.userManager);
-  const assetManager = assetManagerJs.bind(admin, unboundManagers.assetManager);
-  const ttPermissionManager = ttPermissionManagerJs.bind(admin, unboundManagers.ttPermissionManager);
+  const userManager = userManagerJs.bind(token, unboundManagers.userManager);
+  const assetManager = assetManagerJs.bind(token, unboundManagers.assetManager);
+  const ttPermissionManager = ttPermissionManagerJs.bind(token, unboundManagers.ttPermissionManager);
 
   // deploy
   contract.deploy = function* (deployFilename) {
@@ -63,7 +63,7 @@ function* bind(admin, _contract) {
       assetManager,
       ttPermissionManager,
     }
-    return yield deploy(admin, contract, deployFilename, managers)
+    return yield deploy(token, contract, deployFilename, managers)
   }
 
   // create user
@@ -95,7 +95,7 @@ function* bind(admin, _contract) {
 }
 
 // =========================== deployment ========================
-function* deploy(admin, contract, deployFilename, managers) {
+function* deploy(token, contract, deployFilename, managers) {
   rest.verbose('dapp: deploy');
   const { assetManager, ttPermissionManager, userManager } = managers;
 

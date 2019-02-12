@@ -14,7 +14,7 @@ contract BidGovernance {
     emit MemberAdded(_member, _enode);
   }
 
-  function removeChainMember(address _member) public {
+  function removeMember(address _member) public {
     assert(msg.sender == owner);
     emit MemberRemoved(_member);
   }

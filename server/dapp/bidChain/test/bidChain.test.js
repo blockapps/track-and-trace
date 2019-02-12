@@ -30,13 +30,14 @@ describe('Bid Chain Tests', function() {
   it('should create a bidding chain', function* () {
     const chainId = yield bidChain.createChain(distributorToken, manufacturerUser.address)
     
+    // takes a few to populate
+    yield util.sleep(2*1000);
+    
     const chain = yield bidChain.getChainById(chainId);
 
-    console.log(chain);
 
-    assert.equal(chain.label, `bid_${manufacturerToken}_${distributorUser.address}`, 'Chain label should match')
+    assert.equal(chain.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match')
     assert.equal(chain.members.length, 2, 'Chain should have 2 members');
-    assert.equal(chain.id, chainId, 'Chain is should match');
     
     const chains = yield bidChain.getChains(distributorToken);
 
@@ -49,11 +50,11 @@ describe('Bid Chain Tests', function() {
   })
 
   it.skip('should remove a member from bidding chain', function* () {
-
+    // TODO: complete this
   })
 
   it.skip('should add a member from bidding chain', function* () {
-
+    // TODO: complete this
   })
 
 })

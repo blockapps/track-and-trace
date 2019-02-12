@@ -19,7 +19,7 @@ function* createChain(token, assetOwner) {
   );
   
   const chain = yield rest.createChain(
-    `bid_${assetOwner}_${getKeyResponse.address}`,
+    `bid_${getKeyResponse.address}_${assetOwner}`,
     [
       {
         address: assetOwner,
@@ -107,8 +107,9 @@ function* getChainById(chainId) {
 function* getChains(token) {
   const keyResponse = yield rest.getKey(token);
   const chains = yield rest.getChainInfos();
+
   return chains.reduce((acc, c) => {
-    const member = c.members.find((m) => {
+    const member = c.info.members.find((m) => {
       return m.address === keyResponse.address
     })
     if(member !== undefined) {

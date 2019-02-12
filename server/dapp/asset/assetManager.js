@@ -82,8 +82,8 @@ function* handleAssetEvent(token, contract, args) {
   return newState;
 }
 
-function* getAssets(token, contract, args) {
-  rest.verbose('getAssets', args);
+function* getAssets(token, contract) {
+  rest.verbose('getAssets');
 
   const { assets: assetsHashMap } = yield rest.getState(contract);
   const hashmap = permissionHashmapJs.bindAddress(token, assetsHashMap);

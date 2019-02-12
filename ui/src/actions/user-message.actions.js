@@ -5,7 +5,8 @@ export const resetUserMessage = () => ({
   type: RESET_USER_MESSAGE
 });
 
-export const setUserMessage = (message) => ({
+export const setUserMessage = (message, success = false) => ({
   type: SET_USER_MESSAGE,
-  message: message
+  message,
+  success
 });

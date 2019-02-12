@@ -14,7 +14,7 @@ const reducer = (state = initialState, action) => {
         draft.message = null
         break
       case SET_USER_MESSAGE:
-        draft.success = true
+        draft.success = action.success
         draft.message = action.message
         break
       default:

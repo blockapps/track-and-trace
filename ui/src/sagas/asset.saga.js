@@ -58,7 +58,6 @@ function* getAssets() {
     if (response.success) {
       yield put(getAssetsSuccess(response.data));
     } else {
-      console.log(response);
       yield put(getAssetsFailure());
     }
   } catch (err) {
@@ -71,14 +70,16 @@ function* createAsset(action) {
     const response = yield call(createAssetApiCall, action.asset);
     if (response.success) {
       yield put(createAssetSuccess(response.assets));
-      yield put(setUserMessage('Asset Created Successfully'))
+      yield put(setUserMessage('Asset Created Successfully', true))
     } else {
       yield put(createAssetFailure(response.error));
-      yield put(setUserMessage(response.error))
+      // FIXME: if anything that could be better
+      if ((typeof response.error) === 'string')
+        yield put(setUserMessage(response.error))
+      else
+        yield put(setUserMessage('Fail to create'))
     }
   } catch (err) {
-    console.log(err);
-    // TODO: handle unexpected error
     yield put(createAssetFailure(err));
   }
 }

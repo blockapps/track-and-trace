@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
-import { Typography, Popover, AppBar, Toolbar, Button } from '@material-ui/core';
+import { Typography, Popover, AppBar, Toolbar, Button, LinearProgress } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { connect } from "react-redux";
 import { logout } from '../../actions/authentication.actions';
+import LoadingBar from 'react-redux-loading-bar';
 
 class Header extends Component {
   constructor(props) {
@@ -67,6 +68,7 @@ class Header extends Component {
             )
           }
         </Toolbar>
+        <LoadingBar className={classes.loadingBar} />
       </AppBar>
     )
   }
@@ -93,6 +95,12 @@ const styles = theme => ({
   },
   typography: {
     margin: '8px',
+  },
+  loadingBar: {
+    top: '0px',
+    backgroundColor: '#E10050',
+    zIndex: 999,
+    height: '4px'
   }
 });
 

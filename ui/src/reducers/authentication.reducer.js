@@ -1,9 +1,9 @@
 
 import producer from 'immer' //Immutability Library
 import {
-  GET_USER_SUCCESSFUL,
+  GET_USER_SUCCESS,
   UNAUTHORIZED,
-  LOGOUT_SUCCESSFUL
+  LOGOUT_SUCCESS
 } from '../actions/authentication.actions'
 
 const initialState = {
@@ -19,12 +19,12 @@ const initialState = {
 const reducer = (state = initialState, action) => {
   return producer(state, draft => {
     switch(action.type) {
-      case GET_USER_SUCCESSFUL:
+      case GET_USER_SUCCESS:
         draft.user = action.payload
         draft.isGetUserComplete = true
         draft.isAuthenticated = true
         break
-      case LOGOUT_SUCCESSFUL:
+      case LOGOUT_SUCCESS:
         draft.user = null
         draft.isGetUserComplete = false
         draft.logoutUrl = action.logoutUrl

@@ -5,12 +5,12 @@ import {
 } from 'redux-saga/effects';
 import { apiUrl, HTTP_METHODS } from '../constants';
 import { 
-  GET_ASSETS, 
+  GET_ASSETS_REQUEST, 
   getAssetsSuccess, 
   getAssetsFailure, 
-  CREATE_ASSET, 
+  CREATE_ASSET_REQUEST, 
   createAssetSuccess, 
-  createAssetFailure 
+  createAssetFailure
 } from '../actions/asset.actions';
 
 const assetsUrl = `${apiUrl}/assets`;
@@ -82,6 +82,6 @@ function* createAsset(action) {
 }
 
 export default function* watchAssets() {
-  yield takeLatest(GET_ASSETS, getAssets)
-  yield takeLatest(CREATE_ASSET, createAsset)
+  yield takeLatest(GET_ASSETS_REQUEST, getAssets)
+  yield takeLatest(CREATE_ASSET_REQUEST, createAsset)
 }

@@ -5,8 +5,31 @@ import { Paper, Grid, AppBar, Typography, Toolbar, Button } from '@material-ui/c
 import { getAssets } from "../../../actions/asset.actions";
 import './detail.css';
 import AuditLog from "../AuditLog";
+import { ROLES_INDEX } from "../../../utils/roles.utils";
 
 class AssetDetail extends Component {
+
+  requestBid = () => {
+    const role = parseInt(this.props.user['role'], 10);
+    if (role === ROLES_INDEX.RETAILER || role === ROLES_INDEX.DISTRIBUTOR) {
+      return (
+        <Button variant="contained" color="primary">
+          Request Bids
+        </Button>
+      )
+    }
+  }
+
+  placeBid = () => {
+    const role = parseInt(this.props.user['role'], 10);
+    if (role === ROLES_INDEX.MANUFACTURER || role === ROLES_INDEX.DISTRIBUTOR) {
+      return (
+        <Button variant="contained" color="primary">
+          Place Bids
+        </Button>
+      )
+    }
+  }
 
   componentDidMount() {
     this.props.getAssets();
@@ -24,13 +47,9 @@ class AssetDetail extends Component {
                 Asset Detail - {asset && asset.name}
               </Typography>
               <div className="appbar-content">
-                {/* TODO: Mange buttons with their roles */}
-                <Button variant="contained" color="primary">
-                  Request Bids
-                </Button>
-                <Button variant="contained" color="primary">
-                  Place Bids
-                </Button>
+                {/* TODO: Mange buttons with their state*/}
+                {this.requestBid()}
+                {this.placeBid()}
               </div>
             </Toolbar>
           </AppBar>
@@ -72,10 +91,11 @@ class AssetDetail extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const assetId = ownProps.match.params.id;
-  let asset = state.asset.assets.filter((row) => row.id === parseInt(assetId))[0];
+  const assetAddress = ownProps.match.params.address;
+  let asset = state.asset.assets.filter((row) => row.address === assetAddress)[0];
   return {
-    asset: asset
+    asset: asset,
+    user: state.authentication.user
   };
 };
 

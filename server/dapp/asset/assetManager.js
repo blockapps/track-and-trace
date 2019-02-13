@@ -64,13 +64,12 @@ function* createAsset(token, contract, args) {
   rest.verbose('createAsset', args);
 
   const method = 'createAsset';
-  console.log('CALLING CREATE ASSET METHOD');
+
   const [restStatus, assetError, assetAddress] = yield rest.callMethod(token, contract, method, util.usc(args));
-  console.log('FINISHED CALLING CREATE ASSET METHOD');
+  
   if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, assetError, { method, args });
-  console.log('CALLING WAIT FOR ADDRESS');
   const asset = yield contractUtils.waitForAddress(assetJs.contractName, assetAddress);
-  console.log('FINISHED WAIT FOR ADDRESS');
+
   return asset;
 }
 

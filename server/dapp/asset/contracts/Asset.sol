@@ -20,7 +20,7 @@ contract Asset is Util, RestStatus, Searchable, AssetState, AssetError {
   /* Spec[] specs; */
   bytes32[] keys;
   bytes32[] values;
-  address owner;
+  address public owner;
   AssetState public assetState;
 
   /* struct Spec {
@@ -68,6 +68,14 @@ contract Asset is Util, RestStatus, Searchable, AssetState, AssetError {
     if (!ttPermissionManager.canModifyAsset(msg.sender)) return (RestStatus.FORBIDDEN, AssetError.NULL, 0);
 
     assetState = _assetState;
+    return (RestStatus.OK, AssetError.NULL, searchable());
+  }
+
+  function setOwner(address _newOwner) returns (uint, AssetError, uint) {
+    // check permissions
+    if (!ttPermissionManager.canModifyAsset(msg.sender)) return (RestStatus.FORBIDDEN, AssetError.NULL, 0);
+
+    owner = _newOwner;
     return (RestStatus.OK, AssetError.NULL, searchable());
   }
 

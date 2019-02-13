@@ -5,32 +5,21 @@ const contractName = 'Asset';
 const contractFilename = `${process.cwd()}/${config.dappPath}/asset/contracts/Asset.sol`;
 
 
-function* uploadContract(user, ttPermissionManagerContract, args) {
-  const getKeyResponse = yield rest.getKey(user);
+function* uploadContract(token, ttPermissionManagerContract, args) {
+  const getKeyResponse = yield rest.getKey(token);
   
   const contractArgs = Object.assign({}, args, {
     ttPermissionManager: ttPermissionManagerContract.address,
-    owner: getKeyResponse.address
+    owner: getKeyResponse.address 
   });
 
-  const contract = yield rest.uploadContract(user, contractName, contractFilename, util.usc(contractArgs));
-  yield compileSearch(contract);
+  const contract = yield rest.uploadContract(token, contractName, contractFilename, util.usc(contractArgs));
   contract.src = 'removed';
 
-  return bind(user, contract);
+  return bind(token, contract);
 }
 
-function* compileSearch(contract) {
-  rest.verbose('compileSearch', contractName);
-
-  const isSearchable = yield rest.isSearchable(contract.codeHash);
-  if (isSearchable) return;
-
-  const searchable = [contractName];
-  yield rest.compileSearch(searchable, contractName, contractFilename);
-}
-
-function bind(user, contract) {
+function bind(token, contract) {
   contract.getState = function* () {
     return yield rest.getState(contract);
   };
@@ -38,12 +27,12 @@ function bind(user, contract) {
   return contract;
 }
 
-function bindAddress(user, address) {
+function bindAddress(token, address) {
   let contract = {
     name: contractName,
     address
   }
-  return bind(user, contract);
+  return bind(token, contract);
 }
 
 function* waitForRequiredUpdate(sku, searchCounter) {

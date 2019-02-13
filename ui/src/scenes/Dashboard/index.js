@@ -6,8 +6,18 @@ import { Grid, AppBar, Typography, Toolbar } from '@material-ui/core';
 
 import CreateAssetModal from '../Asset/Create';
 import AssetsList from '../../scenes/Asset/List';
+<<<<<<< HEAD
 import './Dashboard.css';
+=======
+import { ROLES_INDEX } from "../../utils/roles.utils";
+import './dashboard.css';
+import SnackbarMessage from "../../components/SnackbarMessage";
+>>>>>>> master
 class Dashboard extends Component {
+
+  get isManufacturer() {
+    return parseInt(this.props.authentication.user['role'], 10) === ROLES_INDEX.MANUFACTURER;
+  }
 
   render() {
     return (
@@ -16,7 +26,7 @@ class Dashboard extends Component {
           <AppBar position="static" color="default">
             <Toolbar>
               <Typography variant="h6" color="inherit" className="appbar-container">
-                <CreateAssetModal />
+                {this.isManufacturer && <CreateAssetModal />}
               </Typography>
             </Toolbar>
           </AppBar>
@@ -24,6 +34,7 @@ class Dashboard extends Component {
         <Grid container>
           <AssetsList />
         </Grid>
+        <SnackbarMessage />
       </div>
     )
   }
@@ -34,7 +45,9 @@ const styles = theme => ({
 });
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+    authentication: state.authentication
+  };
 };
 
 const connected = connect(mapStateToProps, {})(

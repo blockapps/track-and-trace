@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 
-import ThemedComponent from './Theme';
+import ThemedComponent from './theme';
 import { themeColor } from '../utils/roles.utils';
 
 class App extends Component {

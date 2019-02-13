@@ -4,14 +4,24 @@ import {
   put
 } from 'redux-saga/effects';
 import { apiUrl, HTTP_METHODS } from '../constants';
+<<<<<<< HEAD
 import {
   GET_ASSETS,
   getAssetsSuccess,
   getAssetsFailure,
   CREATE_ASSET,
   createAssetSuccess,
+=======
+import { 
+  GET_ASSETS_REQUEST, 
+  getAssetsSuccess, 
+  getAssetsFailure, 
+  CREATE_ASSET_REQUEST, 
+  createAssetSuccess, 
+>>>>>>> master
   createAssetFailure
 } from '../actions/asset.actions';
+import { setUserMessage } from '../actions/user-message.actions';
 
 const assetsUrl = `${apiUrl}/assets`;
 const createAssetUrl = `${apiUrl}/assets`;
@@ -37,11 +47,17 @@ function createAssetApiCall(asset) {
       body: JSON.stringify({
         asset: {
           sku: asset.SKU,
+<<<<<<< HEAD
           description:asset.description,
           name: asset.name,
           price: asset.price ,
           keys: asset.keys,
           values: asset.values
+=======
+          description: asset.description,
+          name: asset.name,
+          price: asset.price
+>>>>>>> master
         }
       })
     })
@@ -59,7 +75,6 @@ function* getAssets() {
     if (response.success) {
       yield put(getAssetsSuccess(response.data));
     } else {
-      console.log(response);
       yield put(getAssetsFailure());
     }
   } catch (err) {
@@ -70,20 +85,23 @@ function* getAssets() {
 function* createAsset(action) {
   try {
     const response = yield call(createAssetApiCall, action.asset);
-    console.log(response);
     if (response.success) {
       yield put(createAssetSuccess(response.assets));
+      yield put(setUserMessage('Asset Created Successfully', true))
     } else {
-      yield put(createAssetFailure(response.data));
+      yield put(createAssetFailure(response.error));
+      // FIXME: if anything that could be better
+      if ((typeof response.error) === 'string')
+        yield put(setUserMessage(response.error))
+      else
+        yield put(setUserMessage('Fail to create'))
     }
   } catch (err) {
-    console.log(err);
-    // TODO: handle unexpected error
     yield put(createAssetFailure(err));
   }
 }
 
 export default function* watchAssets() {
-  yield takeLatest(GET_ASSETS, getAssets)
-  yield takeLatest(CREATE_ASSET, createAsset)
+  yield takeLatest(GET_ASSETS_REQUEST, getAssets)
+  yield takeLatest(CREATE_ASSET_REQUEST, createAsset)
 }

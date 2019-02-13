@@ -1,15 +1,15 @@
-export const GET_ASSETS = 'GET_ASSETS';
+export const GET_ASSETS_REQUEST = 'GET_ASSETS_REQUEST';
 export const GET_ASSETS_SUCCESS = 'GET_ASSETS_SUCCESS';
 export const GET_ASSETS_FAILURE = 'GET_ASSETS_FAILURE';
 export const OPEN_CREATE_ASSET_OVERLAY = 'OPEN_CREATE_ASSET_OVERLAY';
 export const CLOSE_CREATE_ASSET_OVERLAY = 'CLOSE_CREATE_ASSET_OVERLAY';
-export const CREATE_ASSET = 'CREATE_ASSET'
+export const CREATE_ASSET_REQUEST = 'CREATE_ASSET_REQUEST'
 export const CREATE_ASSET_SUCCESS = 'CREATE_ASSET_SUCCESS'
 export const CREATE_ASSET_FAILURE = 'CREATE_ASSET_FAILURE'
 
 export const getAssets = () => {
   return {
-    type: GET_ASSETS
+    type: GET_ASSETS_REQUEST
   }
 }
 
@@ -43,7 +43,7 @@ export const closeCreateAssetOverlay = function () {
 
 export const createAsset = function (asset) {
   return {
-    type: CREATE_ASSET,
+    type: CREATE_ASSET_REQUEST,
     asset
   }
 }

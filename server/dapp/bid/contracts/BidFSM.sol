@@ -2,7 +2,7 @@ import "/blockapps-sol/fsm/contracts/FSM.sol";
 import "./BidState.sol";
 import "./BidEvent.sol";
 
-contract AssetFSM is FSM, BidState, BidEvent {
+contract BidFSM is FSM, BidState, BidEvent {
     constructor() {
         addTransition(BidState.ENTERED, BidEvent.ACCEPT, BidState.ACCEPTED);
         addTransition(BidState.ENTERED, BidEvent.REJECT, BidState.REJECTED);

@@ -4,12 +4,12 @@ import {
   put
 } from 'redux-saga/effects';
 import { apiUrl, HTTP_METHODS } from '../constants';
-import {
-  GET_ASSETS,
-  getAssetsSuccess,
-  getAssetsFailure,
-  CREATE_ASSET,
-  createAssetSuccess,
+import { 
+  GET_ASSETS_REQUEST, 
+  getAssetsSuccess, 
+  getAssetsFailure, 
+  CREATE_ASSET_REQUEST, 
+  createAssetSuccess, 
   createAssetFailure
 } from '../actions/asset.actions';
 import { setUserMessage } from '../actions/user-message.actions';
@@ -85,6 +85,6 @@ function* createAsset(action) {
 }
 
 export default function* watchAssets() {
-  yield takeLatest(GET_ASSETS, getAssets)
-  yield takeLatest(CREATE_ASSET, createAsset)
+  yield takeLatest(GET_ASSETS_REQUEST, getAssets)
+  yield takeLatest(CREATE_ASSET_REQUEST, createAsset)
 }

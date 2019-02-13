@@ -4,6 +4,7 @@ import { reducer as formReducer } from 'redux-form';
 
 import authReducer from './authentication.reducer';
 import assetReducer from './asset.reducer';
+import userMessageReducer from './user-message.reducer';
 import { loadingBarReducer } from 'react-redux-loading-bar'
 
 export default (history) => combineReducers({
@@ -12,4 +13,5 @@ export default (history) => combineReducers({
   router: connectRouter(history),
   authentication: authReducer,
   asset: assetReducer,
+  userMessage: userMessageReducer
 });

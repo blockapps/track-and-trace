@@ -44,6 +44,7 @@ class AssetsList extends Component {
               <TableCell align="left"> {asset.name} </TableCell>
               <TableCell align="left">{asset.description}</TableCell>
               <TableCell align="left">{asset.price}</TableCell>
+              <TableCell align="left">{asset.keys}</TableCell>
             </TableRow>)
         }));
     }

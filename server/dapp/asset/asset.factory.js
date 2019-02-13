@@ -8,8 +8,8 @@ const factory = {
       name: `Name_${Math.random().toString(36).substring(7)}`,
       description: `Description_${Math.random().toString(36).substring(7)}`,
       price: Math.floor((Math.random() * 100) + 1),
-      keys: ['width', 'resolution'],
-      values: ['10 inches', '720p']
+      keys: [`width`, `resolution`],
+      values: [`10 inches`, `720p`]
     };
 
     return Object.assign({}, defaultArgs, overrideArgs);

@@ -29,8 +29,8 @@ class AssetsList extends Component {
     this.setState({ rowsPerPage: event.target.value });
   };
 
-  redirectToAssetDetail = (event, id) => {
-    this.props.history.push(`/asset/${id}`);
+  redirectToAssetDetail = (event, address) => {
+    this.props.history.push(`/asset/${address}`);
   };
 
   renderRows = (assets) => {
@@ -40,7 +40,7 @@ class AssetsList extends Component {
       return (assets.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .map((asset, key) => {
           return (
-            <TableRow key={key} hover onClick={event => this.redirectToAssetDetail(event, asset.id)}>
+            <TableRow key={key} hover onClick={event => this.redirectToAssetDetail(event, asset.address)}>
               <TableCell align="left"> {asset.name} </TableCell>
               <TableCell align="left">{asset.description}</TableCell>
               <TableCell align="left">{asset.price}</TableCell>

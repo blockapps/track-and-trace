@@ -5,11 +5,14 @@ import rootSaga from './sagas'
 import { createLogger } from 'redux-logger'
 import createSagaMiddleware from 'redux-saga'
 import createHistory from 'history/createBrowserHistory'
-
+import { loadingBarMiddleware } from 'react-redux-loading-bar';
 
 // create and export history tracker for router
 export const history = createHistory()
 
+const loadingMiddleware = loadingBarMiddleware({
+  promiseTypeSuffixes: ['REQUEST', 'SUCCESS', 'FAILURE']
+});
 
 // Set initial state
 const initialState = {}
@@ -19,7 +22,8 @@ const enhancers = []
 const sagaMiddleware = createSagaMiddleware()
 const middleware = [
   routerMiddleware(history),
-  sagaMiddleware
+  sagaMiddleware,
+  loadingMiddleware
 ]
 
 // If in dev, enable redux devtool extension and logging
@@ -28,7 +32,6 @@ if (process.env.NODE_ENV === 'development') {
   const logger = createLogger({
     // ...options
   })
-  middleware.push(logger)
 
   const devToolsExtension = window.__REDUX_DEVTOOLS_EXTENSION__
 

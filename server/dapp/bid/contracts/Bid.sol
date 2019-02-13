@@ -1,8 +1,8 @@
 import "/blockapps-sol/rest/contracts/RestStatus.sol";
 
-import './BidFSM.sol';
-import './BidState.sol';
-import './BidEvent.sol';
+import "./BidFSM.sol";
+import "./BidState.sol";
+import "./BidEvent.sol";
 
 contract Bid is BidState, BidEvent, RestStatus {
 
@@ -24,7 +24,7 @@ contract Bid is BidState, BidEvent, RestStatus {
 
   function handleBidEvent(BidEvent _bidEvent) public returns (uint, BidState) {
     if(msg.sender != assetOwner) {
-      return (RestStatus.FORBIDDEN, BidState.NULL)
+      return (RestStatus.FORBIDDEN, BidState.NULL);
     }
     
     BidState newState = bidFSM.handleEvent(bidState, _bidEvent);

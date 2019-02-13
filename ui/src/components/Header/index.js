@@ -1,15 +1,35 @@
 import React, { Component } from 'react'
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import Typography from '@material-ui/core/Typography';
+import { Typography, Popover, AppBar, Toolbar, Button, LinearProgress } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { connect } from "react-redux";
+import { logout } from '../../actions/authentication.actions';
+import LoadingBar from 'react-redux-loading-bar';
 
 class Header extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      popoverEl: null,
+    };
+  }
+
+  handleClick = event => {
+    this.setState({
+      popoverEl: event.currentTarget,
+    });
+  };
+
+  handleClose = () => {
+    this.setState({
+      popoverEl: null,
+    });
+  };
+
   render() {
-    const {user, classes, isAuthenticated} = this.props;
+    const { user, classes, isAuthenticated, logout } = this.props;
+    const { popoverEl } = this.state;
+    const isOpen = Boolean(popoverEl);
 
     return (
       <AppBar position="static">
@@ -22,14 +42,33 @@ class Header extends Component {
             isAuthenticated &&
             (
               <div className={classes.accountDiv}>
-                <Button color="inherit">
+                <Button color="inherit" onClick={this.handleClick}>
                   {user.username}
                   <AccountCircle className={classes.accountIcon} />
                 </Button>
+                <Popover
+                  id="simple-popper"
+                  open={isOpen}
+                  anchorEl={popoverEl}
+                  onClose={this.handleClose}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                  }}
+                >
+                  <Typography className={classes.typography}>
+                    <Button color="inherit" onClick={logout}>logout</Button>
+                  </Typography>
+                </Popover>
               </div>
             )
-          }   
+          }
         </Toolbar>
+        <LoadingBar className={classes.loadingBar} />
       </AppBar>
     )
   }
@@ -48,14 +87,25 @@ const styles = theme => ({
     marginLeft: theme.spacing.unit
   },
   accountDiv: {
-    float : '1px solid black'
+    float: '1px solid black'
   },
   toolbar: {
     display: 'flex',
     justifyContent: 'space-between'
+  },
+  typography: {
+    margin: '8px',
+  },
+  loadingBar: {
+    top: '0px',
+    backgroundColor: '#E10050',
+    zIndex: 999,
+    height: '4px'
   }
 });
 
-const connected = connect(mapStateToProps, {})(Header)
+const connected = connect(mapStateToProps, {
+  logout
+})(Header)
 
 export default withStyles(styles)(connected);

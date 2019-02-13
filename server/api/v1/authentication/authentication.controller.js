@@ -1,7 +1,7 @@
 const jwtDecode = require('jwt-decode');
 const ba = require('blockapps-rest')
 const { common } = ba;
-const { config } = common;
+const { config, util } = common;
 
 const authenticationController = {
   callback: async function (req, res, next) {

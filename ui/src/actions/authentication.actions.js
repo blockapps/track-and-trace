@@ -1,5 +1,6 @@
 export const GET_USER_SUCCESSFUL = 'authentication/GET_USER_SUCCESSFUL'
 export const LOGOUT = 'authentication/LOGOUT'
+export const LOGOUT_SUCCESSFUL = 'authentication/LOGOUT_SUCCESSFUL'
 export const UNAUTHORIZED = 'authentication/UNAUTHORIZED';
 export const GET_USER = `authentication/GET_USER`;
 
@@ -16,9 +17,15 @@ export const getUserSuccessful = (payload) => {
   }
 }
 
+export const logout = () => {
+  return {
+    type: LOGOUT
+  }
+}
+
 export const logoutSuccessful = (logoutUrl) => {
   return {
-    type: LOGOUT,
+    type: LOGOUT_SUCCESSFUL,
     logoutUrl
   }
 }

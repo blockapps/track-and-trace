@@ -1,6 +1,6 @@
 import React from 'react';
 import { Stepper, Step, StepLabel } from '@material-ui/core';
-import './AuditLog.css';
+import './auditLog.css';
 
 function getSteps() {
   // TODO: Change when actual API is integrated

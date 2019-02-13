@@ -72,14 +72,13 @@ contract AssetManager is Util, RestStatus, AssetState, AssetEvent, AssetError {
       return assets.get(_sku);
     }
 
-    // TODO: review the use of search counters
     function handleAssetEvent(string _sku, AssetEvent _assetEvent) public returns (uint, AssetError, uint, AssetState) {
       //  check permissions
-      Asset asset = Asset(assets.get(_sku));
-      if(asset.owner() != msg.sender) return (RestStatus.FORBIDDEN, AssetError.NULL, 0, AssetState.NULL);
+      //if (!ttPermissionManager.canModifyAsset(msg.sender)) return (RestStatus.UNAUTHORIZED, AssetState.NULL, 0);
 
       if (!exists(_sku)) return (RestStatus.NOT_FOUND, AssetError.SKU_NOT_FOUND, 0, AssetState.NULL);
 
+      Asset asset = Asset(assets.get(_sku));
       AssetState newState = assetFSM.handleEvent(asset.assetState(), _assetEvent);
 
       if (newState == AssetState.NULL) return (RestStatus.BAD_REQUEST, AssetError.NULL, 0, AssetState.NULL);
@@ -87,16 +86,5 @@ contract AssetManager is Util, RestStatus, AssetState, AssetEvent, AssetError {
       (, , uint searchCounter) = asset.setAssetState(newState);
 
       return (RestStatus.OK, AssetError.NULL, searchCounter, newState);
-    }
-
-    function transferOwnership(string _sku, address _owner) public returns (uint, AssetError, uint, AssetState) {
-      (uint restStatus, , , AssetState assetState)
-        = handleAssetEvent(_sku, AssetEvent.CHANGE_OWNER);
-      if(restStatus != RestStatus.OK) {
-        return (restStatus, AssetError.NULL, 0, AssetState.NULL);
-      }
-      Asset asset = Asset(assets.get(_sku));
-      (uint ownerRestStatus, AssetError assetError, uint searchCounter) = asset.setOwner(_owner);
-      return (ownerRestStatus, assetError, searchCounter, assetState);
     }
 }

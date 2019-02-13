@@ -17,15 +17,25 @@ contract Asset is Util, RestStatus, Searchable, AssetState, AssetError {
   string name;
   string description;
   uint price;
-<<<<<<< HEAD
+  /* Spec[] specs; */
   bytes32[] keys;
   bytes32[] values;
   address owner;
-=======
-  address public owner;
->>>>>>> master
   AssetState public assetState;
 
+  /* struct Spec {
+    string key;
+    string value;
+  }
+
+  function addSpec(string _key, string _value) {
+    Spec memory newSpec = Spec(
+      _key,
+      _value
+      );
+
+      specs.push(newSpec);
+  } */
   constructor(
     address _ttPermissionManager,
     string _sku,
@@ -45,7 +55,11 @@ contract Asset is Util, RestStatus, Searchable, AssetState, AssetError {
     owner = _owner;
     keys = _keys;
     values = _values;
+    /* for(uint i = 0; i < _keys.length; ++i) {
+      addSpec( bytes32ToString(_keys[i]), bytes32ToString(_values[i]) );
+    } */
     assetState = AssetState.CREATED;
+
     /* timestamp           = block.timestamp; */
   }
 
@@ -54,14 +68,6 @@ contract Asset is Util, RestStatus, Searchable, AssetState, AssetError {
     if (!ttPermissionManager.canModifyAsset(msg.sender)) return (RestStatus.FORBIDDEN, AssetError.NULL, 0);
 
     assetState = _assetState;
-    return (RestStatus.OK, AssetError.NULL, searchable());
-  }
-
-  function setOwner(address _newOwner) returns (uint, AssetError, uint) {
-    // check permissions
-    if (!ttPermissionManager.canModifyAsset(msg.sender)) return (RestStatus.FORBIDDEN, AssetError.NULL, 0);
-
-    owner = _newOwner;
     return (RestStatus.OK, AssetError.NULL, searchable());
   }
 

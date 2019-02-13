@@ -4,21 +4,12 @@ import {
   put
 } from 'redux-saga/effects';
 import { apiUrl, HTTP_METHODS } from '../constants';
-<<<<<<< HEAD
 import {
-  GET_ASSETS,
+  GET_ASSETS_REQUEST,
   getAssetsSuccess,
   getAssetsFailure,
-  CREATE_ASSET,
+  CREATE_ASSET_REQUEST,
   createAssetSuccess,
-=======
-import { 
-  GET_ASSETS_REQUEST, 
-  getAssetsSuccess, 
-  getAssetsFailure, 
-  CREATE_ASSET_REQUEST, 
-  createAssetSuccess, 
->>>>>>> master
   createAssetFailure
 } from '../actions/asset.actions';
 import { setUserMessage } from '../actions/user-message.actions';
@@ -47,17 +38,11 @@ function createAssetApiCall(asset) {
       body: JSON.stringify({
         asset: {
           sku: asset.SKU,
-<<<<<<< HEAD
-          description:asset.description,
-          name: asset.name,
-          price: asset.price ,
-          keys: asset.keys,
-          values: asset.values
-=======
           description: asset.description,
           name: asset.name,
-          price: asset.price
->>>>>>> master
+          price: asset.price,
+          keys: asset.keys,
+          values: asset.values
         }
       })
     })

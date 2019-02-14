@@ -6,6 +6,7 @@ const package = require('../../package.json');
 const authentication = require(`./authentication`);
 const user = require(`./users`)
 const assets = require(`./assets`);
+const bids = require(`./bids`);
 
 router.use(
   `/authentication`, 
@@ -22,6 +23,12 @@ router.use(
   `/assets`,
   authHandler.authorizeRequest(),
   assets
+);
+
+router.use(
+  `/bids`,
+  authHandler.authorizeRequest(),
+  bids
 );
 
 // set health handler

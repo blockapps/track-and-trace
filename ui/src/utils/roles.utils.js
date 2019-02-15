@@ -1,26 +1,3 @@
-// TODO: get this from the server
-export const ROLES = [
-  'NULL',
-  'ADMIN',
-  'ASSET_MANAGER',
-  'MANUFACTURER',
-  'DISTRIBUTOR',
-  'RETAILER',
-  'REGULATOR',
-  'MAX'
-]
-
-export const ROLES_INDEX = {
-  NULL: 0,
-  ADMIN: 1,
-  ASSET_MANAGER: 2,
-  MANUFACTURER: 3,
-  DISTRIBUTOR: 4,
-  RETAILER: 5,
-  REGULATOR: 6,
-  MAX: 7
-}
-
 export const ROLES_COLOR = {
   MANUFACTURER: '#ff9000',
   DISTRIBUTOR: '#ff5722',
@@ -29,15 +6,15 @@ export const ROLES_COLOR = {
   ADMIN: '#3f51b5',
 }
 
-export const themeColor = (role) => {
+export const themeColor = (role, USER_ROLE) => {
   switch (role) {
-    case ROLES_INDEX.MANUFACTURER:
+    case USER_ROLE.MANUFACTURER:
       return ROLES_COLOR.MANUFACTURER
-    case ROLES_INDEX.DISTRIBUTOR:
+    case USER_ROLE.DISTRIBUTOR:
       return ROLES_COLOR.DISTRIBUTOR
-    case ROLES_INDEX.RETAILER:
+    case USER_ROLE.RETAILER:
       return ROLES_COLOR.RETAILER
-    case ROLES_INDEX.REGULATOR:
+    case USER_ROLE.REGULATOR:
       return ROLES_COLOR.REGULATOR
     default: /* Default is admin */
       return ROLES_COLOR.ADMIN

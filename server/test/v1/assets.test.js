@@ -47,6 +47,7 @@ describe('Assets End-To-End Tests', function () {
     yield post(endpoints.Assets.assets, {asset: createAssetArgs} , manufacturerToken);
 
     const assets = yield get(endpoints.Assets.assets, manufacturerToken);
+    console.log(assets);
     assert.isAtLeast(assets.length, 1, 'assets list non-empty');
   });
 
@@ -54,6 +55,10 @@ describe('Assets End-To-End Tests', function () {
     const createAssetArgs = assetFactory.getAssetArgs();
 
     const asset = yield post(endpoints.Assets.assets, {asset: createAssetArgs}, manufacturerToken);
-    assert.equal(asset.sku, createAssetArgs.sku);
+
+    assert.equal(asset.sku, createAssetArgs.sku, 'sku matches');
+    assert.equal(asset.description, createAssetArgs.description, 'description matches');
+    assert.sameDeepMembers(asset.keys, createAssetArgs.keys, 'key array matches');
+    assert.sameDeepMembers(asset.values, createAssetArgs.values, 'values array matches');
   });
 });

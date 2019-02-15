@@ -66,7 +66,7 @@ function* createAsset(token, contract, args) {
   const method = 'createAsset';
 
   const [restStatus, assetError, assetAddress] = yield rest.callMethod(token, contract, method, util.usc(args));
-  
+
   if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, assetError, { method, args });
   const asset = yield contractUtils.waitForAddress(assetJs.contractName, assetAddress);
 

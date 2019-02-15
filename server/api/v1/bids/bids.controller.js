@@ -1,9 +1,10 @@
 const co = require('co');
 
-const { common } = require('blockapps-rest');
+const { common, rest6: rest } = require('blockapps-rest');
 const { config, util } = common;
 
 const bidJs = require(`${process.cwd()}/${config.dappPath}/bid/bid`);
+const BidEvent = rest.getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`).BidEvent;
 
 const bidsController = {
 
@@ -47,12 +48,12 @@ const bidsController = {
   handleEvent: (req, res, next) => {
     const { accessToken, params, body } = req;
     // Bid address
-    const { address } = params;
+    const { bidAddress } = params;
     const { chainId, bidEvent } = body;
 
     co(function* () {
       // TODO: what about chainID and contract.
-      const bidContract = bidJs.bind(accessToken, chainId, { name: 'Bid', address: address, src: 'removed' });
+      const bidContract = bidJs.bind(accessToken, chainId, { name: 'Bid', address: bidAddress, src: 'removed' });
       let bidState;
 
       switch (bidEvent) {

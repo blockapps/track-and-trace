@@ -67,6 +67,17 @@ describe('Bids End-To-End Tests', function () {
     assert.isDefined(bidDetail, 'bid detail using address');
   });
 
-  // TODO: Write testcase for handleEvents
+  // TODO: this test is using chainId and assets are not on the chain (getting user does not have balance)
+  it.skip('ACCEPT - handle event', function* () {
+    const url = `${endpoints.Bids.bids}/${bidsList[0].address}/event`;
+    const bidState = yield post(url, { chainId: bidsList[0].chainId, bidEvent: 1 }, manufacturerToken);
+    assert.isDefined(bidDetail, 'bid detail using address');
+  });
+
+  it.skip('REJECT - handle event', function* () {
+    const url = `${endpoints.Bids.bids}/${bidsList[0].address}/event`;
+    const bidState = yield post(url, { chainId: bidsList[0].chainId, bidEvent: 2 }, manufacturerToken);
+    assert.isDefined(bidDetail, 'bid detail using address');
+  });
 
 });

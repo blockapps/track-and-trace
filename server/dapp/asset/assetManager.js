@@ -11,6 +11,8 @@ const contractUtils = require(`${process.cwd()}/${config.dappPath}/asset/contrac
 const contractName = 'AssetManager';
 const contractFilename = `${process.cwd()}/${config.dappPath}/asset/contracts/AssetManager.sol`;
 
+const ttUtil = require('../../helpers/util');
+
 
 function* uploadContract(token, ttPermissionManagerContract) {
   const contractArgs = {
@@ -96,6 +98,15 @@ function* getAssets(token, contract) {
   const addresses = values.slice(1);
 
   const results = yield rest.query(`${assetJs.contractName}?${genAddressString(addresses, '&')}`);
+
+  let i, j;
+  for(i = 0; i < results.length; ++i) {
+    for(j = 0; j < results[i].keys.length; ++j) {
+      results[i].keys[j] = ttUtil.fromBytes32(results[i].keys[j]);
+      results[i].values[j] = ttUtil.fromBytes32(results[i].values[j]);
+    }
+  }
+
   return results;
 }
 

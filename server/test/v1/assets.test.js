@@ -47,7 +47,6 @@ describe('Assets End-To-End Tests', function () {
     yield post(endpoints.Assets.assets, {asset: createAssetArgs} , manufacturerToken);
 
     const assets = yield get(endpoints.Assets.assets, manufacturerToken);
-    console.log(assets);
     assert.isAtLeast(assets.length, 1, 'assets list non-empty');
   });
 

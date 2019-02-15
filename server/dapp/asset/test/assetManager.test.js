@@ -79,7 +79,7 @@ describe('Asset Manager Tests', function () {
     const assetArgs = assetFactory.getAssetArgs();
 
     const asset = yield manufacturerAssetManagerContract.createAsset(assetArgs);
-
+    yield manufacturerAssetManagerContract.getAssets(manufacturerToken,manufacturerAssetManagerContract);
     assert.equal(asset.sku, assetArgs.sku, 'sku');
 
     existingSku = asset.sku;

@@ -1,19 +1,20 @@
 const authHandler = require('../middleware/authHandler');
 const router = require('express').Router();
-const moment  = require('moment');
+const moment = require('moment');
 const package = require('../../package.json');
 
 const authentication = require(`./authentication`);
 const user = require(`./users`)
 const assets = require(`./assets`);
+const constants = require(`./constants`);
 
 router.use(
-  `/authentication`, 
+  `/authentication`,
   authentication
 );
 
 router.use(
-  `/users`, 
+  `/users`,
   authHandler.authorizeRequest(),
   user
 )
@@ -22,6 +23,11 @@ router.use(
   `/assets`,
   authHandler.authorizeRequest(),
   assets
+);
+
+router.use(
+  `/constants`,
+  constants
 );
 
 // set health handler

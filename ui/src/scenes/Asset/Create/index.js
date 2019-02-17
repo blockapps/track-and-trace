@@ -1,24 +1,79 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
-import { Field, reduxForm, Form } from 'redux-form'
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Icon, IconButton } from '@material-ui/core';
+import { Field, reduxForm, Form, FieldArray } from 'redux-form'
 import ReduxedTextField from "../../../components/ReduxedTextField";
-import { 
-  openCreateAssetOverlay, 
-  closeCreateAssetOverlay, 
+import {
+  openCreateAssetOverlay,
+  closeCreateAssetOverlay,
   createAsset,
   getAssets
 } from "../../../actions/asset.actions";
+import './Create.css'
 
 class CreateAssetModal extends Component {
 
   submit = (asset) => {
-    this.props.createAsset(asset);
+    const { specs } = asset;
+
+    let spec = specs.map((spec) => {
+      return ({ [spec.key]: spec.value });
+    });
+
+    const params = {
+      _SKU: asset.SKU,
+      _description: asset.description,
+      _name: asset.name,
+      _price: asset.price,
+      _spec: spec
+    }
+
+    this.props.createAsset(params);
+  }
+
+  renderSpec = ({ fields }) => {
+    return (
+      <div>
+        {fields.map((user, index) =>
+          <div key={index}>
+            <div>
+              <Field
+                id={`${user}.key`}
+                name={`${user}.key`}
+                type="text"
+                label="Key"
+                margin="normal"
+                className="spec-field"
+                component={ReduxedTextField}
+              />
+              <Field
+                id={`${user}.value`}
+                name={`${user}.value`}
+                type="text"
+                margin="normal"
+                label="Value"
+                component={ReduxedTextField}
+              />
+              <span className="spec-delete">
+                <IconButton aria-label="Delete" className="remove-button" onClick={() => fields.remove(index)}>
+                  <Icon color="action">delete</Icon>
+                </IconButton>
+              </span>
+            </div>
+          </div>
+        )}
+        <div>
+          <Button variant="contained" color="primary" onClick={() => fields.push({})}>
+            add spec
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   componentDidUpdate(prevProps) {
-    if(prevProps.isOpen && !this.props.isOpen && !this.props.error) {
+    if (prevProps.isOpen && !this.props.isOpen && !this.props.error) {
       this.props.getAssets();
     }
   }
@@ -83,7 +138,7 @@ class CreateAssetModal extends Component {
                   <div>error</div>
                 )
               }
-              {/* TODO: add Spec sheet - list of key value pairs */}
+              <FieldArray name="specs" component={this.renderSpec} />
             </DialogContent>
             <DialogActions>
               <Button onClick={closeCreateAssetOverlay} color="primary"> Cancel </Button>

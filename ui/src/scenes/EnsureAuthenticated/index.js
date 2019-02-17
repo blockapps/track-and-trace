@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom'
 import {
   getUser
@@ -24,10 +24,16 @@ class EnsureAuthenticated extends Component {
     const {
       isAuthenticated,
       isGetUserComplete,
-      loginUrl
+      loginUrl,
+      logoutUrl
     } = authentication;
 
-    if(!isGetUserComplete) {
+    if (logoutUrl) {
+      window.location = logoutUrl;
+      return null;
+    }
+
+    if (!isGetUserComplete) {
       return (
         <Grid item xs={12} className={classes.item}>
           <Grid container justify="center" alignItems="center" className={classes.container}>

@@ -6,31 +6,42 @@ import { connect } from "react-redux";
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 
-import ThemedComponent from './Theme';
+import ThemedComponent from './theme';
 import { themeColor } from '../utils/roles.utils';
+import { getConstants } from '../actions/constants.actions';
 
 class App extends Component {
 
+  componentDidMount() {
+    this.props.getConstants();
+  }
+
   render() {
-    const { classes, user } = this.props;
+    const { classes, user, constants } = this.props;
     let userRole = user && user['role'];
+    const USER_ROLE = constants && constants.TT.TtRole;
 
     return (
-      <ThemedComponent color={themeColor(userRole)} >
-        <div className={classes.docRoot}>
-          <Header />
-        </div>
-        <Grid>
-          <Routes />
-        </Grid>
-      </ThemedComponent>
+      <div>
+        {
+          USER_ROLE ? (<ThemedComponent color={themeColor(userRole, USER_ROLE)} >
+            <div className={classes.docRoot}>
+              <Header />
+            </div>
+            <Grid>
+              <Routes />
+            </Grid>
+          </ThemedComponent>) : ''
+        }
+      </div>
     );
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    user: state.authentication.user
+    user: state.authentication.user,
+    constants: state.constants
   };
 };
 
@@ -44,7 +55,9 @@ const styles = theme => ({
   }
 });
 
-const connected = connect(mapStateToProps, {})(
+const connected = connect(mapStateToProps, {
+  getConstants
+})(
   withStyles(styles)(App)
 );
 

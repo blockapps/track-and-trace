@@ -3,34 +3,23 @@ const { util, config } = common;
 
 const contractName = 'Asset';
 const contractFilename = `${process.cwd()}/${config.dappPath}/asset/contracts/Asset.sol`;
+const encodingHelpers = require('../../helpers/encoding');
 
-
-function* uploadContract(user, ttPermissionManagerContract, args) {
-  const getKeyResponse = yield rest.getKey(user);
+function* uploadContract(token, ttPermissionManagerContract, args) {
+  const getKeyResponse = yield rest.getKey(token);
   
   const contractArgs = Object.assign({}, args, {
     ttPermissionManager: ttPermissionManagerContract.address,
-    owner: getKeyResponse.address
+    owner: getKeyResponse.address 
   });
 
-  const contract = yield rest.uploadContract(user, contractName, contractFilename, util.usc(contractArgs));
-  yield compileSearch(contract);
+  const contract = yield rest.uploadContract(token, contractName, contractFilename, util.usc(contractArgs));
   contract.src = 'removed';
 
-  return bind(user, contract);
+  return bind(token, contract);
 }
 
-function* compileSearch(contract) {
-  rest.verbose('compileSearch', contractName);
-
-  const isSearchable = yield rest.isSearchable(contract.codeHash);
-  if (isSearchable) return;
-
-  const searchable = [contractName];
-  yield rest.compileSearch(searchable, contractName, contractFilename);
-}
-
-function bind(user, contract) {
+function bind(token, contract) {
   contract.getState = function* () {
     return yield rest.getState(contract);
   };
@@ -38,24 +27,50 @@ function bind(user, contract) {
   return contract;
 }
 
-function bindAddress(user, address) {
+function bindAddress(token, address) {
   let contract = {
     name: contractName,
     address
   }
-  return bind(user, contract);
+  return bind(token, contract);
 }
 
 function* waitForRequiredUpdate(sku, searchCounter) {
   const queryString = `${contractName}?and=(sku.eq.${sku},searchCounter.gte.${searchCounter})`;
   const results = yield rest.waitQuery(queryString, 1);
 
-  return results[0];
+  const asset = {
+    ...results[0],
+    keys: results[0].keys.map(k => encodingHelpers.fromBytes32(k)),
+    values: results[0].values.map(k => encodingHelpers.fromBytes32(v))
+  } 
+
+  return asset;
+}
+
+function fromBytes32(asset) {
+  const converted = {
+    ...asset,
+    keys: asset.keys.map(k => encodingHelpers.fromBytes32(k)),
+    values: asset.values.map(v => encodingHelpers.fromBytes32(v))
+  }
+  return converted
+}
+
+function toBytes32(asset) {
+  const converted = {
+    ...asset,
+    keys: asset.keys.map(k => encodingHelpers.toBytes32(k)),
+    values: asset.values.map(v => encodingHelpers.toBytes32(v))
+  }
+  return converted
 }
 
 module.exports = {
   uploadContract,
   bindAddress,
   contractName,
-  waitForRequiredUpdate
+  waitForRequiredUpdate,
+  fromBytes32,
+  toBytes32
 }

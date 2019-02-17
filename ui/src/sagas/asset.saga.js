@@ -36,14 +36,7 @@ function createAssetApiCall(asset) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        asset: {
-          sku: asset.SKU,
-          description: asset.description,
-          name: asset.name,
-          price: asset.price,
-          keys: asset.keys,
-          values: asset.values
-        }
+        asset
       })
     })
     .then(function (response) {

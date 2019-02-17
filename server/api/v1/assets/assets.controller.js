@@ -27,6 +27,7 @@ const assetsController = {
     const { app, accessToken, body } = req;
     const args = { ...body.asset };
 
+    // TODO: write a to ensure 400 here
     if(
       !Array.isArray(args.keys) 
       || !Array.isArray(args.values)

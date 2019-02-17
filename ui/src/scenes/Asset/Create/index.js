@@ -22,11 +22,12 @@ class CreateAssetModal extends Component {
     });
 
     const params = {
-      _SKU: asset.SKU,
-      _description: asset.description,
-      _name: asset.name,
-      _price: asset.price,
-      _spec: spec
+      sku: asset.sku,
+      description: asset.description,
+      name: asset.name,
+      price: asset.price,
+      keys: specs.map(s => s.key),
+      values: specs.map(s => s.value)
     }
 
     this.props.createAsset(params);
@@ -98,9 +99,9 @@ class CreateAssetModal extends Component {
             <DialogTitle id="form-dialog-title">Create Asset</DialogTitle>
             <DialogContent>
               <Field
-                name="SKU"
+                name="sku"
                 type="text"
-                placeholder="SKU"
+                placeholder="sku"
                 margin="normal"
                 component={ReduxedTextField}
                 fullWidth

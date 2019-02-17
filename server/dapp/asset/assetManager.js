@@ -11,7 +11,7 @@ const contractUtils = require(`${process.cwd()}/${config.dappPath}/asset/contrac
 const contractName = 'AssetManager';
 const contractFilename = `${process.cwd()}/${config.dappPath}/asset/contracts/AssetManager.sol`;
 
-const ttUtil = require('../../helpers/util');
+const encodingHelper = require(`${process.cwd()}/helpers/encoding`);
 
 
 function* uploadContract(token, ttPermissionManagerContract) {
@@ -67,12 +67,14 @@ function* createAsset(token, contract, args) {
 
   const method = 'createAsset';
 
-  const [restStatus, assetError, assetAddress] = yield rest.callMethod(token, contract, method, util.usc(args));
+  const converted = assetJs.toBytes32(args);
 
-  if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, assetError, { method, args });
+  const [restStatus, assetError, assetAddress] = yield rest.callMethod(token, contract, method, util.usc(converted));
+
+  if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, assetError, { method, converted });
   const asset = yield contractUtils.waitForAddress(assetJs.contractName, assetAddress);
 
-  return asset;
+  return assetJs.fromBytes32(asset);
 }
 
 function* handleAssetEvent(token, contract, args) {
@@ -99,15 +101,9 @@ function* getAssets(token, contract) {
 
   const results = yield rest.query(`${assetJs.contractName}?${genAddressString(addresses, '&')}`);
 
-  let i, j;
-  for(i = 0; i < results.length; ++i) {
-    for(j = 0; j < results[i].keys.length; ++j) {
-      results[i].keys[j] = ttUtil.fromBytes32(results[i].keys[j]);
-      results[i].values[j] = ttUtil.fromBytes32(results[i].values[j]);
-    }
-  }
+  const converted = results.map(r => assetJs.fromBytes32(r));
 
-  return results;
+  return converted;
 }
 
 function* transferOwnership(token, contract, args) {

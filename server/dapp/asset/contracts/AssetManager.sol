@@ -43,7 +43,9 @@ contract AssetManager is Util, RestStatus, AssetState, AssetEvent, AssetError {
       string _sku,
       string _name,
       string _description,
-      uint _price
+      uint _price,
+      bytes32[] _keys,
+      bytes32[] _values
     ) public returns (uint, AssetError, address) {
       if (!ttPermissionManager.canCreateAsset(msg.sender)) return (RestStatus.UNAUTHORIZED, AssetError.NULL, 0);
 
@@ -52,11 +54,13 @@ contract AssetManager is Util, RestStatus, AssetState, AssetEvent, AssetError {
       if (exists(_sku)) return (RestStatus.BAD_REQUEST, AssetError.SKU_EXISTS, 0);
 
       Asset asset = new Asset(
-        ttPermissionManager, 
+        ttPermissionManager,
         _sku,
         _name,
         _description,
         _price,
+        _keys,
+        _values,
         msg.sender
       );
       assets.put(_sku, asset);
@@ -73,11 +77,11 @@ contract AssetManager is Util, RestStatus, AssetState, AssetEvent, AssetError {
       //  check permissions
       Asset asset = Asset(assets.get(_sku));
       if(asset.owner() != msg.sender) return (RestStatus.FORBIDDEN, AssetError.NULL, 0, AssetState.NULL);
-      
+
       if (!exists(_sku)) return (RestStatus.NOT_FOUND, AssetError.SKU_NOT_FOUND, 0, AssetState.NULL);
 
       AssetState newState = assetFSM.handleEvent(asset.assetState(), _assetEvent);
-      
+
       if (newState == AssetState.NULL) return (RestStatus.BAD_REQUEST, AssetError.NULL, 0, AssetState.NULL);
 
       (, , uint searchCounter) = asset.setAssetState(newState);
@@ -86,11 +90,11 @@ contract AssetManager is Util, RestStatus, AssetState, AssetEvent, AssetError {
     }
 
     function transferOwnership(string _sku, address _owner) public returns (uint, AssetError, uint, AssetState) {
-      (uint restStatus, , , AssetState assetState) 
+      (uint restStatus, , , AssetState assetState)
         = handleAssetEvent(_sku, AssetEvent.CHANGE_OWNER);
       if(restStatus != RestStatus.OK) {
         return (restStatus, AssetError.NULL, 0, AssetState.NULL);
-      }      
+      }
       Asset asset = Asset(assets.get(_sku));
       (uint ownerRestStatus, AssetError assetError, uint searchCounter) = asset.setOwner(_owner);
       return (ownerRestStatus, assetError, searchCounter, assetState);

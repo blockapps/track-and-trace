@@ -1,0 +1,11 @@
+.text-right {
+  text-align: right;
+}
+
+.spec-field {
+  margin-right: 30px !important;
+}
+
+.remove-button {
+  margin: 15px 0px 0px 20px !important;
+}

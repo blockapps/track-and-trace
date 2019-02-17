@@ -75,6 +75,12 @@ class AssetDetail extends Component {
                 {/* TODO: apply table here for Spec */}
                 Table for Spec
               </Typography>
+              <Typography component="p">
+                {asset && asset.keys}
+              </Typography>
+              <Typography component="p">
+                {asset && asset.values}
+              </Typography>
             </Paper>
           </Grid>
           <Grid item xs={1}></Grid>

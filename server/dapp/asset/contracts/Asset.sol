@@ -17,15 +17,19 @@ contract Asset is Util, RestStatus, Searchable, AssetState, AssetError {
   string name;
   string description;
   uint price;
+  bytes32[] keys;
+  bytes32[] values;
   address public owner;
   AssetState public assetState;
 
   constructor(
-    address _ttPermissionManager, 
+    address _ttPermissionManager,
     string _sku,
     string _name,
     string _description,
     uint _price,
+    bytes32[] _keys,
+    bytes32[] _values,
     address _owner
   ) {
     ttPermissionManager = TtPermissionManager(_ttPermissionManager);
@@ -35,7 +39,10 @@ contract Asset is Util, RestStatus, Searchable, AssetState, AssetError {
     description = _description;
     price = _price;
     owner = _owner;
+    keys = _keys;
+    values = _values;
     assetState = AssetState.CREATED;
+
     /* timestamp           = block.timestamp; */
   }
 

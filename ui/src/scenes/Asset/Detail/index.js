@@ -5,13 +5,13 @@ import { Paper, Grid, AppBar, Typography, Toolbar, Button } from '@material-ui/c
 import { getAssets } from "../../../actions/asset.actions";
 import './detail.css';
 import AuditLog from "../AuditLog";
-import { ROLES_INDEX } from "../../../utils/roles.utils";
 
 class AssetDetail extends Component {
 
   requestBid = () => {
+    const { USER_ROLE } = this.props;
     const role = parseInt(this.props.user['role'], 10);
-    if (role === ROLES_INDEX.RETAILER || role === ROLES_INDEX.DISTRIBUTOR) {
+    if (role === USER_ROLE.RETAILER || role === USER_ROLE.DISTRIBUTOR) {
       return (
         <Button variant="contained" color="primary">
           Request Bids
@@ -21,8 +21,9 @@ class AssetDetail extends Component {
   }
 
   placeBid = () => {
+    const { USER_ROLE } = this.props;
     const role = parseInt(this.props.user['role'], 10);
-    if (role === ROLES_INDEX.MANUFACTURER || role === ROLES_INDEX.DISTRIBUTOR) {
+    if (role === USER_ROLE.MANUFACTURER || role === USER_ROLE.DISTRIBUTOR) {
       return (
         <Button variant="contained" color="primary">
           Place Bids
@@ -74,6 +75,12 @@ class AssetDetail extends Component {
                 {/* TODO: apply table here for Spec */}
                 Table for Spec
               </Typography>
+              <Typography component="p">
+                {asset && asset.keys}
+              </Typography>
+              <Typography component="p">
+                {asset && asset.values}
+              </Typography>
             </Paper>
           </Grid>
           <Grid item xs={1}></Grid>
@@ -95,7 +102,8 @@ const mapStateToProps = (state, ownProps) => {
   let asset = state.asset.assets.filter((row) => row.address === assetAddress)[0];
   return {
     asset: asset,
-    user: state.authentication.user
+    user: state.authentication.user,
+    USER_ROLE: state.constants.TT.TtRole
   };
 };
 

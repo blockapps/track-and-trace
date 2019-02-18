@@ -11,6 +11,8 @@ const contractUtils = require(`${process.cwd()}/${config.dappPath}/asset/contrac
 const contractName = 'AssetManager';
 const contractFilename = `${process.cwd()}/${config.dappPath}/asset/contracts/AssetManager.sol`;
 
+const encodingHelper = require(`${process.cwd()}/helpers/encoding`);
+
 
 function* uploadContract(token, ttPermissionManagerContract) {
   const contractArgs = {
@@ -61,16 +63,18 @@ function* exists(token, contract, sku) {
 }
 
 function* createAsset(token, contract, args) {
-  rest.verbose('createAsset', args);  
+  rest.verbose('createAsset', args);
 
   const method = 'createAsset';
-  const [restStatus, assetError, assetAddress] = yield rest.callMethod(token, contract, method, util.usc(args));
 
-  if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, assetError, { method, args });
+  const converted = assetJs.toBytes32(args);
 
+  const [restStatus, assetError, assetAddress] = yield rest.callMethod(token, contract, method, util.usc(converted));
+
+  if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, assetError, { method, converted });
   const asset = yield contractUtils.waitForAddress(assetJs.contractName, assetAddress);
 
-  return asset;
+  return assetJs.fromBytes32(asset);
 }
 
 function* handleAssetEvent(token, contract, args) {
@@ -96,16 +100,19 @@ function* getAssets(token, contract) {
   const addresses = values.slice(1);
 
   const results = yield rest.query(`${assetJs.contractName}?${genAddressString(addresses, '&')}`);
-  return results;
+
+  const converted = results.map(r => assetJs.fromBytes32(r));
+
+  return converted;
 }
 
 function* transferOwnership(token, contract, args) {
   rest.verbose('transferOwnership', args);
 
   const method = 'transferOwnership';
-  const [restStatus, assetError, searchCounter, newState] = 
+  const [restStatus, assetError, searchCounter, newState] =
     yield rest.callMethod(token, contract, method, util.usc(args));
-  
+
   if (restStatus != RestStatus.OK) throw new rest.RestError(restStatus, assetError, { method, args });
 
   yield assetJs.waitForRequiredUpdate(args.sku, searchCounter);

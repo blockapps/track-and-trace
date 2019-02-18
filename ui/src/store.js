@@ -34,6 +34,7 @@ if (process.env.NODE_ENV === 'development') {
   })
   middleware.push(logger)
 
+  middleware.push(logger);
   const devToolsExtension = window.__REDUX_DEVTOOLS_EXTENSION__
 
   if (typeof devToolsExtension === 'function') {

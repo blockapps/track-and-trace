@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Typography, Popover, AppBar, Toolbar, Button, LinearProgress } from '@material-ui/core';
+import { Typography, Popover, AppBar, Toolbar, Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { connect } from "react-redux";

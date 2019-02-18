@@ -4,6 +4,8 @@ const { common } = require('blockapps-rest');
 const { config, util } = common;
 
 const dappJs = require(`${process.cwd()}/${config.dappPath}/dapp/dapp`);
+const encodingHelpers = require(`../../../helpers/encoding`);
+
 
 const assetsController = {
   getAssets: (req, res, next) => {
@@ -24,6 +26,16 @@ const assetsController = {
   createAsset: (req, res, next) => {
     const { app, accessToken, body } = req;
     const args = { ...body.asset };
+
+    // TODO: write a to ensure 400 here
+    if(
+      !Array.isArray(args.keys) 
+      || !Array.isArray(args.values)
+      || args.keys.length !== args.values.length 
+    ) {
+      util.response.status400('Missing spec or bad spec format');
+      next();
+    }
 
     const deploy = app.get('deploy');
 

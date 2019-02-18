@@ -5,7 +5,7 @@ const contractName = 'Bid';
 const contractFilename = `${process.cwd()}/${config.dappPath}/bid/contracts/Bid.sol`;
 
 const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
-const bidChainJs = require(`${process.cwd()}/${config.dappPath}/bidChain/bidChain`);
+const bidChainJs = require(`${process.cwd()}/${config.dappPath}/bidChain/bidchain`);
 
 // TODO: prevent bid from getting created if the asset is not in BIDS_REQUESTED state
 function* createBid(token, assetAddress, ownerAddress, bidValue) {

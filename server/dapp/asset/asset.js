@@ -42,7 +42,7 @@ function* waitForRequiredUpdate(sku, searchCounter) {
   const asset = {
     ...results[0],
     keys: results[0].keys.map(k => encodingHelpers.fromBytes32(k)),
-    values: results[0].values.map(k => encodingHelpers.fromBytes32(v))
+    values: results[0].values.map(v => encodingHelpers.fromBytes32(v))
   } 
 
   return asset;

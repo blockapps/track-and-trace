@@ -10,9 +10,11 @@ const endpoints = require(`${process.cwd()}/api/v1/endpoints`);
 
 const TtRole = rest.getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`).TtRole;
 const assetFactory = require(`${process.cwd()}/${config.dappPath}/asset/asset.factory`);
+const AssetState = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`).AssetState;
 
 const adminToken = process.env.ADMIN_TOKEN;
 const manufacturerToken = process.env.MANUFACTURER_TOKEN;
+const distributerToken = process.env.DISTRIBUTOR_TOKEN;
 
 const TEST_TIMEOUT = 60000;
 
@@ -40,17 +42,22 @@ describe('Bids End-To-End Tests', function () {
   before(function* () {
     assert.isDefined(adminToken, 'admin token is not defined');
     assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
+    assert.isDefined(distributerToken, 'distributer token is not defined');
     yield createUser(manufacturerToken, TtRole.MANUFACTURER);
+    yield createUser(distributerToken, TtRole.DISTRIBUTOR);
 
     const createAssetArgs = assetFactory.getAssetArgs();
     asset = yield post(endpoints.Assets.assets, { asset: createAssetArgs }, manufacturerToken);
     assert.equal(asset.sku, createAssetArgs.sku);
+
+    const handleEventUrl = `${endpoints.Assets.assets}/handleEvent`;
+    const assetState = yield post(handleEventUrl, { sku: asset.sku }, manufacturerToken);
+    assert.equal(AssetState.BIDS_REQUESTED, assetState, "State should be updated");
   });
 
   it('Create Bid', function* () {
     const bidValue = 10;
-    response = yield post(endpoints.Bids.bids, { address: asset.address, owner: asset.owner, bidValue }, manufacturerToken);
-
+    response = yield post(endpoints.Bids.bids, { address: asset.address, owner: asset.owner, bidValue }, distributerToken);
     assert.equal(response.owner, asset.owner);
     assert.equal(response.address, asset.owner);
     assert.isAtLeast(asset.length, 1, 'create bid list');

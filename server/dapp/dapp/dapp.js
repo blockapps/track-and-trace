@@ -91,6 +91,10 @@ function* bind(token, _contract) {
     return yield assetManager.createAsset(args);
   }
 
+  contract.handleAssetEvent = function* (args) {
+    return yield assetManager.handleAssetEvent(args);
+  }
+
   return contract;
 }
 

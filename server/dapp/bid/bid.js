@@ -5,11 +5,16 @@ const contractName = 'Bid';
 const contractFilename = `${process.cwd()}/${config.dappPath}/bid/contracts/Bid.sol`;
 
 const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
-const bidChainJs = require(`${process.cwd()}/${config.dappPath}/bidChain/bidChain`);
+const bidChainJs = require(`${process.cwd()}/${config.dappPath}/bidChain/bidchain`);
 
 // TODO: prevent bid from getting created if the asset is not in BIDS_REQUESTED state
 function* createBid(token, assetAddress, ownerAddress, bidValue) {
   const chainId = yield bidChainJs.createChain(token, ownerAddress)
+
+  // NOTE: This is here to resolve a timing issue, where the balance is not assigned to the address in new chain causing low balance issue \
+  // in next call. `sleep` is is just a workaround to let the things settle after chain creation
+  // This is explaind in STRATO-1300, once the original issue is resolved, this should be removed.
+  yield util.sleep(500);
 
   const bid = yield uploadContract(
     token,

@@ -7,7 +7,12 @@ const Users = {
   me: '/users/me'
 }
 
+const Bids = {
+  bids: '/bids'
+};
+
 module.exports = {
   Assets,
   Users,
+  Bids,
 };

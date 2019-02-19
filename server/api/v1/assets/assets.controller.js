@@ -50,9 +50,10 @@ const assetsController = {
 
   handleAssetEvent: (req, res, next) => {
     const { app, accessToken, body } = req;
+    const { sku, assetEvent } = body;
 
     // Get sku and assetEvent
-    const args = { sku: body.sku, assetEvent: AssetEvent.REQUEST_BIDS };
+    const args = { sku, assetEvent: parseInt(assetEvent, 10) };
 
     const deploy = app.get('deploy');
 

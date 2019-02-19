@@ -8,12 +8,21 @@ const encodingHelpers = require('../../helpers/encoding');
 function* uploadContract(token, ttPermissionManagerContract, args) {
   const getKeyResponse = yield rest.getKey(token);
   
-  const contractArgs = Object.assign({}, args, {
-    ttPermissionManager: ttPermissionManagerContract.address,
-    owner: getKeyResponse.address 
-  });
+  const contractArgs = Object.assign(
+    {}, 
+    toBytes32(args), 
+    {
+      ttPermissionManager: ttPermissionManagerContract.address,
+      owner: getKeyResponse.address 
+    }
+  );
 
-  const contract = yield rest.uploadContract(token, contractName, contractFilename, util.usc(contractArgs));
+  const contract = yield rest.uploadContract(
+    token, 
+    contractName, 
+    contractFilename, 
+    util.usc(contractArgs)
+  );
   contract.src = 'removed';
 
   return bind(token, contract);
@@ -39,11 +48,7 @@ function* waitForRequiredUpdate(sku, searchCounter) {
   const queryString = `${contractName}?and=(sku.eq.${sku},searchCounter.gte.${searchCounter})`;
   const results = yield rest.waitQuery(queryString, 1);
 
-  const asset = {
-    ...results[0],
-    keys: results[0].keys.map(k => encodingHelpers.fromBytes32(k)),
-    values: results[0].values.map(v => encodingHelpers.fromBytes32(v))
-  } 
+  const asset = fromBytes32(results[0])
 
   return asset;
 }

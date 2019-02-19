@@ -39,7 +39,7 @@ describe('Bid Tests', function() {
   function* createAsset() {
     const assetArgs = assetFactory.getAssetArgs();
     const asset = yield manufacturerAssetManagerContract.createAsset(assetArgs);
-    assert.equal(asset.sku, assetArgs.sku, 'sku');    
+    assert.equal(asset.sku, assetArgs.sku, 'sku');
     assert.equal(asset.assetState, AssetState.CREATED);
     return asset;
   }
@@ -98,7 +98,7 @@ describe('Bid Tests', function() {
 
   it('Distributor should be able to create a bid', function* () {
     const asset = yield createAsset();
-    
+
     const handleAssetEventArgs = {
       sku: asset.sku,
       assetEvent: AssetEvent.REQUEST_BIDS
@@ -108,7 +108,7 @@ describe('Bid Tests', function() {
 
     const bidValue = 100;
     const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue);
- 
+
     assert.isDefined(bid.chainId, "Chain id should be defined")
     assert.equal(bid.assetOwner, asset.owner, 'Asset owner should match')
     assert.equal(bid.initiator, distributorUser.address, 'Bidder address should be correct')
@@ -120,7 +120,7 @@ describe('Bid Tests', function() {
     const mBids = yield bidJs.getBids(manufacturerToken)
     const mBid = mBids.find((b) => b.address === bid.address)
     assert.isDefined(mBid, "Manufacturer should be able to view the bid")
-    
+
     // retailer should not be able to view this bid
     const rBids = yield bidJs.getBids(retailerToken)
     const rBid = rBids.find((b) => b.address === bid.address)
@@ -129,7 +129,7 @@ describe('Bid Tests', function() {
 
   it("Distributor should not be able to accept a bid", function* () {
     const asset = yield createAsset();
-    
+
     const handleAssetEventArgs = {
       sku: asset.sku,
       assetEvent: AssetEvent.REQUEST_BIDS
@@ -139,7 +139,7 @@ describe('Bid Tests', function() {
 
     const bidValue = 100;
     const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue);
- 
+
     const bidContract = bidJs.bind(distributorToken, bid.chainId, {
       name: 'Bid',
       address: bid.address,
@@ -154,7 +154,7 @@ describe('Bid Tests', function() {
 
   it("Manufacturer be able to accept a bid", function* () {
     const asset = yield createAsset();
-    
+
     const handleAssetEventArgs = {
       sku: asset.sku,
       assetEvent: AssetEvent.REQUEST_BIDS
@@ -164,7 +164,7 @@ describe('Bid Tests', function() {
 
     const bidValue = 100;
     const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue);
- 
+
     const bidContract = bidJs.bind(manufacturerToken, bid.chainId, {
       name: 'Bid',
       address: bid.address,
@@ -178,7 +178,7 @@ describe('Bid Tests', function() {
 
   it("Manufacturer should be able to change ownership", function* () {
     const asset = yield createAsset();
-    
+
     const handleAssetEventArgs = {
       sku: asset.sku,
       assetEvent: AssetEvent.REQUEST_BIDS
@@ -188,7 +188,7 @@ describe('Bid Tests', function() {
 
     const bidValue = 100;
     const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue);
- 
+
     const bidContract = bidJs.bind(manufacturerToken, bid.chainId, {
       name: 'Bid',
       address: bid.address,
@@ -202,7 +202,7 @@ describe('Bid Tests', function() {
       owner: distributorUser.address
     }
 
-    const newAssetState = 
+    const newAssetState =
       yield manufacturerAssetManagerContract.transferOwnership(transferOwnershipArgs);
 
     assert(newAssetState, AssetState.OWNER_UPDATED, 'State should match')
@@ -212,7 +212,7 @@ describe('Bid Tests', function() {
 
   it("Distributor should not be able to change ownership", function* () {
     const asset = yield createAsset();
-    
+
     const handleAssetEventArgs = {
       sku: asset.sku,
       assetEvent: AssetEvent.REQUEST_BIDS
@@ -222,7 +222,7 @@ describe('Bid Tests', function() {
 
     const bidValue = 100;
     const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue);
- 
+
     const bidContract = bidJs.bind(manufacturerToken, bid.chainId, {
       name: 'Bid',
       address: bid.address,

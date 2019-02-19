@@ -5,6 +5,7 @@ import { Paper, Grid, AppBar, Typography, Toolbar, Button } from '@material-ui/c
 import { getAssets } from "../../../actions/asset.actions";
 import './detail.css';
 import AuditLog from "../AuditLog";
+import PlaceBidModal from "../../Bid/PlaceBidModal";
 
 class AssetDetail extends Component {
 
@@ -20,14 +21,12 @@ class AssetDetail extends Component {
     }
   }
 
-  placeBid = () => {
+  placeBid = (asset) => {
     const { USER_ROLE } = this.props;
     const role = parseInt(this.props.user['role'], 10);
     if (role === USER_ROLE.MANUFACTURER || role === USER_ROLE.DISTRIBUTOR) {
       return (
-        <Button variant="contained" color="primary">
-          Place Bids
-        </Button>
+        <PlaceBidModal asset={asset} />
       )
     }
   }
@@ -50,7 +49,7 @@ class AssetDetail extends Component {
               <div className="appbar-content">
                 {/* TODO: Mange buttons with their state*/}
                 {this.requestBid()}
-                {this.placeBid()}
+                {this.placeBid(asset)}
               </div>
             </Toolbar>
           </AppBar>
@@ -71,14 +70,10 @@ class AssetDetail extends Component {
               <Typography variant="h5" component="h3">
                 Spec
               </Typography>
-              <Typography component="p">
-                {/* TODO: apply table here for Spec */}
-                Table for Spec
-              </Typography>
-              <Typography component="p">
+              <Typography component="span">
                 {asset && asset.keys}
               </Typography>
-              <Typography component="p">
+              <Typography component="span">
                 {asset && asset.values}
               </Typography>
             </Paper>

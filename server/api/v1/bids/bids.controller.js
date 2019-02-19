@@ -48,11 +48,10 @@ const bidsController = {
   handleEvent: (req, res, next) => {
     const { accessToken, params, body } = req;
     // Bid address
-    const { bidAddress } = params;
+    const { address: bidAddress } = params;
     const { chainId, bidEvent } = body;
 
     co(function* () {
-      // TODO: what about chainID and contract.
       const bidContract = bidJs.bind(accessToken, chainId, { name: 'Bid', address: bidAddress, src: 'removed' });
       let bidState;
 

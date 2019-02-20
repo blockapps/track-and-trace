@@ -1,5 +1,6 @@
 const Assets = {
-  assets: '/assets'
+  assets: '/assets',
+  asset: '/assets/:sku'
 };
 
 const Users = {

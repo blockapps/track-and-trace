@@ -8,7 +8,10 @@ import { setUserMessage } from '../actions/user-message.actions';
 import {
   BID_SUBMIT_REQUEST,
   bidSubmitSuccess,
-  bidSubmitFailure
+  bidSubmitFailure,
+  getBidsSuccess,
+  getBidsFailure,
+  GET_BIDS_REQUEST
 } from '../actions/bid.actions';
 
 const placeBidUrl = `${apiUrl}/bids`;
@@ -22,6 +25,23 @@ function placeBidApiCall(payload) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload)
+    })
+    .then((response) => {
+      return response.json()
+    })
+    .catch(err => {
+      throw err
+    });
+}
+
+function fetchBidsApiCall() {
+  return fetch(placeBidUrl,
+    {
+      method: HTTP_METHODS.GET,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
     })
     .then((response) => {
       return response.json()
@@ -48,6 +68,20 @@ function* placeBid(action) {
   }
 }
 
+function* fetchBids() {
+  try {
+    const response = yield call(fetchBidsApiCall);
+    if (response.success) {
+      yield put(getBidsSuccess(response.data));
+    } else {
+      yield put(getBidsFailure());
+    }
+  } catch (err) {
+    yield put(getBidsFailure());
+  }
+}
+
 export default function* watchBids() {
   yield takeLatest(BID_SUBMIT_REQUEST, placeBid)
+  yield takeLatest(GET_BIDS_REQUEST, fetchBids)
 }

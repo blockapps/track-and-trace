@@ -7,6 +7,7 @@ import './detail.css';
 import AuditLog from "../AuditLog";
 import PlaceBidModal from "../../Bid/PlaceBidModal";
 import SnackbarMessage from '../../../components/SnackbarMessage';
+import { getBids } from "../../../actions/bid.actions";
 
 class AssetDetail extends Component {
 
@@ -34,10 +35,11 @@ class AssetDetail extends Component {
 
   componentDidMount() {
     this.props.getAssets();
+    this.props.getBids();
   }
 
   render() {
-    const { asset } = this.props;
+    const { asset, bids } = this.props;
 
     return (
       <div className="asset-container">
@@ -78,6 +80,17 @@ class AssetDetail extends Component {
                 {asset && asset.values}
               </Typography>
             </Paper>
+
+            <Paper elevation={1} className="asset-description asset-spec">
+              <Typography variant="h5" component="h3">
+                Bids
+              </Typography>
+              {bids.map((bid, key) =>
+                <Typography component="span" key={key}>
+                  {bid.address}
+                </Typography>
+              )}
+            </Paper>
           </Grid>
           <Grid item xs={1}></Grid>
           <Grid item xs={4}>
@@ -97,13 +110,16 @@ class AssetDetail extends Component {
 const mapStateToProps = (state, ownProps) => {
   const assetAddress = ownProps.match.params.address;
   let asset = state.asset.assets.filter((row) => row.address === assetAddress)[0];
+  let bids = state.bid.bids.filter((row) => row.asset === assetAddress);
+
   return {
     asset: asset,
     user: state.authentication.user,
-    USER_ROLE: state.constants.TT.TtRole
+    USER_ROLE: state.constants.TT.TtRole,
+    bids: bids
   };
 };
 
-const connected = connect(mapStateToProps, { getAssets })(AssetDetail);
+const connected = connect(mapStateToProps, { getAssets, getBids })(AssetDetail);
 
 export default withRouter(connected);

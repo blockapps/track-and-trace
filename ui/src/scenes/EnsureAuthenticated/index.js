@@ -59,6 +59,10 @@ class EnsureAuthenticated extends Component {
 }
 
 const styles = theme => ({
+  // (typography) is depricated. So immediate switch to typography v2 you can simply pass useNextVariants: true when calling 
+  typography: {
+    useNextVariants: true,
+  },
   paper: {
     padding: theme.spacing.unit * 2,
   },

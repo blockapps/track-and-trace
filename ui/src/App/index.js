@@ -17,7 +17,7 @@ class App extends Component {
   }
 
   render() {
-    const { classes, user, constants } = this.props;
+    const { classes, user, constants, history } = this.props;
     let userRole = user && user['role'];
     const USER_ROLE = constants && constants.TT.TtRole;
 
@@ -26,7 +26,7 @@ class App extends Component {
         {
           USER_ROLE ? (<ThemedComponent color={themeColor(userRole, USER_ROLE)} >
             <div className={classes.docRoot}>
-              <Header />
+              <Header history={history} />
             </div>
             <Grid>
               <Routes />

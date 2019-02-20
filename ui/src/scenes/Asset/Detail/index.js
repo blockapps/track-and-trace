@@ -15,8 +15,9 @@ class AssetDetail extends Component {
   requestBid = () => {
     const { USER_ROLE } = this.props;
     const role = parseInt(this.props.user['role'], 10);
-    if (role === USER_ROLE.RETAILER || role === USER_ROLE.DISTRIBUTOR) {
+    if (role === USER_ROLE.MANUFACTURER || role === USER_ROLE.DISTRIBUTOR) {
       return (
+        // TODO: Add button functionality
         <Button variant="contained" color="primary">
           Request Bids
         </Button>
@@ -27,11 +28,23 @@ class AssetDetail extends Component {
   placeBid = (asset) => {
     const { USER_ROLE } = this.props;
     const role = parseInt(this.props.user['role'], 10);
-    if (role === USER_ROLE.MANUFACTURER || role === USER_ROLE.DISTRIBUTOR) {
+    if (role === USER_ROLE.RETAILER || role === USER_ROLE.DISTRIBUTOR) {
       return (
         <PlaceBidModal asset={asset} />
       )
     }
+  }
+
+  get isManufacturer() {
+    const { USER_ROLE } = this.props;
+    return parseInt(this.props.user['role'], 10) === USER_ROLE.MANUFACTURER;
+  }
+
+  acceptBid = (address, chainId) => {
+    const { bidEvent } = this.props;
+    console.log("----------------------", bidEvent.ACCEPT)
+    console.log("-----------------------------")
+    // TODO: Add API call 
   }
 
   componentDidMount() {
@@ -100,7 +113,7 @@ class AssetDetail extends Component {
               <Typography variant="h5" component="h3">
                 Bids
               </Typography>
-              <BidTable bids={bids} />
+              <BidTable bids={bids} acceptBid={this.acceptBid} isManufacturer={this.isManufacturer} />
             </Paper>
           </Grid>
         </Grid>
@@ -115,13 +128,14 @@ const mapStateToProps = (state, ownProps) => {
   const assetAddress = ownProps.match.params.sku;
   let asset = state.asset.assets.filter((row) => row.sku === assetAddress)[0];
 
-  // TODO: filter with owners state.bid.bids.filter((row) => row.asset === assetAddress);
+  // TODO: filter with their (role) owners state.bid.bids.filter((row) => row.asset === assetAddress);
   let bids = state.bid.bids
 
   return {
     asset: asset,
     user: state.authentication.user,
     USER_ROLE: state.constants.TT.TtRole,
+    bidEvent: state.constants.Bid.BidEvent,
     bids: bids
   };
 };

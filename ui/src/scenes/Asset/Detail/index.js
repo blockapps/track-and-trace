@@ -8,6 +8,7 @@ import AuditLog from "../AuditLog";
 import PlaceBidModal from "../../Bid/PlaceBidModal";
 import SnackbarMessage from '../../../components/SnackbarMessage';
 import { getBids } from "../../../actions/bid.actions";
+import BidTable from "../../Bid/BidTable";
 
 class AssetDetail extends Component {
 
@@ -80,17 +81,6 @@ class AssetDetail extends Component {
                 {asset && asset.values}
               </Typography>
             </Paper>
-
-            <Paper elevation={1} className="asset-description asset-spec">
-              <Typography variant="h5" component="h3">
-                Bids
-              </Typography>
-              {bids.map((bid, key) =>
-                <Typography component="span" key={key}>
-                  {bid.address}
-                </Typography>
-              )}
-            </Paper>
           </Grid>
           <Grid item xs={1}></Grid>
           <Grid item xs={4}>
@@ -101,6 +91,18 @@ class AssetDetail extends Component {
           </Grid>
           <Grid item xs={2}></Grid>
         </Grid>
+        <Grid container spacing={24} className="asset-detail">
+          <Grid item xs={1}></Grid>
+          <Grid item xs={10}>
+            <Paper elevation={1} className="asset-description asset-spec">
+              <Typography variant="h5" component="h3">
+                Bids
+              </Typography>
+              <BidTable bids={bids} />
+            </Paper>
+          </Grid>
+        </Grid>
+        <Grid item xs={1}></Grid>
         <SnackbarMessage />
       </div>
     )

@@ -64,7 +64,7 @@ function bind(token, contract) {
   return contract;
 }
 
-function* addMember(token, contract, member) {
+function* addMember(token, contract, member, options) {
   rest.verbose('exists', member);
 
   const method = 'addMember';
@@ -77,13 +77,14 @@ function* addMember(token, contract, member) {
     token,
     contract,
     method,
-    util.usc(args)
+    util.usc(args),
+    options
   );
 
   return result
 }
 
-function* removeMember(token, contract, member) {
+function* removeMember(token, contract, member, options) {
   rest.verbose('removeMember', member);
   const method = 'removeMember';
   const args = {
@@ -94,7 +95,8 @@ function* removeMember(token, contract, member) {
     token,
     contract,
     method,
-    util.usc(args)
+    util.usc(args),
+    options
   );
 
   return result
@@ -128,5 +130,6 @@ module.exports = {
   bind,
   getChainById,
   getChains,
-  removeMember
+  removeMember,
+  addMember
 }

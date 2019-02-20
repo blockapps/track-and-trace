@@ -23,19 +23,41 @@ const assetsController = {
       .catch(next);
   },
 
+  getAsset: (req, res,next) => {
+    const { app, accessToken} = req;
+    const sku = req.params.sku;
+
+    if(!sku) {
+      util.response.status400(res, 'Missing sku')
+      return next();
+    }
+
+    const deploy = app.get('deploy');
+
+    co(function* () {
+      const dapp = yield dappJs.bind(accessToken, deploy.contract);
+      const asset = yield dapp.getAsset(sku);
+      util.response.status200(res, asset);
+    })
+      .catch(next);
+  },
+
+  getHistory: (req,res,next) => {
+
+  },
+
   // TODO: throw errors correctly from dapp
   createAsset: (req, res, next) => {
     const { app, accessToken, body } = req;
     const args = { ...body.asset };
 
-    // TODO: write a to ensure 400 here
     if (
       !Array.isArray(args.keys)
       || !Array.isArray(args.values)
       || args.keys.length !== args.values.length
     ) {
-      util.response.status400('Missing spec or bad spec format');
-      next();
+      util.response.status400(res, 'Missing spec or bad spec format');
+      return next();
     }
 
     const deploy = app.get('deploy');

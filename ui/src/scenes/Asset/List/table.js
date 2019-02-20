@@ -28,7 +28,7 @@ class AssetsTable extends Component {
       return (assets.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .map((asset, key) => {
           return (
-            <TableRow key={key} hover onClick={event => redirectToAssetDetail(event, asset.address)}>
+            <TableRow key={key} hover onClick={event => redirectToAssetDetail(event, asset.sku)}>
               <TableCell align="left"> {asset.name} </TableCell>
               <TableCell align="left">{asset.description}</TableCell>
               <TableCell align="left">{asset.price}</TableCell>

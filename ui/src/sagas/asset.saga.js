@@ -10,15 +10,30 @@ import {
   getAssetsFailure,
   CREATE_ASSET_REQUEST,
   createAssetSuccess,
-  createAssetFailure
+  createAssetFailure,
+  GET_ASSET_DETAIL_REQUEST,
+  getAssetDetailSuccess,
+  getAssetDetailFailure
 } from '../actions/asset.actions';
 import { setUserMessage } from '../actions/user-message.actions';
 
 const assetsUrl = `${apiUrl}/assets`;
 const createAssetUrl = `${apiUrl}/assets`;
+const getAssetUrl = `${apiUrl}/assets/:sku`;
 
 function fetchAssets() {
   return fetch(assetsUrl, { method: HTTP_METHODS.GET })
+    .then((response) => {
+      return response.json()
+    })
+    .catch(err => {
+      throw err
+    });
+}
+
+function fetchAsset(sku) {
+  const url = getAssetUrl.replace(':sku', sku)
+  return fetch(url, { method: HTTP_METHODS.GET })
     .then((response) => {
       return response.json()
     })
@@ -45,6 +60,19 @@ function createAssetApiCall(asset) {
     .catch(function (error) {
       throw error;
     });
+}
+
+function* getAsset(action) {
+  try {
+    const response = yield call(fetchAsset, action.sku);
+    if (response.success) {
+      yield put(getAssetDetailSuccess(response.data));
+    } else {
+      yield put(getAssetDetailFailure(response.error));
+    }
+  } catch (err) {
+    yield put(getAssetDetailFailure(err));
+  }
 }
 
 function* getAssets() {
@@ -82,4 +110,5 @@ function* createAsset(action) {
 export default function* watchAssets() {
   yield takeLatest(GET_ASSETS_REQUEST, getAssets)
   yield takeLatest(CREATE_ASSET_REQUEST, createAsset)
+  yield takeLatest(GET_ASSET_DETAIL_REQUEST, getAsset)
 }

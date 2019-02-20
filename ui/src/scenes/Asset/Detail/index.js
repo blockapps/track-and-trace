@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Paper, Grid, AppBar, Typography, Toolbar, Button } from '@material-ui/core';
-import { getAssets } from "../../../actions/asset.actions";
+import { getAssets, getAssetDetail } from "../../../actions/asset.actions";
 import './detail.css';
 import AuditLog from "../AuditLog";
 import PlaceBidModal from "../../Bid/PlaceBidModal";
@@ -35,8 +35,10 @@ class AssetDetail extends Component {
   }
 
   componentDidMount() {
+    const sku = this.props.match.params.sku;
     this.props.getAssets();
     this.props.getBids();
+    this.props.getAssetDetail(sku);
   }
 
   render() {
@@ -110,9 +112,11 @@ class AssetDetail extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const assetAddress = ownProps.match.params.address;
-  let asset = state.asset.assets.filter((row) => row.address === assetAddress)[0];
-  let bids = state.bid.bids.filter((row) => row.asset === assetAddress);
+  const assetAddress = ownProps.match.params.sku;
+  let asset = state.asset.assets.filter((row) => row.sku === assetAddress)[0];
+
+  // TODO: filter with owners state.bid.bids.filter((row) => row.asset === assetAddress);
+  let bids = state.bid.bids
 
   return {
     asset: asset,
@@ -122,6 +126,6 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const connected = connect(mapStateToProps, { getAssets, getBids })(AssetDetail);
+const connected = connect(mapStateToProps, { getAssets, getBids, getAssetDetail })(AssetDetail);
 
 export default withRouter(connected);

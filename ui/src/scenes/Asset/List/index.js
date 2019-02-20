@@ -14,8 +14,8 @@ class AssetsList extends Component {
     this.props.getAssets();
   }
 
-  redirectToAssetDetail = (event, address) => {
-    this.props.history.push(`/asset/${address}`);
+  redirectToAssetDetail = (event, sku) => {
+    this.props.history.push(`/asset/${sku}`);
   };
 
   render() {

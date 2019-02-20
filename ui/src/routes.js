@@ -9,7 +9,7 @@ class Routes extends Component {
     return (
       <EnsureAuthenticated>
         <Route exact path="/" component={Dashboard} />
-        <Route exact path="/asset/:address" component={AssetDetail} />
+        <Route exact path="/asset/:sku" component={AssetDetail} />
       </EnsureAuthenticated>
     );
   }

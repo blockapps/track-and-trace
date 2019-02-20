@@ -1,6 +1,9 @@
 export const GET_ASSETS_REQUEST = 'GET_ASSETS_REQUEST';
 export const GET_ASSETS_SUCCESS = 'GET_ASSETS_SUCCESS';
 export const GET_ASSETS_FAILURE = 'GET_ASSETS_FAILURE';
+export const GET_ASSET_DETAIL_REQUEST = 'GET_ASSET_DETAIL_REQUEST'
+export const GET_ASSET_DETAIL_SUCCESS = 'GET_ASSET_DETAIL_SUCCESS'
+export const GET_ASSET_DETAIL_FAILURE = 'GET_ASSET_DETAIL_FAILURE'
 export const OPEN_CREATE_ASSET_OVERLAY = 'OPEN_CREATE_ASSET_OVERLAY';
 export const CLOSE_CREATE_ASSET_OVERLAY = 'CLOSE_CREATE_ASSET_OVERLAY';
 export const CREATE_ASSET_REQUEST = 'CREATE_ASSET_REQUEST'
@@ -23,6 +26,27 @@ export const getAssetsSuccess = (assets) => {
 export const getAssetsFailure = (error) => {
   return {
     type: GET_ASSETS_FAILURE,
+    error
+  }
+}
+
+export const getAssetDetail = (sku) => {
+  return {
+    type: GET_ASSET_DETAIL_REQUEST,
+    sku
+  }
+}
+
+export const getAssetDetailSuccess = (asset) => {
+  return {
+    type: GET_ASSET_DETAIL_SUCCESS,
+    asset
+  }
+}
+
+export const getAssetDetailFailure = (error) => {
+  return {
+    type: GET_ASSET_DETAIL_FAILURE,
     error
   }
 }

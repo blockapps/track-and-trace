@@ -6,12 +6,14 @@ const contractFilename = `${process.cwd()}/${config.dappPath}/bid/contracts/Bid.
 
 const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
 const bidChainJs = require(`${process.cwd()}/${config.dappPath}/bidChain/bidchain`);
+const assetJs = require(`${process.cwd()}/${config.dappPath}/asset/asset`);
+const queryHelper = require('../../helpers/query');
 
 // TODO: prevent bid from getting created if the asset is not in BIDS_REQUESTED state
 function* createBid(token, assetAddress, ownerAddress, bidValue) {
   const chainId = yield bidChainJs.createChain(token, ownerAddress)
 
-  // NOTE: This is here to resolve a timing issue, where the balance is not assigned to the address in new chain causing low balance issue \
+  // NspoOTE: This is here to resolve a timing issue, where the balance is not assigned to the address in new chain causing low balance issue \
   // in next call. `sleep` is is just a workaround to let the things settle after chain creation
   // This is explaind in STRATO-1300, once the original issue is resolved, this should be removed.
   yield util.sleep(500);
@@ -37,7 +39,8 @@ function* uploadContract(token, chainId, args) {
     contractFilename,
     util.usc(args),
     {
-      chainId
+      chainId,
+      enableHistory: true
     }
   );
 
@@ -90,38 +93,32 @@ function* getBids(token, searchParams) {
     chainId: chains.map(c => c.id)
   }
 
-  const results = yield rest.query(`${contractName}?${getPostgrestQueryString(queryParams)}`)
+  const results = yield rest.query(`${contractName}?${queryHelper.getPostgrestQueryString(queryParams)}`)
   return results;
 }
 
-function getPostgrestQueryString(params) {
-  const queryString = Object.getOwnPropertyNames(params).reduce((qs, prop) => {
-    if(Array.isArray(params[prop])) {
-      qs += `${qs.length === 0 ? '' : '&'}${prop}=in.${arrayToCsv(params[prop])}`;
-      return qs;
-    }
-    if(typeof params[prop] === 'object') {
-      return qs;
-    }
-    qs +=  `${qs.length === 0 ? '' : '&'}${prop}=eq.${params[prop]}`
-  }, '')
+function* getBidsHistory(token, assetAddress) {
+  const chains = yield bidChainJs.getChains(token);
 
-  return queryString;
+  if(chains.length === 0) {
+    return []
+  }
+
+  const queryParams = {
+    asset: assetAddress,
+    chainId: chains.map(c => c.id)
+  }
+
+  const results = yield rest.query(`history@${contractName}?${queryHelper.getPostgrestQueryString(queryParams)}`)
+  return results;
 }
 
-function arrayToCsv(array, delimiter = ',') {
-  return array.reduce(
-    (csv, element) => {
-      csv += `${csv.length === 0 ? '' : delimiter}${element}`
-      return csv;
-    }, 
-    ''
-  )
-}
+
 
 module.exports = {
   createBid,
   uploadContract,
   bind,
-  getBids
+  getBids,
+  getBidsHistory
 }

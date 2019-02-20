@@ -4,20 +4,19 @@ import { connect } from "react-redux";
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
 import { Field, reduxForm, Form } from 'redux-form'
 import ReduxedTextField from "../../../components/ReduxedTextField";
-import { openBidOverlay, closeBidOverlay } from "../../../actions/bid.actions";
+import { openBidOverlay, closeBidOverlay, bidSubmit } from "../../../actions/bid.actions";
 
 class PlaceBidModal extends Component {
 
   submit = (bid) => {
     const { bidValue } = bid;
     const { address, owner } = this.props.asset;
-    console.log("----------------", address)
-    console.log("----------------", owner)
-
+    // TODO: validate value
+    this.props.bidSubmit({ bidValue, address, owner });
   }
 
   render() {
-    const { isOpen, openBidOverlay, closeBidOverlay, handleSubmit, asset } = this.props;
+    const { isOpen, openBidOverlay, closeBidOverlay, handleSubmit } = this.props;
 
     return (
       <div>
@@ -70,7 +69,8 @@ const mapStateToProps = (state) => {
 const formed = reduxForm({ form: 'place-bid' })(PlaceBidModal);
 const connected = connect(mapStateToProps, {
   openBidOverlay,
-  closeBidOverlay
+  closeBidOverlay,
+  bidSubmit
 })(formed);
 
 export default withRouter(connected);

@@ -17,10 +17,7 @@ class CreateAssetModal extends Component {
   submit = (asset) => {
     const { specs } = asset;
 
-    let spec = specs.map((spec) => {
-      return ({ [spec.key]: spec.value });
-    });
-
+    // TODO: Add validations
     const params = {
       sku: asset.sku,
       description: asset.description,

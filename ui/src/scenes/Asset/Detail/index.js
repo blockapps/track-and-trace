@@ -6,6 +6,7 @@ import { getAssets } from "../../../actions/asset.actions";
 import './detail.css';
 import AuditLog from "../AuditLog";
 import PlaceBidModal from "../../Bid/PlaceBidModal";
+import SnackbarMessage from '../../../components/SnackbarMessage';
 
 class AssetDetail extends Component {
 
@@ -87,6 +88,7 @@ class AssetDetail extends Component {
           </Grid>
           <Grid item xs={2}></Grid>
         </Grid>
+        <SnackbarMessage />
       </div>
     )
   }

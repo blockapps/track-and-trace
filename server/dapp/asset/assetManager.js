@@ -57,6 +57,10 @@ function bind(token, contract) {
     return yield getAsset(token, contract, sku);
   }
 
+  contract.getAssetHistory = function* (sku) {
+    return yield getAssetHistory(token, contract, sku);
+  }
+
   contract.transferOwnership = function* (args) {
     return yield transferOwnership(token, contract, args);
   }
@@ -153,6 +157,27 @@ function* getAsset(token, contract, sku) {
   const converted = assetJs.fromBytes32(result[0]);
 
   return converted;
+}
+
+function* getAssetHistory(token, contract, sku) {
+  rest.verbose('getAssetHistory');
+
+  const found = yield exists(token, contract, sku);
+
+  if(!found) {
+    throw new rest.RestError(restStatus.NOT_FOUND, `SKU ${sku} not found`);
+  }
+
+  const address = yield rest.callMethod(
+    token,
+    contract,
+    'getAsset',
+    util.usc({sku})
+  )
+
+  const history = yield rest.query(`history@${assetJs.contractName}?address=eq.${address}`);
+
+  return history.map(h => assetJs.fromBytes32(h));
 }
 
 function* transferOwnership(token, contract, args) {

@@ -11,7 +11,8 @@ const getPostgrestQueryString = function (params) {
     if(typeof params[prop] === 'object') {
       return qs;
     }
-    qs +=  `${qs.length === 0 ? '' : '&'}${prop}=eq.${params[prop]}`
+    qs +=  `${qs.length === 0 ? '' : '&'}${prop}=eq.${params[prop]}`;
+    return qs;
   }, '')
 
   return queryString;

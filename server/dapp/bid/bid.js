@@ -6,6 +6,7 @@ const contractFilename = `${process.cwd()}/${config.dappPath}/bid/contracts/Bid.
 
 const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
 const bidChainJs = require(`${process.cwd()}/${config.dappPath}/bidChain/bidchain`);
+const assetJs = require(`${process.cwd()}/${config.dappPath}/asset/asset`);
 const queryHelper = require('../../helpers/query');
 
 // TODO: prevent bid from getting created if the asset is not in BIDS_REQUESTED state
@@ -96,11 +97,28 @@ function* getBids(token, searchParams) {
   return results;
 }
 
+function* getBidsHistory(token, assetAddress) {
+  const chains = yield bidChainJs.getChains(token);
+
+  if(chains.length === 0) {
+    return []
+  }
+
+  const queryParams = {
+    asset: assetAddress,
+    chainId: chains.map(c => c.id)
+  }
+
+  const results = yield rest.query(`history@${contractName}?${queryHelper.getPostgrestQueryString(queryParams)}`)
+  return results;
+}
+
 
 
 module.exports = {
   createBid,
   uploadContract,
   bind,
-  getBids
+  getBids,
+  getBidsHistory
 }

@@ -6,7 +6,9 @@ const { config, util } = common;
 const dappJs = require(`${process.cwd()}/${config.dappPath}/dapp/dapp`);
 const encodingHelpers = require(`../../../helpers/encoding`);
 const AssetEvent = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`).AssetEvent;
+const bidJs = require(`${process.cwd()}/${config.dappPath}/bid/bid`);
 
+const moment = require('moment');
 
 const assetsController = {
   getAssets: (req, res, next) => {
@@ -37,13 +39,21 @@ const assetsController = {
     co(function* () {
       const dapp = yield dappJs.bind(accessToken, deploy.contract);
       const asset = yield dapp.getAsset(sku);
+      const assetHistory = yield dapp.getAssetHistory(sku)
+      const bidHistory = yield bidJs.getBidsHistory(accessToken, asset.address);
+
+      const histories = [
+        ...assetHistory.map(h => { return {...h, type: 'ASSET'}}),
+        ...bidHistory.map(h => { return {...h, type: 'BID'}})
+      ];
+
+      asset.history = histories.sort( 
+        (h1,h2) => moment(h1.block_timestamp).unix() - moment(h2.block_timestamp).unix() 
+      )
+
       util.response.status200(res, asset);
     })
       .catch(next);
-  },
-
-  getHistory: (req,res,next) => {
-
   },
 
   // TODO: throw errors correctly from dapp

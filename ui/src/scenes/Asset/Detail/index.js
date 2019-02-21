@@ -10,6 +10,7 @@ import { getBids, bidEventRequest } from "../../../actions/bid.actions";
 import BidTable from "../../Bid/BidTable";
 import ChangeOwner from "../ChangeOwner";
 import './detail.css';
+import SpecTable from "../Spec";
 
 class AssetDetail extends Component {
 
@@ -58,15 +59,15 @@ class AssetDetail extends Component {
     return parseInt(this.props.user['role'], 10) === USER_ROLE.MANUFACTURER;
   }
 
-  acceptBid = (address, chainId) => {
-    const { bidEvent, bidEventRequest } = this.props;
+  handleEvent = (address, chainId, bidEvent) => {
+    const { bidEventRequest } = this.props;
 
-    const payload = { address, chainId, bidEvent: bidEvent.ACCEPT };
+    const payload = { address, chainId, bidEvent };
     bidEventRequest(payload);
   }
 
   render() {
-    const { asset, bids } = this.props;
+    const { asset, bids, bidEvent } = this.props;
 
     return (
       <div className="asset-container">
@@ -101,12 +102,7 @@ class AssetDetail extends Component {
               <Typography variant="h5" component="h3">
                 Spec
               </Typography>
-              <Typography component="span">
-                {asset && asset.keys}
-              </Typography>
-              <Typography component="span">
-                {asset && asset.values}
-              </Typography>
+              <SpecTable asset={asset} />
             </Paper>
           </Grid>
           <Grid item xs={1}></Grid>
@@ -125,7 +121,7 @@ class AssetDetail extends Component {
               <Typography variant="h5" component="h3">
                 Bids
               </Typography>
-              <BidTable bids={bids} acceptBid={this.acceptBid} isManufacturer={this.isManufacturer} />
+              <BidTable bids={bids} bidEvent={bidEvent} handleEvent={this.handleEvent} isManufacturer={this.isManufacturer} />
             </Paper>
           </Grid>
         </Grid>

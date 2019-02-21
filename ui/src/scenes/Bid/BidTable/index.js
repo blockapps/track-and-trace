@@ -1,16 +1,27 @@
 import React, { Component } from "react";
 import { Table, TableHead, TableRow, TableCell, TableBody, Button } from '@material-ui/core';
+import './bidTable.css';
 
 class BidTable extends Component {
 
   acceptBidButton = (bid) => {
-    const { acceptBid, isManufacturer } = this.props;
-    // TODO: Remove this button when bid is accepted
+    const { handleEvent, isManufacturer, bidEvent } = this.props;
     if (isManufacturer) {
       return (
-        <Button variant="contained" color="primary" onClick={() => acceptBid(bid.address, bid.chainId)}>
+        <Button variant="contained" color="primary" className="event-button" onClick={() => handleEvent(bid.address, bid.chainId, bidEvent.ACCEPT)}>
           Accept Bid
-      </Button>
+        </Button>
+      )
+    }
+  }
+
+  rejectBidButton = (bid) => {
+    const { handleEvent, isManufacturer, bidEvent } = this.props;
+    if (isManufacturer) {
+      return (
+        <Button variant="contained" color="primary" className="event-button" onClick={() => handleEvent(bid.address, bid.chainId, bidEvent.REJECT)}>
+          Reject Bid
+        </Button>
       )
     }
   }
@@ -35,9 +46,8 @@ class BidTable extends Component {
               </TableCell>
               <TableCell>{bid.value}</TableCell>
               <TableCell>
-                {
-                  this.acceptBidButton(bid)
-                }
+                {this.acceptBidButton(bid)}
+                {this.rejectBidButton(bid)}
               </TableCell>
             </TableRow>
           )}

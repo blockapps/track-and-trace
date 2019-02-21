@@ -12,19 +12,19 @@ const enode = `enode://${publicKey}@${localIp}:${port}`
 
 function* createChain(token, assetOwner) {
   const getKeyResponse = yield rest.getKey(token);
-  
+
   const governanceSrc = yield rest.getContractString(
-    contractName, 
+    contractName,
     contractFileName
   );
-  
+
   const chain = yield rest.createChain(
     `bid_${getKeyResponse.address}_${assetOwner}`,
     [
       {
         address: assetOwner,
         enode
-      }, 
+      },
       {
         address: getKeyResponse.address,
         enode
@@ -34,7 +34,7 @@ function* createChain(token, assetOwner) {
       {
         address: assetOwner,
         balance
-      }, 
+      },
       {
         address: getKeyResponse.address,
         balance
@@ -73,16 +73,16 @@ function* addMember(token, contract, member) {
   }
 
   const result = yield rest.callMethod(
-    token, 
+    token,
     contract,
-    method, 
+    method,
     util.usc(args)
   );
 
   return result
 }
 
-function*  removeMember(token, contract, member) {
+function* removeMember(token, contract, member) {
   rest.verbose('removeMember', member);
   const method = 'removeMember';
   const args = {
@@ -90,9 +90,9 @@ function*  removeMember(token, contract, member) {
   }
 
   const result = yield rest.callMethod(
-    token, 
+    token,
     contract,
-    method, 
+    method,
     util.usc(args)
   );
 
@@ -107,13 +107,27 @@ function* getChainById(chainId) {
 // only return chains where current user is a member
 function* getChains(token) {
   const keyResponse = yield rest.getKey(token);
-  const chains = yield rest.getChainInfos();
+  let chains;
+
+  /* 
+    NOTE: getChainIfos returns a 500 error expected should be empty array
+    REFER: Strato JIRA ticket https://blockapps.atlassian.net/browse/STRATO-1304
+    TODO: Remove Try and catch once STRATO-1304 is done
+  */
+  try {
+    chains = yield rest.getChainInfos();
+  } catch (e) {
+    if (e.status === 500) {
+      chains = [];
+    }
+    console.error('Error getting chainInfo:', e);
+  }
 
   const filtered = chains.reduce((acc, c) => {
     const member = c.info.members.find((m) => {
       return m.address === keyResponse.address
     })
-    if(member !== undefined) {
+    if (member !== undefined) {
       acc.push(c)
     }
     return acc;

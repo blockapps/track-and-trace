@@ -19,13 +19,15 @@ class AssetsList extends Component {
   };
 
   render() {
-    const { assets } = this.props;
-    const requestedBids = assets.filter((asset) => parseInt(asset.assetState, 10) === BID_STATE.BIDS_REQUESTED);
+    const { assets, user } = this.props;
+
+    const ownedAssets = assets.filter((asset) => asset.owner === user.account);
+    const requestedAssets = assets.filter((asset) => parseInt(asset.assetState, 10) === BID_STATE.BIDS_REQUESTED);
 
     return (
       <Grid container>
-        <AssetsTable assets={assets} title={'My assets'} redirectToAssetDetail={this.redirectToAssetDetail} />
-        <AssetsTable assets={requestedBids} title={'Bidding assets'} redirectToAssetDetail={this.redirectToAssetDetail} />
+        <AssetsTable assets={ownedAssets} title={'My assets'} redirectToAssetDetail={this.redirectToAssetDetail} />
+        <AssetsTable assets={requestedAssets} title={'Bidding assets'} redirectToAssetDetail={this.redirectToAssetDetail} />
       </Grid>
     )
   }
@@ -33,7 +35,8 @@ class AssetsList extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    assets: state.asset.assets
+    assets: state.asset.assets,
+    user: state.authentication.user
   };
 };
 

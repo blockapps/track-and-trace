@@ -2,8 +2,21 @@ import React, { Component } from "react";
 import { Table, TableHead, TableRow, TableCell, TableBody, Button } from '@material-ui/core';
 
 class BidTable extends Component {
+
+  acceptBidButton = (bid) => {
+    const { acceptBid, isManufacturer } = this.props;
+    // TODO: Remove this button when bid is accepted
+    if (isManufacturer) {
+      return (
+        <Button variant="contained" color="primary" onClick={() => acceptBid(bid.address, bid.chainId)}>
+          Accept Bid
+      </Button>
+      )
+    }
+  }
+
   render() {
-    const { bids, acceptBid, isManufacturer } = this.props;
+    const { bids } = this.props;
 
     return (
       <Table>
@@ -23,10 +36,7 @@ class BidTable extends Component {
               <TableCell>{bid.value}</TableCell>
               <TableCell>
                 {
-                  isManufacturer &&
-                  <Button variant="contained" color="primary" onClick={() => acceptBid(bid.address, bid.chainId)}>
-                    Accept Bid
-                  </Button>
+                  this.acceptBidButton(bid)
                 }
               </TableCell>
             </TableRow>

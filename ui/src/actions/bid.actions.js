@@ -4,8 +4,11 @@ export const BID_FAILURE = "BID_FAILURE";
 export const GET_BIDS_REQUEST = "GET_BIDS_REQUEST";
 export const GET_BIDS_SUCCESS = "GET_BIDS_SUCCESS";
 export const GET_BIDS_FAILURE = "GET_BIDS_FAILURE";
-export const CLOSE_BID_OVERLAY = 'CLOSE_BID_OVERLAY';
+export const BID_EVENT_REQUEST = "BID_EVENT_REQUEST";
+export const BID_EVENT_SUCCESS = "BID_EVENT_SUCCESS";
+export const BID_EVENT_FAILURE = "BID_EVENT_FAILURE";
 export const OPEN_BID_OVERLAY = 'OPEN_BID_OVERLAY';
+export const CLOSE_BID_OVERLAY = 'CLOSE_BID_OVERLAY';
 
 export const bidSubmit = (payload) => {
   return {
@@ -43,6 +46,27 @@ export const getBidsSuccess = (bids) => {
 export const getBidsFailure = () => {
   return {
     type: GET_BIDS_FAILURE
+  }
+}
+
+export const bidEventRequest = (payload) => {
+  return {
+    type: BID_EVENT_REQUEST,
+    payload
+  }
+}
+
+export const bidEventSuccess = (bidState) => {
+  return {
+    type: BID_EVENT_SUCCESS,
+    bidState
+  }
+}
+
+export const bidEventFailure = (error) => {
+  return {
+    type: BID_EVENT_FAILURE,
+    error
   }
 }
 

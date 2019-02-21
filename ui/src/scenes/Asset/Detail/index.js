@@ -2,19 +2,31 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Paper, Grid, AppBar, Typography, Toolbar, Button } from '@material-ui/core';
-import { getAssets, getAssetDetail, assetEventRequest } from "../../../actions/asset.actions";
+import { getAssets, getAssetDetail, assetEventRequest, changeOwner } from "../../../actions/asset.actions";
 import './detail.css';
 import AuditLog from "../AuditLog";
 import PlaceBidModal from "../../Bid/PlaceBidModal";
 import SnackbarMessage from '../../../components/SnackbarMessage';
-import { getBids } from "../../../actions/bid.actions";
+import { getBids, bidEventRequest } from "../../../actions/bid.actions";
 import BidTable from "../../Bid/BidTable";
+import ChangeOwner from "../ChangeOwner";
 
 class AssetDetail extends Component {
 
   componentDidMount() {
     const sku = this.props.match.params.sku;
     this.props.getAssetDetail(sku);
+    this.props.getBids();
+  }
+
+  changeOwner = (asset) => {
+    const { USER_ROLE, changeOwner } = this.props;
+    const role = parseInt(this.props.user['role'], 10);
+    if (role === USER_ROLE.MANUFACTURER) {
+      return (
+        <ChangeOwner asset={asset} />
+      )
+    }
   }
 
   requestBid = (asset) => {
@@ -22,7 +34,6 @@ class AssetDetail extends Component {
     const role = parseInt(this.props.user['role'], 10);
     if (role === USER_ROLE.MANUFACTURER || role === USER_ROLE.DISTRIBUTOR) {
       return (
-        // TODO: Add button functionality
         <Button variant="contained" color="primary" onClick={() => {
           assetEventRequest({ sku: asset.sku, assetEvent: assetEvent.REQUEST_BIDS })
         }}>
@@ -48,18 +59,14 @@ class AssetDetail extends Component {
   }
 
   acceptBid = (address, chainId) => {
-    const { bidEvent } = this.props;
-    console.log("----------------------", bidEvent.ACCEPT)
-    console.log("-----------------------------")
-    // TODO: Add API call 
+    const { bidEvent, bidEventRequest } = this.props;
+
+    const payload = { address, chainId, bidEvent: bidEvent.ACCEPT };
+    bidEventRequest(payload);
   }
 
   render() {
-    const { asset } = this.props;
-    const { history } = asset;
-
-    // Filter bids from history.
-    const bids = Object.keys(asset).length ? history.filter((history) => history.type === 'BID') : [];
+    const { asset, bids } = this.props;
 
     return (
       <div className="asset-container">
@@ -73,6 +80,7 @@ class AssetDetail extends Component {
                 {/* TODO: Mange buttons with their state*/}
                 {this.requestBid(asset)}
                 {this.placeBid(asset)}
+                {this.changeOwner(asset)}
               </div>
             </Toolbar>
           </AppBar>
@@ -129,15 +137,25 @@ class AssetDetail extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
+  const asset = state.asset.asset;
+  const bids = state.bid.bids.filter((bid) => bid.asset === asset.address)
+
   return {
-    asset: state.asset.asset,
+    asset,
     user: state.authentication.user,
     USER_ROLE: state.constants.TT.TtRole,
     bidEvent: state.constants.Bid.BidEvent,
-    assetEvent: state.constants.Asset.AssetEvent
+    assetEvent: state.constants.Asset.AssetEvent,
+    bids
   };
 };
 
-const connected = connect(mapStateToProps, { getAssets, getBids, getAssetDetail, assetEventRequest })(AssetDetail);
+const connected = connect(mapStateToProps, {
+  getAssets,
+  getBids,
+  getAssetDetail,
+  assetEventRequest,
+  bidEventRequest
+})(AssetDetail);
 
 export default withRouter(connected);

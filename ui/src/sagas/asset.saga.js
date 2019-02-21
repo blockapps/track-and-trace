@@ -16,7 +16,10 @@ import {
   getAssetDetailFailure,
   assetEventSuccess,
   assetEventFailure,
-  ASSET_EVENT_REQUEST
+  ASSET_EVENT_REQUEST,
+  CHANGE_OWNER_REQUEST,
+  changeOwnerSuccess,
+  changeOwnerFailure
 } from '../actions/asset.actions';
 import { setUserMessage } from '../actions/user-message.actions';
 
@@ -24,6 +27,7 @@ const assetsUrl = `${apiUrl}/assets`;
 const createAssetUrl = `${apiUrl}/assets`;
 const getAssetUrl = `${apiUrl}/assets/:sku`;
 const handleAssetEventUrl = `${apiUrl}/assets/handleEvent`;
+const changeAssetOwnerUrl = `${apiUrl}/assets/transferOwnership`;
 
 function fetchAssets() {
   return fetch(assetsUrl, { method: HTTP_METHODS.GET })
@@ -75,6 +79,24 @@ function createAssetApiCall(asset) {
       body: JSON.stringify({
         asset
       })
+    })
+    .then(function (response) {
+      return response.json()
+    })
+    .catch(function (error) {
+      throw error;
+    });
+}
+
+function changeOwnerApiCall(payload) {
+  return fetch(changeAssetOwnerUrl,
+    {
+      method: HTTP_METHODS.POST,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     })
     .then(function (response) {
       return response.json()
@@ -145,9 +167,26 @@ function* assetEvent(action) {
   }
 }
 
+function* changeOwner(action) {
+  try {
+    const response = yield call(changeOwnerApiCall, action.payload);
+    if (response.success) {
+      // TODO: change message
+      yield put(changeOwnerSuccess(response.data))
+      yield put(setUserMessage(`Owner changed`, true))
+    } else {
+      yield put(changeOwnerFailure(response.error));
+      yield put(setUserMessage(`Failed to change ownership`))
+    }
+  } catch (err) {
+    yield put(changeOwnerFailure(err));
+  }
+}
+
 export default function* watchAssets() {
   yield takeLatest(GET_ASSETS_REQUEST, getAssets)
   yield takeLatest(CREATE_ASSET_REQUEST, createAsset)
   yield takeLatest(GET_ASSET_DETAIL_REQUEST, getAsset)
   yield takeLatest(ASSET_EVENT_REQUEST, assetEvent)
+  yield takeLatest(CHANGE_OWNER_REQUEST, changeOwner)
 }

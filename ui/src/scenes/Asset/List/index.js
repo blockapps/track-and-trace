@@ -24,7 +24,7 @@ class AssetsList extends Component {
 
     return (
       <Grid container>
-        <AssetsTable assets={assets} title={'User owns assets'} redirectToAssetDetail={this.redirectToAssetDetail} />
+        <AssetsTable assets={assets} title={'My assets'} redirectToAssetDetail={this.redirectToAssetDetail} />
         <AssetsTable assets={requestedBids} title={'Bidding assets'} redirectToAssetDetail={this.redirectToAssetDetail} />
       </Grid>
     )

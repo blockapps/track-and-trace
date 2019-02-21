@@ -8,7 +8,8 @@ import {
   CREATE_ASSET_SUCCESS,
   CREATE_ASSET_FAILURE,
   GET_ASSET_DETAIL_SUCCESS,
-  GET_ASSET_DETAIL_FAILURE
+  GET_ASSET_DETAIL_FAILURE,
+  GET_ASSET_DETAIL_REQUEST
 } from '../actions/asset.actions';
 
 const initialState = {
@@ -21,6 +22,10 @@ const initialState = {
 const reducer = (state = initialState, action) => {
   return producer(state, draft => {
     switch (action.type) {
+      case GET_ASSET_DETAIL_REQUEST:
+        draft.asset = {};
+        draft.error = null;
+        break;
       case GET_ASSET_DETAIL_SUCCESS:
         draft.asset = action.asset;
         draft.error = null;

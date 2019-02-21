@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Paper, Grid, AppBar, Typography, Toolbar, Button } from '@material-ui/core';
-import { getAssets, getAssetDetail } from "../../../actions/asset.actions";
+import { getAssets, getAssetDetail, assetEventRequest } from "../../../actions/asset.actions";
 import './detail.css';
 import AuditLog from "../AuditLog";
 import PlaceBidModal from "../../Bid/PlaceBidModal";
@@ -12,13 +12,20 @@ import BidTable from "../../Bid/BidTable";
 
 class AssetDetail extends Component {
 
-  requestBid = () => {
-    const { USER_ROLE } = this.props;
+  componentDidMount() {
+    const sku = this.props.match.params.sku;
+    this.props.getAssetDetail(sku);
+  }
+
+  requestBid = (asset) => {
+    const { USER_ROLE, assetEvent, assetEventRequest } = this.props;
     const role = parseInt(this.props.user['role'], 10);
     if (role === USER_ROLE.MANUFACTURER || role === USER_ROLE.DISTRIBUTOR) {
       return (
         // TODO: Add button functionality
-        <Button variant="contained" color="primary">
+        <Button variant="contained" color="primary" onClick={() => {
+          assetEventRequest({ sku: asset.sku, assetEvent: assetEvent.REQUEST_BIDS })
+        }}>
           Request Bids
         </Button>
       )
@@ -47,15 +54,12 @@ class AssetDetail extends Component {
     // TODO: Add API call 
   }
 
-  componentDidMount() {
-    const sku = this.props.match.params.sku;
-    this.props.getAssets();
-    this.props.getBids();
-    this.props.getAssetDetail(sku);
-  }
-
   render() {
-    const { asset, bids } = this.props;
+    const { asset } = this.props;
+    const { history } = asset;
+
+    // Filter bids from history.
+    const bids = Object.keys(asset).length ? history.filter((history) => history.type === 'BID') : [];
 
     return (
       <div className="asset-container">
@@ -67,7 +71,7 @@ class AssetDetail extends Component {
               </Typography>
               <div className="appbar-content">
                 {/* TODO: Mange buttons with their state*/}
-                {this.requestBid()}
+                {this.requestBid(asset)}
                 {this.placeBid(asset)}
               </div>
             </Toolbar>
@@ -125,21 +129,15 @@ class AssetDetail extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const assetAddress = ownProps.match.params.sku;
-  let asset = state.asset.assets.filter((row) => row.sku === assetAddress)[0];
-
-  // TODO: filter with their (role) owners state.bid.bids.filter((row) => row.asset === assetAddress);
-  let bids = state.bid.bids
-
   return {
-    asset: asset,
+    asset: state.asset.asset,
     user: state.authentication.user,
     USER_ROLE: state.constants.TT.TtRole,
     bidEvent: state.constants.Bid.BidEvent,
-    bids: bids
+    assetEvent: state.constants.Asset.AssetEvent
   };
 };
 
-const connected = connect(mapStateToProps, { getAssets, getBids, getAssetDetail })(AssetDetail);
+const connected = connect(mapStateToProps, { getAssets, getBids, getAssetDetail, assetEventRequest })(AssetDetail);
 
 export default withRouter(connected);

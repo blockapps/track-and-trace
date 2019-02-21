@@ -6,9 +6,13 @@ export const GET_ASSET_DETAIL_SUCCESS = 'GET_ASSET_DETAIL_SUCCESS'
 export const GET_ASSET_DETAIL_FAILURE = 'GET_ASSET_DETAIL_FAILURE'
 export const OPEN_CREATE_ASSET_OVERLAY = 'OPEN_CREATE_ASSET_OVERLAY';
 export const CLOSE_CREATE_ASSET_OVERLAY = 'CLOSE_CREATE_ASSET_OVERLAY';
-export const CREATE_ASSET_REQUEST = 'CREATE_ASSET_REQUEST'
-export const CREATE_ASSET_SUCCESS = 'CREATE_ASSET_SUCCESS'
-export const CREATE_ASSET_FAILURE = 'CREATE_ASSET_FAILURE'
+export const CREATE_ASSET_REQUEST = 'CREATE_ASSET_REQUEST';
+export const CREATE_ASSET_SUCCESS = 'CREATE_ASSET_SUCCESS';
+export const CREATE_ASSET_FAILURE = 'CREATE_ASSET_FAILURE';
+export const ASSET_EVENT_REQUEST = 'ASSET_EVENT_REQUEST';
+export const ASSET_EVENT_SUCCESS = 'ASSET_EVENT_SUCCESS';
+export const ASSET_EVENT_FAILURE = 'ASSET_EVENT_FAILURE';
+
 
 export const getAssets = () => {
   return {
@@ -81,6 +85,27 @@ export const createAssetSuccess = function () {
 export const createAssetFailure = function (error) {
   return {
     type: CREATE_ASSET_FAILURE,
+    error
+  }
+}
+
+export const assetEventRequest = function (payload) {
+  return {
+    type: ASSET_EVENT_REQUEST,
+    payload
+  }
+}
+
+export const assetEventSuccess = function (newState) {
+  return {
+    type: ASSET_EVENT_SUCCESS,
+    newState
+  }
+}
+
+export const assetEventFailure = function (error) {
+  return {
+    type: ASSET_EVENT_FAILURE,
     error
   }
 }

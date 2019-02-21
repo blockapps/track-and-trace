@@ -13,13 +13,17 @@ import {
   createAssetFailure,
   GET_ASSET_DETAIL_REQUEST,
   getAssetDetailSuccess,
-  getAssetDetailFailure
+  getAssetDetailFailure,
+  assetEventSuccess,
+  assetEventFailure,
+  ASSET_EVENT_REQUEST
 } from '../actions/asset.actions';
 import { setUserMessage } from '../actions/user-message.actions';
 
 const assetsUrl = `${apiUrl}/assets`;
 const createAssetUrl = `${apiUrl}/assets`;
 const getAssetUrl = `${apiUrl}/assets/:sku`;
+const handleAssetEventUrl = `${apiUrl}/assets/handleEvent`;
 
 function fetchAssets() {
   return fetch(assetsUrl, { method: HTTP_METHODS.GET })
@@ -39,6 +43,24 @@ function fetchAsset(sku) {
     })
     .catch(err => {
       throw err
+    });
+}
+
+function handleEventApiCall(payload) {
+  return fetch(handleAssetEventUrl,
+    {
+      method: HTTP_METHODS.POST,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(function (response) {
+      return response.json()
+    })
+    .catch(function (error) {
+      throw error;
     });
 }
 
@@ -107,8 +129,25 @@ function* createAsset(action) {
   }
 }
 
+function* assetEvent(action) {
+  try {
+    const response = yield call(handleEventApiCall, action.payload);
+    if (response.success) {
+      // TODO: change message
+      yield put(assetEventSuccess(response.data))
+      yield put(setUserMessage(`Event changed to BID_REQUESTED`, true))
+    } else {
+      yield put(assetEventFailure(response.error));
+      yield put(setUserMessage(`Failed to change Event`))
+    }
+  } catch (err) {
+    yield put(createAssetFailure(err));
+  }
+}
+
 export default function* watchAssets() {
   yield takeLatest(GET_ASSETS_REQUEST, getAssets)
   yield takeLatest(CREATE_ASSET_REQUEST, createAsset)
   yield takeLatest(GET_ASSET_DETAIL_REQUEST, getAsset)
+  yield takeLatest(ASSET_EVENT_REQUEST, assetEvent)
 }

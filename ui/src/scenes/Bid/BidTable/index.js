@@ -31,6 +31,12 @@ class BidTable extends Component {
               </TableCell>
             </TableRow>
           )}
+          {
+            !bids.length &&
+            <TableRow>
+              <TableCell colSpan={3} align="center"> No bids found </TableCell>
+            </TableRow>
+          }
         </TableBody>
       </Table>
     )

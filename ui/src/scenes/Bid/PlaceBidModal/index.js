@@ -5,7 +5,7 @@ import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mate
 import { Field, reduxForm, Form } from 'redux-form'
 import ReduxedTextField from "../../../components/ReduxedTextField";
 import { openBidOverlay, closeBidOverlay, bidSubmit } from "../../../actions/bid.actions";
-
+import './placeBidModal.css'
 class PlaceBidModal extends Component {
 
   submit = (bid) => {
@@ -19,7 +19,7 @@ class PlaceBidModal extends Component {
     const { isOpen, openBidOverlay, closeBidOverlay, handleSubmit } = this.props;
 
     return (
-      <div>
+      <div className="place-bid-container">
         <Button variant="contained" color="primary" onClick={() => {
           openBidOverlay();
           this.props.reset();

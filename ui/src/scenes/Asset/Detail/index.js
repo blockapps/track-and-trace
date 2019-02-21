@@ -2,14 +2,14 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Paper, Grid, AppBar, Typography, Toolbar, Button } from '@material-ui/core';
-import { getAssets, getAssetDetail, assetEventRequest, changeOwner } from "../../../actions/asset.actions";
-import './detail.css';
+import { getAssets, getAssetDetail, assetEventRequest } from "../../../actions/asset.actions";
 import AuditLog from "../AuditLog";
 import PlaceBidModal from "../../Bid/PlaceBidModal";
 import SnackbarMessage from '../../../components/SnackbarMessage';
 import { getBids, bidEventRequest } from "../../../actions/bid.actions";
 import BidTable from "../../Bid/BidTable";
 import ChangeOwner from "../ChangeOwner";
+import './detail.css';
 
 class AssetDetail extends Component {
 
@@ -20,7 +20,7 @@ class AssetDetail extends Component {
   }
 
   changeOwner = (asset) => {
-    const { USER_ROLE, changeOwner } = this.props;
+    const { USER_ROLE } = this.props;
     const role = parseInt(this.props.user['role'], 10);
     if (role === USER_ROLE.MANUFACTURER) {
       return (
@@ -146,6 +146,7 @@ const mapStateToProps = (state, ownProps) => {
     USER_ROLE: state.constants.TT.TtRole,
     bidEvent: state.constants.Bid.BidEvent,
     assetEvent: state.constants.Asset.AssetEvent,
+    assetState: state.constants.Asset.AssetState,
     bids
   };
 };

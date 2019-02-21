@@ -5,6 +5,7 @@ import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mate
 import { Field, reduxForm, Form } from 'redux-form'
 import ReduxedTextField from "../../../components/ReduxedTextField";
 import { openChangeOwnerOverlay, closeChangeOwnerOverlay, changeOwner } from "../../../actions/asset.actions";
+import './changeOwner.css';
 
 class ChangeOwnerModal extends Component {
 
@@ -17,7 +18,7 @@ class ChangeOwnerModal extends Component {
     const { isOpen, openChangeOwnerOverlay, closeChangeOwnerOverlay, handleSubmit } = this.props;
 
     return (
-      <div>
+      <div className="owner-container">
         <Button variant="contained" color="primary" onClick={() => {
           openChangeOwnerOverlay();
         }}>

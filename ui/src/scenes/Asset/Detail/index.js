@@ -8,8 +8,6 @@ import PlaceBidModal from "../../Bid/PlaceBidModal";
 import SnackbarMessage from '../../../components/SnackbarMessage';
 import { getBids, bidEventRequest } from "../../../actions/bid.actions";
 import BidTable from "../../Bid/BidTable";
-// TODO: remove this file
-import ChangeOwner from "../ChangeOwner";
 import './detail.css';
 import SpecTable from "../Spec";
 
@@ -19,17 +17,6 @@ class AssetDetail extends Component {
     const sku = this.props.match.params.sku;
     this.props.getAssetDetail(sku);
     this.props.getBids();
-  }
-
-  // TODO: Remove this one
-  changeOwner = (asset) => {
-    const { USER_ROLE } = this.props;
-    const role = parseInt(this.props.user['role'], 10);
-    if (role === USER_ROLE.MANUFACTURER) {
-      return (
-        <ChangeOwner asset={asset} />
-      )
-    }
   }
 
   requestBid = (asset) => {
@@ -87,7 +74,6 @@ class AssetDetail extends Component {
                 {/* TODO: Mange buttons with their state*/}
                 {this.requestBid(asset)}
                 {this.placeBid(asset)}
-                {this.changeOwner(asset)}
               </div>
             </Toolbar>
           </AppBar>

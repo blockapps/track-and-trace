@@ -9,11 +9,7 @@ import {
   CREATE_ASSET_FAILURE,
   GET_ASSET_DETAIL_SUCCESS,
   GET_ASSET_DETAIL_FAILURE,
-  GET_ASSET_DETAIL_REQUEST,
-  OPEN_CHANGE_OWNER_OVERLAY,
-  CLOSE_CHANGE_OWNER_OVERLAY,
-  CHANGE_OWNER_SUCCESS,
-  CHANGE_OWNER_FAILURE
+  GET_ASSET_DETAIL_REQUEST
 } from '../actions/asset.actions';
 
 const initialState = {
@@ -61,18 +57,6 @@ const reducer = (state = initialState, action) => {
         draft.user = null;
         draft.error = action.error;
         break
-      case CHANGE_OWNER_SUCCESS:
-        draft.isChangeOwnerModalOpen = false;
-        break
-      case CHANGE_OWNER_FAILURE:
-        draft.isChangeOwnerModalOpen = true;
-        break
-      case OPEN_CHANGE_OWNER_OVERLAY:
-        draft.isChangeOwnerModalOpen = action.isOpen;
-        break;
-      case CLOSE_CHANGE_OWNER_OVERLAY:
-        draft.isChangeOwnerModalOpen = action.isOpen;
-        break;
       default:
         break
     }

@@ -15,8 +15,6 @@ export const ASSET_EVENT_FAILURE = 'ASSET_EVENT_FAILURE';
 export const CHANGE_OWNER_REQUEST = 'CHANGE_OWNER_REQUEST';
 export const CHANGE_OWNER_SUCCESS = 'CHANGE_OWNER_SUCCESS';
 export const CHANGE_OWNER_FAILURE = 'CHANGE_OWNER_FAILURE';
-export const OPEN_CHANGE_OWNER_OVERLAY = 'OPEN_CHANGE_OWNER_OVERLAY';
-export const CLOSE_CHANGE_OWNER_OVERLAY = 'CLOSE_CHANGE_OWNER_OVERLAY';
 
 
 export const getAssets = () => {
@@ -133,19 +131,5 @@ export const changeOwnerFailure = function (error) {
   return {
     type: CHANGE_OWNER_FAILURE,
     error
-  }
-}
-
-export const openChangeOwnerOverlay = () => {
-  return {
-    type: OPEN_CHANGE_OWNER_OVERLAY,
-    isOpen: true
-  }
-}
-
-export const closeChangeOwnerOverlay = () => {
-  return {
-    type: CLOSE_CHANGE_OWNER_OVERLAY,
-    isOpen: false
   }
 }

@@ -1,7 +1,8 @@
 import {
   call,
   takeLatest,
-  put
+  put,
+  delay
 } from 'redux-saga/effects';
 import { apiUrl, HTTP_METHODS } from '../constants';
 import { setUserMessage } from '../actions/user-message.actions';
@@ -112,7 +113,13 @@ function* bidEvent(action) {
     const response = yield call(bidEventApiCall, action.payload);
     if (response.success) {
       yield put(bidEventSuccess(response.data));
-      yield put(setUserMessage('Bid accepted', true));
+      yield delay(500)
+      yield put(getBids())
+      // TODO: change hardcoded value
+      if (action.payload.bidEvent === 1)
+        yield put(setUserMessage('Bid accepted', true));
+      else
+        yield put(setUserMessage('Bid Rejected', true));
     } else {
       yield put(bidEventFailure(response.error));
       // TODO: change the message

@@ -20,9 +20,9 @@ class AssetDetail extends Component {
   }
 
   requestBid = (asset) => {
-    const { USER_ROLE, assetEvent, assetEventRequest } = this.props;
-    const role = parseInt(this.props.user['role'], 10);
-    if (role === USER_ROLE.MANUFACTURER || role === USER_ROLE.DISTRIBUTOR) {
+    const { assetEvent, assetEventRequest, assetState, user } = this.props;
+    const checkState = (parseInt(asset.assetState, 10) === assetState.CREATED) || (parseInt(asset.assetState, 10) === assetState.OWNER_UPDATED);
+    if (checkState && (user.account === asset.owner)) {
       return (
         <Button variant="contained" color="primary" onClick={() => {
           assetEventRequest({ sku: asset.sku, assetEvent: assetEvent.REQUEST_BIDS })
@@ -34,18 +34,12 @@ class AssetDetail extends Component {
   }
 
   placeBid = (asset) => {
-    const { USER_ROLE } = this.props;
-    const role = parseInt(this.props.user['role'], 10);
-    if (role === USER_ROLE.RETAILER || role === USER_ROLE.DISTRIBUTOR) {
+    const { account } = this.props.user;
+    if (account !== asset.owner) {
       return (
         <PlaceBidModal asset={asset} />
       )
     }
-  }
-
-  get isManufacturer() {
-    const { USER_ROLE } = this.props;
-    return parseInt(this.props.user['role'], 10) === USER_ROLE.MANUFACTURER;
   }
 
   handleEvent = (address, chainId, bidEvent, initiator) => {
@@ -60,7 +54,7 @@ class AssetDetail extends Component {
   }
 
   render() {
-    const { asset, bids, bidEvent } = this.props;
+    const { asset, bids, bidEvent, user, bidState } = this.props;
 
     return (
       <div className="asset-container">
@@ -71,7 +65,6 @@ class AssetDetail extends Component {
                 Asset Detail - {asset && asset.name}
               </Typography>
               <div className="appbar-content">
-                {/* TODO: Mange buttons with their state*/}
                 {this.requestBid(asset)}
                 {this.placeBid(asset)}
               </div>
@@ -113,7 +106,13 @@ class AssetDetail extends Component {
               <Typography variant="h5" component="h3">
                 Bids
               </Typography>
-              <BidTable bids={bids} bidEvent={bidEvent} handleEvent={this.handleEvent} isManufacturer={this.isManufacturer} />
+              <BidTable
+                bids={bids}
+                bidEvent={bidEvent}
+                bidState={bidState}
+                handleEvent={this.handleEvent}
+                user={user}
+              />
             </Paper>
           </Grid>
         </Grid>
@@ -133,6 +132,7 @@ const mapStateToProps = (state, ownProps) => {
     user: state.authentication.user,
     USER_ROLE: state.constants.TT.TtRole,
     bidEvent: state.constants.Bid.BidEvent,
+    bidState: state.constants.Bid.BidState,
     assetEvent: state.constants.Asset.AssetEvent,
     assetState: state.constants.Asset.AssetState,
     bids

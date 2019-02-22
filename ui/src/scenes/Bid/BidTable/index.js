@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import { Table, TableHead, TableRow, TableCell, TableBody, Button } from '@material-ui/core';
+import moment from 'moment';
 import './bidTable.css';
 
 class BidTable extends Component {
 
-  acceptBidButton = (bid) => {
-    const { handleEvent, isManufacturer, bidEvent } = this.props;
-    if (isManufacturer) {
+  acceptBidButton = (bid, user) => {
+    const { handleEvent, bidEvent, bidState } = this.props;
+    if (bid.assetOwner === user.account && parseInt(bid.bidState) === bidState.ENTERED) {
       return (
         <Button
           variant="contained"
@@ -19,9 +20,9 @@ class BidTable extends Component {
     }
   }
 
-  rejectBidButton = (bid) => {
-    const { handleEvent, isManufacturer, bidEvent } = this.props;
-    if (isManufacturer) {
+  rejectBidButton = (bid, user) => {
+    const { handleEvent, bidEvent, bidState } = this.props;
+    if (bid.assetOwner === user.account && parseInt(bid.bidState) === bidState.ENTERED) {
       return (
         <Button
           variant="contained"
@@ -35,34 +36,38 @@ class BidTable extends Component {
   }
 
   render() {
-    const { bids } = this.props;
+    const { bids, user } = this.props;
 
     return (
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Bid Address</TableCell>
-            <TableCell>Amount</TableCell>
+            <TableCell>Asset Address</TableCell>
+            <TableCell>Initiator</TableCell>
+            <TableCell>Value</TableCell>
+            <TableCell>Time</TableCell>
             <TableCell></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {bids.map((bid, key) =>
             <TableRow key={key}>
-              <TableCell component="th" scope="row">
-                {bid.address}
-              </TableCell>
+              <TableCell> {bid.asset} </TableCell>
+              <TableCell> {bid.initiator} </TableCell>
               <TableCell>{bid.value}</TableCell>
               <TableCell>
-                {this.acceptBidButton(bid)}
-                {this.rejectBidButton(bid)}
+                {moment().utc(bid.block_timestamp).local().format('YYYY-MM-DD HH:mm')}
+              </TableCell>
+              <TableCell>
+                {this.acceptBidButton(bid, user)}
+                {this.rejectBidButton(bid, user)}
               </TableCell>
             </TableRow>
           )}
           {
             !bids.length &&
             <TableRow>
-              <TableCell colSpan={3} align="center"> No bids found </TableCell>
+              <TableCell colSpan={5} align="center"> No bids found </TableCell>
             </TableRow>
           }
         </TableBody>

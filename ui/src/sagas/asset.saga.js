@@ -19,7 +19,8 @@ import {
   ASSET_EVENT_REQUEST,
   CHANGE_OWNER_REQUEST,
   changeOwnerSuccess,
-  changeOwnerFailure
+  changeOwnerFailure,
+  getAssetDetail
 } from '../actions/asset.actions';
 import { setUserMessage } from '../actions/user-message.actions';
 
@@ -156,6 +157,7 @@ function* assetEvent(action) {
     const response = yield call(handleEventApiCall, action.payload);
     if (response.success) {
       yield put(assetEventSuccess(response.data))
+      yield put(getAssetDetail(action.payload.sku))
       yield put(setUserMessage(`Ready to accept bid`, true))
     } else {
       yield put(assetEventFailure(response.error));

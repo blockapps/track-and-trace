@@ -2,12 +2,13 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Paper, Grid, AppBar, Typography, Toolbar, Button } from '@material-ui/core';
-import { getAssets, getAssetDetail, assetEventRequest } from "../../../actions/asset.actions";
+import { getAssets, getAssetDetail, assetEventRequest, changeOwner } from "../../../actions/asset.actions";
 import AuditLog from "../AuditLog";
 import PlaceBidModal from "../../Bid/PlaceBidModal";
 import SnackbarMessage from '../../../components/SnackbarMessage';
 import { getBids, bidEventRequest } from "../../../actions/bid.actions";
 import BidTable from "../../Bid/BidTable";
+// TODO: remove this file
 import ChangeOwner from "../ChangeOwner";
 import './detail.css';
 import SpecTable from "../Spec";
@@ -20,6 +21,7 @@ class AssetDetail extends Component {
     this.props.getBids();
   }
 
+  // TODO: Remove this one
   changeOwner = (asset) => {
     const { USER_ROLE } = this.props;
     const role = parseInt(this.props.user['role'], 10);
@@ -59,11 +61,15 @@ class AssetDetail extends Component {
     return parseInt(this.props.user['role'], 10) === USER_ROLE.MANUFACTURER;
   }
 
-  handleEvent = (address, chainId, bidEvent) => {
-    const { bidEventRequest } = this.props;
+  handleEvent = (address, chainId, bidEvent, initiator) => {
+    const { bidEventRequest, changeOwner, asset } = this.props;
 
     const payload = { address, chainId, bidEvent };
     bidEventRequest(payload);
+
+    if (bidEvent === this.props.bidEvent.ACCEPT) {
+      changeOwner({ sku: asset.sku, owner: initiator })
+    }
   }
 
   render() {
@@ -152,7 +158,8 @@ const connected = connect(mapStateToProps, {
   getBids,
   getAssetDetail,
   assetEventRequest,
-  bidEventRequest
+  bidEventRequest,
+  changeOwner
 })(AssetDetail);
 
 export default withRouter(connected);

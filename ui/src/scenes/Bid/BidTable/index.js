@@ -8,7 +8,11 @@ class BidTable extends Component {
     const { handleEvent, isManufacturer, bidEvent } = this.props;
     if (isManufacturer) {
       return (
-        <Button variant="contained" color="primary" className="event-button" onClick={() => handleEvent(bid.address, bid.chainId, bidEvent.ACCEPT)}>
+        <Button
+          variant="contained"
+          color="primary"
+          className="event-button"
+          onClick={() => handleEvent(bid.address, bid.chainId, bidEvent.ACCEPT, bid.initiator)}>
           Accept Bid
         </Button>
       )
@@ -19,7 +23,11 @@ class BidTable extends Component {
     const { handleEvent, isManufacturer, bidEvent } = this.props;
     if (isManufacturer) {
       return (
-        <Button variant="contained" color="primary" className="event-button" onClick={() => handleEvent(bid.address, bid.chainId, bidEvent.REJECT)}>
+        <Button
+          variant="contained"
+          color="primary"
+          className="event-button"
+          onClick={() => handleEvent(bid.address, bid.chainId, bidEvent.REJECT, bid.initiator)}>
           Reject Bid
         </Button>
       )

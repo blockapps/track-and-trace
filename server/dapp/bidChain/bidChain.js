@@ -48,23 +48,23 @@ function* createChain(token, assetOwner) {
     }
   );
 
-  return bind(token, chain);
+  return bind(token, chain, chain);
 }
 
-function bind(token, contract) {
-  console.log('contract BEFORE bind', contract);
+function bind(token, contract, chainId) {
+  // console.log('contract BEFORE bind', contract);
   contract.addMember = function* (member) {
-    return yield addMember(token, contract, member)
+    return yield addMember(token, contract, member, chainId)
   }
 
   contract.removeMember = function* (member) {
-    return yield removeMember(token, contract, member)
+    return yield removeMember(token, contract, member, chainId)
   }
-  console.log('contract after bind is done', contract);
+  // console.log('contract after bind is done', contract);
   return contract;
 }
 
-function* addMember(token, contract, member, options) {
+function* addMember(token, contract, member, chainId) {
   rest.verbose('exists', member);
 
   const method = 'addMember';
@@ -78,13 +78,15 @@ function* addMember(token, contract, member, options) {
     contract,
     method,
     util.usc(args),
-    options
+    {
+      chainId
+    }
   );
 
   return result
 }
 
-function* removeMember(token, contract, member, options) {
+function* removeMember(token, contract, member, chainId) {
   rest.verbose('removeMember', member);
   const method = 'removeMember';
   const args = {
@@ -96,7 +98,9 @@ function* removeMember(token, contract, member, options) {
     contract,
     method,
     util.usc(args),
-    options
+    {
+      chainId
+    }
   );
 
   return result

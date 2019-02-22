@@ -14,20 +14,38 @@ class AssetsList extends Component {
     this.props.getAssets();
   }
 
-  redirectToAssetDetail = (event, sku) => {
-    this.props.history.push(`/asset/${sku}`);
+  redirectToAssetDetail = (event, sku, name) => {
+    if (name) {
+      this.props.history.push(`/asset/audit/${sku}`)
+    } else {
+      this.props.history.push(`/asset/${sku}`);
+    }
   };
 
-  render() {
-    const { assets, user } = this.props;
+  renderTable = () => {
+    const { assets, user, USER_ROLE } = this.props;
 
+    // Filter assets
     const ownedAssets = assets.filter((asset) => asset.owner === user.account);
     const requestedAssets = assets.filter((asset) => parseInt(asset.assetState, 10) === BID_STATE.BIDS_REQUESTED);
 
+
+    if (parseInt(user.role, 10) === USER_ROLE.REGULATOR) {
+      return (<AssetsTable assets={assets} name="regulator" title={'Audit Trail'} redirectToAssetDetail={this.redirectToAssetDetail} />)
+    }
+
     return (
-      <Grid container>
+      <div className="dashboard-container">
         <AssetsTable assets={ownedAssets} title={'My assets'} redirectToAssetDetail={this.redirectToAssetDetail} />
         <AssetsTable assets={requestedAssets} title={'Bidding assets'} redirectToAssetDetail={this.redirectToAssetDetail} />
+      </div>
+    );
+  }
+
+  render() {
+    return (
+      <Grid container>
+        {this.renderTable()}
       </Grid>
     )
   }
@@ -36,7 +54,8 @@ class AssetsList extends Component {
 const mapStateToProps = (state) => {
   return {
     assets: state.asset.assets,
-    user: state.authentication.user
+    user: state.authentication.user,
+    USER_ROLE: state.constants.TT.TtRole
   };
 };
 

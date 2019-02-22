@@ -136,15 +136,15 @@ function* createAsset(action) {
   try {
     const response = yield call(createAssetApiCall, action.asset);
     if (response.success) {
-      yield put(createAssetSuccess(response.assets));
-      yield put(setUserMessage('Asset Created Successfully', true))
+      yield put(createAssetSuccess(response.data));
+      yield put(setUserMessage(`Asset '${response.data.name}' has been created`, true))
     } else {
       yield put(createAssetFailure(response.error));
       // FIXME: if anything that could be better
       if ((typeof response.error) === 'string')
         yield put(setUserMessage(response.error))
       else
-        yield put(setUserMessage('Fail to create'))
+        yield put(setUserMessage('Unable to create asset'))
     }
   } catch (err) {
     yield put(createAssetFailure(err));
@@ -155,12 +155,11 @@ function* assetEvent(action) {
   try {
     const response = yield call(handleEventApiCall, action.payload);
     if (response.success) {
-      // TODO: change message
       yield put(assetEventSuccess(response.data))
-      yield put(setUserMessage(`Event changed to BID_REQUESTED`, true))
+      yield put(setUserMessage(`Ready to accept bid`, true))
     } else {
       yield put(assetEventFailure(response.error));
-      yield put(setUserMessage(`Failed to change Event`))
+      yield put(setUserMessage(`Unable to request bid`))
     }
   } catch (err) {
     yield put(createAssetFailure(err));
@@ -171,12 +170,11 @@ function* changeOwner(action) {
   try {
     const response = yield call(changeOwnerApiCall, action.payload);
     if (response.success) {
-      // TODO: change message
       yield put(changeOwnerSuccess(response.data))
-      yield put(setUserMessage(`Owner changed`, true))
+      yield put(setUserMessage(`Owner has been changed`, true))
     } else {
       yield put(changeOwnerFailure(response.error));
-      yield put(setUserMessage(`Failed to change ownership`))
+      yield put(setUserMessage(`Unable to change ownership`))
     }
   } catch (err) {
     yield put(changeOwnerFailure(err));

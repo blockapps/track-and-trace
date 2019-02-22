@@ -98,7 +98,7 @@ class CreateAssetModal extends Component {
               <Field
                 name="sku"
                 type="text"
-                placeholder="sku"
+                placeholder="Stock Keeping Unit"
                 margin="normal"
                 component={ReduxedTextField}
                 fullWidth

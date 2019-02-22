@@ -3,7 +3,7 @@ import { Stepper, Step, StepLabel } from '@material-ui/core';
 import './auditLog.css';
 
 function getSteps() {
-  return ['Asset Created', 'Bid Requested', 'You are now owner of asset'];
+  return ['Asset Created', 'Bid Requested', 'Owned'];
 }
 
 class AuditLog extends React.Component {

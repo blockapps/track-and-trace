@@ -81,17 +81,17 @@ function* placeBid(action) {
     const response = yield call(placeBidApiCall, action.payload);
     if (response.success) {
       yield put(bidSubmitSuccess(response.data));
-      yield put(setUserMessage('Bid success', true));
+      yield put(setUserMessage('Bid has been placed', true));
       // Update bids
       yield put(getBids());
     } else {
       yield put(bidSubmitFailure());
       // TODO: change the message
-      yield put(setUserMessage('Bid failed'));
+      yield put(setUserMessage('Unable to place bid'));
     }
   } catch (err) {
     yield put(bidSubmitFailure(err));
-    yield put(setUserMessage('Bid failed'));
+    yield put(setUserMessage('Unable to place bid'));
   }
 }
 
@@ -117,13 +117,12 @@ function* bidEvent(action) {
       yield put(getBids())
       // TODO: change hardcoded value
       if (action.payload.bidEvent === 1)
-        yield put(setUserMessage('Bid accepted', true));
+        yield put(setUserMessage('Bid has been Accepted', true));
       else
-        yield put(setUserMessage('Bid Rejected', true));
+        yield put(setUserMessage('Bid has been Rejected', true));
     } else {
       yield put(bidEventFailure(response.error));
-      // TODO: change the message
-      yield put(setUserMessage('Accept Bid Failed'));
+      yield put(setUserMessage('Unable to accept bid'));
     }
   } catch (err) {
     yield put(bidEventFailure(err));

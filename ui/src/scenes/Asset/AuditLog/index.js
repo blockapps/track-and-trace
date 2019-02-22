@@ -3,21 +3,13 @@ import { Stepper, Step, StepLabel } from '@material-ui/core';
 import './auditLog.css';
 
 function getSteps() {
-  // TODO: Change when actual API is integrated
-  return ['Distributer Requested bid', 'Distributer Requested bid', 'Distributer Requested bid'];
+  return ['Asset Created', 'Bid Requested', 'You are now owner of asset'];
 }
 
 class AuditLog extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeStep: 0
-    };
-  }
-
   render() {
     const steps = getSteps();
-    const { activeStep } = this.state;
+    const { activeStep } = this.props;
 
     return (
       <div className="audit-container">

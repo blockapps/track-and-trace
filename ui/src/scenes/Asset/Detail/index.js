@@ -97,7 +97,7 @@ class AssetDetail extends Component {
             <Typography variant="h5" component="h3">
               Audit Log
             </Typography>
-            <AuditLog />
+            <AuditLog activeStep={asset && asset.assetState} />
           </Grid>
           <Grid item xs={2}></Grid>
         </Grid>

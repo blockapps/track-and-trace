@@ -20,9 +20,11 @@ class AssetDetail extends Component {
   }
 
   requestBid = (asset) => {
-    const { assetEvent, assetEventRequest, assetState, user } = this.props;
+    const { assetEvent, assetEventRequest, assetState, user, USER_ROLE } = this.props;
+    const role = parseInt(this.props.user['role'], 10);
+
     const checkState = (parseInt(asset.assetState, 10) === assetState.CREATED) || (parseInt(asset.assetState, 10) === assetState.OWNER_UPDATED);
-    if (checkState && (user.account === asset.owner)) {
+    if (checkState && (user.account === asset.owner) && role !== USER_ROLE.RETAILER) {
       return (
         <Button variant="contained" color="primary" onClick={() => {
           assetEventRequest({ sku: asset.sku, assetEvent: assetEvent.REQUEST_BIDS })

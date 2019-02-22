@@ -87,6 +87,14 @@ function* bind(token, _contract) {
     return yield assetManager.getAssets(args);
   }
 
+  contract.getAsset = function* (sku) {
+    return yield assetManager.getAsset(sku);
+  }
+
+  contract.getAssetHistory = function* (sku) {
+    return yield assetManager.getAssetHistory(sku);
+  }
+
   contract.createAsset = function* (args) {
     return yield assetManager.createAsset(args);
   }

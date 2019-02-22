@@ -98,4 +98,15 @@ describe('Bids End-To-End Tests', function () {
     assert.equal(bidState, BidState.REJECTED, "bid state should be in Rejected state");
   });
 
+  it('should retrieve asset and bid history', function* () {
+    const retrieved = yield get(
+      endpoints.Assets.asset.replace(':sku',asset.sku),
+      manufacturerToken
+    )
+
+    assert.equal(retrieved.sku, asset.sku, 'SKU should match');
+    assert.isArray(retrieved.history, 'History should be present');
+    assert.isAtLeast(retrieved.history.length,1, 'History should be present');
+  });
+
 });

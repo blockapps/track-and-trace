@@ -25,7 +25,7 @@ function* createBid(token, assetAddress, ownerAddress, bidValue) {
       value: bidValue
     }
   );
-    console.log('HERE IS THE BID CONTRACT', bid);
+
   const result = yield rest.waitQuery(`${contractName}?address=eq.${bid.address}&chainId=eq.${chainId}`, 1);
   return result[0];
 }
@@ -40,7 +40,7 @@ function* uploadContract(token, chainId, args) {
       chainId
     }
   );
-  console.log('HERE IS THE CONTRACT BEFORE BIND', contract);
+
   return bind(token, chainId, contract);
 }
 

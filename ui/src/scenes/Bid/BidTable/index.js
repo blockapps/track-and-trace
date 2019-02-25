@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Table, TableHead, TableRow, TableCell, TableBody, Button } from '@material-ui/core';
+import { Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
 import { Icon, IconButton } from '@material-ui/core';
 import moment from 'moment';
 import './bidTable.css';

@@ -14,7 +14,7 @@ class AuditTable extends Component {
   render() {
     const { asset } = this.props;
     const history = Object.keys(asset).length ? asset.history : [];
-    // TODO: Audit logs API is not ready yet 
+
     return (
       <div className="asset-container">
         <Grid container spacing={24} className="asset-detail">
@@ -27,19 +27,21 @@ class AuditTable extends Component {
               <Table>
                 <TableHead>
                   <TableRow>
+                    <TableCell>Address</TableCell>
                     <TableCell>Asset Address</TableCell>
-                    <TableCell>Initiator</TableCell>
+                    <TableCell>Bid State</TableCell>
                     <TableCell>Value</TableCell>
-                    <TableCell>Time</TableCell>
-                    <TableCell></TableCell>
+                    <TableCell>Type</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {history.map((bid, key) =>
+                  {history.map((history, key) =>
                     <TableRow key={key}>
-                      <TableCell> {'bid.asset'} </TableCell>
-                      <TableCell> {'bid.initiator'} </TableCell>
-                      <TableCell>{'bid.value'}</TableCell>
+                      <TableCell> {history.address} </TableCell>
+                      <TableCell> {history.asset} </TableCell>
+                      <TableCell>{history.bidState}</TableCell>
+                      <TableCell>{history.value}</TableCell>
+                      <TableCell>{history.type}</TableCell>
                     </TableRow>
                   )}
                   {

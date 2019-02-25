@@ -10,8 +10,13 @@ const port = 30303;
 const localIp = ip.address();
 const enode = `enode://${publicKey}@${localIp}:${port}`
 
+
 function* createChain(token, assetOwner) {
+  // NOTE: used to add the env variable
+  const regulator = process.env.REGULATOR_TOKEN;
+
   const getKeyResponse = yield rest.getKey(token);
+  const getRegulatorKey = yield rest.getKey(regulator);
 
   const governanceSrc = yield rest.getContractString(
     contractName,
@@ -28,6 +33,10 @@ function* createChain(token, assetOwner) {
       {
         address: getKeyResponse.address,
         enode
+      },
+      {
+        address: getRegulatorKey.address,
+        enode
       }
     ],
     [
@@ -37,6 +46,10 @@ function* createChain(token, assetOwner) {
       },
       {
         address: getKeyResponse.address,
+        balance
+      },
+      {
+        address: getRegulatorKey.address,
         balance
       }
     ],

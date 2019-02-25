@@ -11,7 +11,6 @@ class Routes extends Component {
       <EnsureAuthenticated>
         <Route exact path="/" component={Dashboard} />
         <Route exact path="/asset/:sku" component={AssetDetail} />
-        {/* TODO: Full Audit log for regulator right now not getting history*/}
         <Route exact path="/asset/audit/:sku" component={Audit} />
       </EnsureAuthenticated>
     );

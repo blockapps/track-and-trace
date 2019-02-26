@@ -7,7 +7,7 @@
   "author": "BlockApps Inc.",
   "license": "MIT",
   "dependencies": {
-    "blockapps-rest": "git://github.com/blockapps/blockapps-rest#v6.2.10",
+    "blockapps-rest": "git://github.com/blockapps/blockapps-rest#5537b64",
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
     "co-mocha": "^1.2.2",

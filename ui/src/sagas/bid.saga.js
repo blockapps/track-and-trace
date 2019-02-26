@@ -86,8 +86,7 @@ function* placeBid(action) {
       yield put(getBids());
     } else {
       yield put(bidSubmitFailure());
-      // TODO: change the message
-      yield put(setUserMessage('Unable to place bid'));
+      yield put(setUserMessage(response.error));
     }
   } catch (err) {
     yield put(bidSubmitFailure(err));

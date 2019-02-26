@@ -9,10 +9,9 @@ import './placeBidModal.css'
 class PlaceBidModal extends Component {
 
   submit = (bid) => {
-    const { bidValue } = bid;
+    const { bidValue, retailerEmail } = bid;
     const { address, owner } = this.props.asset;
-    // TODO: validate value
-    this.props.bidSubmit({ bidValue, address, owner });
+    this.props.bidSubmit({ bidValue, address, owner, retailerEmail });
   }
 
   render() {
@@ -38,6 +37,15 @@ class PlaceBidModal extends Component {
                 name="bidValue"
                 type="number"
                 placeholder="Enter amount"
+                margin="normal"
+                component={ReduxedTextField}
+                fullWidth
+                required
+              />
+              <Field
+                name="retailerEmail"
+                type="email"
+                placeholder="Enter retailer email"
                 margin="normal"
                 component={ReduxedTextField}
                 fullWidth

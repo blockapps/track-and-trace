@@ -10,8 +10,8 @@ const assetJs = require(`${process.cwd()}/${config.dappPath}/asset/asset`);
 const queryHelper = require('../../helpers/query');
 
 // TODO: prevent bid from getting created if the asset is not in BIDS_REQUESTED state
-function* createBid(token, assetAddress, ownerAddress, bidValue) {
-  const chainId = yield bidChainJs.createChain(token, ownerAddress)
+function* createBid(token, assetAddress, ownerAddress, bidValue, retailerAddress) {
+  const chainId = yield bidChainJs.createChain(token, ownerAddress, retailerAddress)
 
   // NspoOTE: This is here to resolve a timing issue, where the balance is not assigned to the address in new chain causing low balance issue \
   // in next call. `sleep` is is just a workaround to let the things settle after chain creation

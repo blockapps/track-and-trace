@@ -48,19 +48,18 @@ function* createChain(token, assetOwner) {
     }
   );
 
-  return bind(token, chain, chain);
+  return bind(token, chain);
 }
 
-function bind(token, contract, chainId) {
-  // console.log('contract BEFORE bind', contract);
+function bind(token, contract) {
   contract.addMember = function* (member) {
-    return yield addMember(token, contract, member, chainId)
+    return yield addMember(token, contract, member)
   }
 
   contract.removeMember = function* (member) {
-    return yield removeMember(token, contract, member, chainId)
+    return yield removeMember(token, contract, member)
   }
-  // console.log('contract after bind is done', contract);
+
   return contract;
 }
 

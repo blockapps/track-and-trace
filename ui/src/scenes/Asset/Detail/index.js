@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Paper, Grid, AppBar, Typography, Toolbar, Button } from '@material-ui/core';
+import { Paper, Grid, AppBar, Typography, Toolbar, Button, Chip } from '@material-ui/core';
 import { getAssets, getAssetDetail, assetEventRequest, changeOwner } from "../../../actions/asset.actions";
 import AuditLog from "../AuditLog";
 import PlaceBidModal from "../../Bid/PlaceBidModal";
@@ -20,14 +20,14 @@ class AssetDetail extends Component {
   }
 
   requestBid = (asset) => {
-    const { assetEvent, assetEventRequest, assetState, user, USER_ROLE } = this.props;
+    const { ASSET_EVENT, assetEventRequest, ASSET_STATE, user, USER_ROLE } = this.props;
     const role = parseInt(this.props.user['role'], 10);
 
-    const checkState = (parseInt(asset.assetState, 10) === assetState.CREATED) || (parseInt(asset.assetState, 10) === assetState.OWNER_UPDATED);
+    const checkState = (parseInt(asset.assetState, 10) === ASSET_STATE.CREATED) || (parseInt(asset.assetState, 10) === ASSET_STATE.OWNER_UPDATED);
     if (checkState && (user.account === asset.owner) && role !== USER_ROLE.RETAILER) {
       return (
         <Button variant="contained" color="primary" onClick={() => {
-          assetEventRequest({ sku: asset.sku, assetEvent: assetEvent.REQUEST_BIDS })
+          assetEventRequest({ sku: asset.sku, assetEvent: ASSET_EVENT.REQUEST_BIDS })
         }}>
           Request Bids
         </Button>
@@ -50,13 +50,15 @@ class AssetDetail extends Component {
     const payload = { address, chainId, bidEvent };
     bidEventRequest(payload);
 
-    if (bidEvent === this.props.bidEvent.ACCEPT) {
+    if (bidEvent === this.props.BID_EVENT.ACCEPT) {
       changeOwner({ sku: asset.sku, owner: initiator })
     }
   }
 
   render() {
-    const { asset, bids, bidEvent, user, bidState } = this.props;
+    const { asset, bids, BID_EVENT, user, BID_STATE, ASSET_STATE } = this.props;
+    // Asset State
+    const state = asset ? parseInt(asset.assetState) : 0;
 
     return (
       <div className="asset-container">
@@ -65,6 +67,7 @@ class AssetDetail extends Component {
             <Toolbar>
               <Typography variant="h6" color="inherit" className="appbar-name">
                 Asset Detail - {asset && asset.name}
+                <Chip label={ASSET_STATE[state]} className="status-chip" />
               </Typography>
               <div className="appbar-content">
                 {this.requestBid(asset)}
@@ -97,7 +100,7 @@ class AssetDetail extends Component {
             <Typography variant="h5" component="h3">
               Audit Log
             </Typography>
-            <AuditLog activeStep={asset && asset.assetState} />
+            <AuditLog activeStep={state} />
           </Grid>
           <Grid item xs={2}></Grid>
         </Grid>
@@ -110,8 +113,8 @@ class AssetDetail extends Component {
               </Typography>
               <BidTable
                 bids={bids}
-                bidEvent={bidEvent}
-                bidState={bidState}
+                BID_EVENT={BID_EVENT}
+                BID_STATE={BID_STATE}
                 handleEvent={this.handleEvent}
                 user={user}
               />
@@ -133,10 +136,10 @@ const mapStateToProps = (state, ownProps) => {
     asset,
     user: state.authentication.user,
     USER_ROLE: state.constants.TT.TtRole,
-    bidEvent: state.constants.Bid.BidEvent,
-    bidState: state.constants.Bid.BidState,
-    assetEvent: state.constants.Asset.AssetEvent,
-    assetState: state.constants.Asset.AssetState,
+    BID_EVENT: state.constants.Bid.BidEvent,
+    BID_STATE: state.constants.Bid.BidState,
+    ASSET_EVENT: state.constants.Asset.AssetEvent,
+    ASSET_STATE: state.constants.Asset.AssetState,
     bids
   };
 };

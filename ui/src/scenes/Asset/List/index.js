@@ -6,7 +6,6 @@ import AssetsTable from './table';
 
 import { getAssets } from "../../../actions/asset.actions";
 import './list.css';
-import { BID_STATE } from "../../../utils/bids.utils";
 
 class AssetsList extends Component {
 
@@ -23,21 +22,20 @@ class AssetsList extends Component {
   };
 
   renderTable = () => {
-    const { assets, user, USER_ROLE } = this.props;
+    const { assets, user, USER_ROLE, ASSET_STATE } = this.props;
 
     // Filter assets
     const ownedAssets = assets.filter((asset) => asset.owner === user.account);
-    const requestedAssets = assets.filter((asset) => parseInt(asset.assetState, 10) === BID_STATE.BIDS_REQUESTED);
-
+    const requestedAssets = assets.filter((asset) => parseInt(asset.assetState, 10) === ASSET_STATE.BIDS_REQUESTED);
 
     if (parseInt(user.role, 10) === USER_ROLE.REGULATOR) {
-      return (<AssetsTable assets={assets} name="regulator" title={'Audit Trail'} redirectToAssetDetail={this.redirectToAssetDetail} />)
+      return (<AssetsTable assets={assets} name="regulator" title={'Audit Trail'} redirectToAssetDetail={this.redirectToAssetDetail} ASSET_STATE={ASSET_STATE} />)
     }
 
     return (
       <div className="dashboard-container">
-        <AssetsTable assets={ownedAssets} title={'My assets'} redirectToAssetDetail={this.redirectToAssetDetail} />
-        <AssetsTable assets={requestedAssets} title={'Bidding assets'} redirectToAssetDetail={this.redirectToAssetDetail} />
+        <AssetsTable assets={ownedAssets} title={'My assets'} redirectToAssetDetail={this.redirectToAssetDetail} ASSET_STATE={ASSET_STATE} />
+        <AssetsTable assets={requestedAssets} title={'Bidding assets'} redirectToAssetDetail={this.redirectToAssetDetail} ASSET_STATE={ASSET_STATE} />
       </div>
     );
   }
@@ -55,7 +53,9 @@ const mapStateToProps = (state) => {
   return {
     assets: state.asset.assets,
     user: state.authentication.user,
-    USER_ROLE: state.constants.TT.TtRole
+    USER_ROLE: state.constants.TT.TtRole,
+    BID_STATE: state.constants.Bid.BidState,
+    ASSET_STATE: state.constants.Asset.AssetState
   };
 };
 

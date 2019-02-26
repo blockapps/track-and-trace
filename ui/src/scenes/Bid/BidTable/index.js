@@ -7,14 +7,14 @@ import './bidTable.css';
 class BidTable extends Component {
 
   acceptBidButton = (bid, user) => {
-    const { handleEvent, bidEvent, bidState } = this.props;
-    if (bid.assetOwner === user.account && parseInt(bid.bidState) === bidState.ENTERED) {
+    const { handleEvent, BID_EVENT, BID_STATE } = this.props;
+    if (bid.assetOwner === user.account && parseInt(bid.bidState) === BID_STATE.ENTERED) {
       return (
         <IconButton
           aria-label="check"
           title="Accept"
           className="buttons"
-          onClick={() => handleEvent(bid.address, bid.chainId, bidEvent.ACCEPT, bid.initiator)}>
+          onClick={() => handleEvent(bid.address, bid.chainId, BID_EVENT.ACCEPT, bid.initiator)}>
           <Icon color="action">check</Icon>
         </IconButton>
       )
@@ -22,14 +22,14 @@ class BidTable extends Component {
   }
 
   rejectBidButton = (bid, user) => {
-    const { handleEvent, bidEvent, bidState } = this.props;
-    if (bid.assetOwner === user.account && parseInt(bid.bidState) === bidState.ENTERED) {
+    const { handleEvent, BID_EVENT, BID_STATE } = this.props;
+    if (bid.assetOwner === user.account && parseInt(bid.bidState) === BID_STATE.ENTERED) {
       return (
         <IconButton
           aria-label="clear"
           title="Reject"
           className="buttons"
-          onClick={() => handleEvent(bid.address, bid.chainId, bidEvent.REJECT, bid.initiator)}>
+          onClick={() => handleEvent(bid.address, bid.chainId, BID_EVENT.REJECT, bid.initiator)}>
           <Icon color="action">clear</Icon>
         </IconButton>
       )

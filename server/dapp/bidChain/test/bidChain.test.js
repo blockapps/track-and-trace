@@ -4,7 +4,7 @@ const { common, rest6: rest } = require('blockapps-rest');
 const { assert, config, fsutil, util } = common;
 const { getEmailIdFromToken, createStratoUser } = require(`${process.cwd()}/helpers/oauth`);
 
-const bidChain = require(`${process.cwd()}/${config.dappPath}/bidChain/bidChain`);
+const bidChain = require(`${process.cwd()}/${config.dappPath}/bidChain/bidchain`);
 
 const contractName = 'BidGovernance';
 const contractFileName = `${process.cwd()}/${config.dappPath}/bidChain/contracts/BidChain.sol`;

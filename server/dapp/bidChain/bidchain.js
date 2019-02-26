@@ -12,19 +12,19 @@ const enode = `enode://${publicKey}@${localIp}:${port}`
 
 function* createChain(token, assetOwner) {
   const getKeyResponse = yield rest.getKey(token);
-  
+
   const governanceSrc = yield rest.getContractString(
-    contractName, 
+    contractName,
     contractFileName
   );
-  
+
   const chain = yield rest.createChain(
     `bid_${getKeyResponse.address}_${assetOwner}`,
     [
       {
         address: assetOwner,
         enode
-      }, 
+      },
       {
         address: getKeyResponse.address,
         enode
@@ -34,7 +34,7 @@ function* createChain(token, assetOwner) {
       {
         address: assetOwner,
         balance
-      }, 
+      },
       {
         address: getKeyResponse.address,
         balance
@@ -48,22 +48,23 @@ function* createChain(token, assetOwner) {
     }
   );
 
-  return bind(token, chain);
+  return bind(token, chain, chain);
 }
 
-function bind(token, contract) {
+function bind(token, contract, chainId) {
+  // console.log('contract BEFORE bind', contract);
   contract.addMember = function* (member) {
-    return yield addMember(token, contract, member)
+    return yield addMember(token, contract, member, chainId)
   }
 
   contract.removeMember = function* (member) {
-    return yield removeMember(token, contract, member)
+    return yield removeMember(token, contract, member, chainId)
   }
-
+  // console.log('contract after bind is done', contract);
   return contract;
 }
 
-function* addMember(token, contract, member) {
+function* addMember(token, contract, member, chainId) {
   rest.verbose('exists', member);
 
   const method = 'addMember';
@@ -73,16 +74,19 @@ function* addMember(token, contract, member) {
   }
 
   const result = yield rest.callMethod(
-    token, 
+    token,
     contract,
-    method, 
-    util.usc(args)
+    method,
+    util.usc(args),
+    {
+      chainId
+    }
   );
 
   return result
 }
 
-function*  removeMember(token, contract, member) {
+function* removeMember(token, contract, member, chainId) {
   rest.verbose('removeMember', member);
   const method = 'removeMember';
   const args = {
@@ -90,10 +94,13 @@ function*  removeMember(token, contract, member) {
   }
 
   const result = yield rest.callMethod(
-    token, 
+    token,
     contract,
-    method, 
-    util.usc(args)
+    method,
+    util.usc(args),
+    {
+      chainId
+    }
   );
 
   return result
@@ -126,5 +133,7 @@ module.exports = {
   createChain,
   bind,
   getChainById,
-  getChains
+  getChains,
+  removeMember,
+  addMember
 }

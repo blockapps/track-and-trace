@@ -1,5 +1,5 @@
 import React from 'react';
-import { Stepper, Step, StepLabel, StepContent, Typography, Card } from '@material-ui/core';
+import { Stepper, Step, StepLabel, StepContent, Typography } from '@material-ui/core';
 import './auditLog.css';
 
 class AuditLog extends React.Component {

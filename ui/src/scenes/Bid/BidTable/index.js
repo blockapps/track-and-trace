@@ -36,7 +36,7 @@ class BidTable extends Component {
   }
 
   render() {
-    const { bids, user, isRegulator } = this.props;
+    const { bids, user } = this.props;
 
     return (
       <Table>

@@ -18,6 +18,7 @@ import {
   bidEventFailure,
   getBids
 } from '../actions/bid.actions';
+import { changeOwner } from '../actions/asset.actions';
 
 const placeBidUrl = `${apiUrl}/bids`;
 const bidEventUrl = `${apiUrl}/bids/:address/event`;
@@ -112,13 +113,15 @@ function* bidEvent(action) {
     const response = yield call(bidEventApiCall, action.payload);
     if (response.success) {
       yield put(bidEventSuccess(response.data));
-      yield delay(500)
-      yield put(getBids())
-      // TODO: change hardcoded value
-      if (action.payload.bidEvent === 1)
-        yield put(setUserMessage('Bid has been Accepted', true));
-      else
+      // Check status accepted and request for change owner
+      if (parseInt(response.data) === action.BID_STATE.ACCEPTED)
+        yield put(changeOwner({ sku: action.sku, owner: action.initiator}));
+      // Check event and display snackbar
+      if (action.payload.bidEvent === action.BID_EVENT.REJECT)
         yield put(setUserMessage('Bid has been Rejected', true));
+
+      yield delay(500);
+      yield put(getBids());
     } else {
       yield put(bidEventFailure(response.error));
       yield put(setUserMessage('Unable to accept bid'));

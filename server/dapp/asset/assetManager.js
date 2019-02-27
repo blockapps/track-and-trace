@@ -19,15 +19,11 @@ function* uploadContract(token, ttPermissionManagerContract) {
   const contractArgs = {
     ttPermissionManager: ttPermissionManagerContract.address
   };
-
   const contract = yield rest.uploadContract(
     token, 
     contractName, 
     contractFilename, 
-    util.usc(contractArgs),
-    {
-      history: [assetJs.contractName]
-    }
+    util.usc(contractArgs)
   );
   contract.src = 'removed';
 
@@ -86,7 +82,7 @@ function* createAsset(token, contract, args) {
 
   const converted = assetJs.toBytes32(args);
 
-  const [restStatus, assetError, assetAddress] = yield rest.callMethod(token, contract, method, util.usc(converted));
+  const [restStatus, assetError, assetAddress] = yield rest.callMethod(token, contract, method, util.usc(converted), { history: [assetJs.contractName] });
 
   if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, assetError, { method, converted });
   const asset = yield contractUtils.waitForAddress(assetJs.contractName, assetAddress);
@@ -176,7 +172,6 @@ function* getAssetHistory(token, contract, sku) {
   )
 
   const history = yield rest.query(`history@${assetJs.contractName}?address=eq.${address}`);
-
   return history.map(h => assetJs.fromBytes32(h));
 }
 

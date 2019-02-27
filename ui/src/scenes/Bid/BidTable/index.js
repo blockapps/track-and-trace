@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
 import { Icon, IconButton } from '@material-ui/core';
-import moment from 'moment';
 import './bidTable.css';
 
 class BidTable extends Component {
@@ -57,7 +56,7 @@ class BidTable extends Component {
               <TableCell> {bid.initiator} </TableCell>
               <TableCell>{bid.value}</TableCell>
               <TableCell>
-                {moment().utc(bid.block_timestamp).local().format('YYYY-MM-DD HH:mm')}
+                {bid.block_timestamp}
               </TableCell>
               <TableCell>
                 {this.acceptBidButton(bid, user)}

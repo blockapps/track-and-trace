@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Paper, Grid, AppBar, Typography, Toolbar, Button, Chip } from '@material-ui/core';
+import { Paper, Grid, AppBar, Typography, Toolbar, Button, Chip, Card } from '@material-ui/core';
 import { getAssets, getAssetDetail, assetEventRequest, changeOwner } from "../../../actions/asset.actions";
 import AuditLog from "../AuditLog";
 import PlaceBidModal from "../../Bid/PlaceBidModal";
@@ -97,10 +97,12 @@ class AssetDetail extends Component {
           </Grid>
           <Grid item xs={1}></Grid>
           <Grid item xs={4}>
-            <Typography variant="h5" component="h3">
-              Audit Log
-            </Typography>
-            <AuditLog activeStep={state} />
+            <Card>
+              <Typography variant="h5" component="h3" className="audit-log">
+                Audit Log
+              </Typography>
+              <AuditLog activeStep={state} history={asset && asset.history} ASSET_STATE={ASSET_STATE} BID_STATE={BID_STATE} />
+            </Card>
           </Grid>
           <Grid item xs={2}></Grid>
         </Grid>

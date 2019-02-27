@@ -114,10 +114,10 @@ function* bidEvent(action) {
     if (response.success) {
       yield put(bidEventSuccess(response.data));
       // Check status accepted and request for change owner
-      if (parseInt(response.data) === 2)
+      if (parseInt(response.data) === action.BID_STATE.ACCEPTED)
         yield put(changeOwner({ sku: action.sku, owner: action.initiator}));
       // Check event and display snackbar
-      if (action.payload.bidEvent === 2)
+      if (action.payload.bidEvent === action.BID_EVENT.REJECT)
         yield put(setUserMessage('Bid has been Rejected', true));
 
       yield delay(500);

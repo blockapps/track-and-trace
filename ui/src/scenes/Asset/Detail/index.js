@@ -50,10 +50,10 @@ class AssetDetail extends Component {
   }
 
   handleEvent = (address, chainId, bidEvent, initiator) => {
-    const { bidEventRequest, asset } = this.props;
+    const { bidEventRequest, asset, BID_EVENT, BID_STATE } = this.props;
 
     const payload = { address, chainId, bidEvent };
-    bidEventRequest(payload, asset.sku, initiator);
+    bidEventRequest(payload, asset.sku, initiator, BID_EVENT, BID_STATE);
   }
 
   render() {

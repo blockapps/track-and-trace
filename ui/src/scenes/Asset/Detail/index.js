@@ -62,6 +62,9 @@ class AssetDetail extends Component {
 
   render() {
     const { asset, bids, BID_EVENT, user, BID_STATE, ASSET_STATE } = this.props;
+
+    const filterdBids = this.isRegulator ? bids : bids.filter((bid) => bid.asset === asset.address);
+
     // Asset State
     const state = asset ? parseInt(asset.assetState) : 0;
 
@@ -119,7 +122,7 @@ class AssetDetail extends Component {
                 Bids
               </Typography>
               <BidTable
-                bids={bids}
+                bids={filterdBids}
                 BID_EVENT={BID_EVENT}
                 BID_STATE={BID_STATE}
                 handleEvent={this.handleEvent}
@@ -137,18 +140,15 @@ class AssetDetail extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const asset = state.asset.asset;
-  const bids = state.bid.bids.filter((bid) => bid.asset === asset.address)
-
   return {
-    asset,
+    asset: state.asset.asset,
     user: state.authentication.user,
     USER_ROLE: state.constants.TT.TtRole,
     BID_EVENT: state.constants.Bid.BidEvent,
     BID_STATE: state.constants.Bid.BidState,
     ASSET_EVENT: state.constants.Asset.AssetEvent,
     ASSET_STATE: state.constants.Asset.AssetState,
-    bids
+    bids: state.bid.bids
   };
 };
 

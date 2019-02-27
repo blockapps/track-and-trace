@@ -173,7 +173,7 @@ function* changeOwner(action) {
     const response = yield call(changeOwnerApiCall, action.payload);
     if (response.success) {
       yield put(changeOwnerSuccess(response.data))
-      yield put(setUserMessage(`Owner has been changed`, true))
+      yield put(setUserMessage(`Bid accepted and Owner has been changed`, true))
     } else {
       yield put(changeOwnerFailure(response.error));
       yield put(setUserMessage(`Unable to change ownership`))

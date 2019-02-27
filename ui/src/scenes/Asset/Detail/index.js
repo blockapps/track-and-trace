@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Paper, Grid, AppBar, Typography, Toolbar, Button, Chip, Card } from '@material-ui/core';
-import { getAssets, getAssetDetail, assetEventRequest, changeOwner } from "../../../actions/asset.actions";
+import { getAssets, getAssetDetail, assetEventRequest } from "../../../actions/asset.actions";
 import AuditLog from "../AuditLog";
 import PlaceBidModal from "../../Bid/PlaceBidModal";
 import SnackbarMessage from '../../../components/SnackbarMessage';
@@ -50,14 +50,10 @@ class AssetDetail extends Component {
   }
 
   handleEvent = (address, chainId, bidEvent, initiator) => {
-    const { bidEventRequest, changeOwner, asset } = this.props;
+    const { bidEventRequest, asset } = this.props;
 
     const payload = { address, chainId, bidEvent };
-    bidEventRequest(payload);
-
-    if (bidEvent === this.props.BID_EVENT.ACCEPT) {
-      changeOwner({ sku: asset.sku, owner: initiator })
-    }
+    bidEventRequest(payload, asset.sku, initiator);
   }
 
   render() {
@@ -157,8 +153,7 @@ const connected = connect(mapStateToProps, {
   getBids,
   getAssetDetail,
   assetEventRequest,
-  bidEventRequest,
-  changeOwner
+  bidEventRequest
 })(AssetDetail);
 
 export default withRouter(connected);

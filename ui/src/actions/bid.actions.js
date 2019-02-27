@@ -49,10 +49,12 @@ export const getBidsFailure = () => {
   }
 }
 
-export const bidEventRequest = (payload) => {
+export const bidEventRequest = (payload, sku, initiator) => {
   return {
     type: BID_EVENT_REQUEST,
-    payload
+    payload,
+    sku,
+    initiator
   }
 }
 

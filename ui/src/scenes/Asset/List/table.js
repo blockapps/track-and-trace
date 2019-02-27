@@ -22,13 +22,13 @@ class AssetsTable extends Component {
 
   renderRows = (assets) => {
     const { page, rowsPerPage } = this.state;
-    const { redirectToAssetDetail, name, ASSET_STATE } = this.props;
+    const { redirectToAssetDetail, ASSET_STATE } = this.props;
 
     if (assets.length) {
       return (assets.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .map((asset, key) => {
           return (
-            <TableRow key={key} hover onClick={event => redirectToAssetDetail(event, asset.sku, name)}>
+            <TableRow key={key} hover onClick={event => redirectToAssetDetail(event, asset.sku)}>
               <TableCell align="left"> {asset.name} </TableCell>
               <TableCell align="left">{asset.description}</TableCell>
               <TableCell align="left">{asset.price}</TableCell>

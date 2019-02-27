@@ -36,7 +36,7 @@ class BidTable extends Component {
   }
 
   render() {
-    const { bids, user } = this.props;
+    const { bids, user, isRegulator } = this.props;
 
     return (
       <Table>
@@ -59,8 +59,8 @@ class BidTable extends Component {
                 {bid.block_timestamp}
               </TableCell>
               <TableCell>
-                {this.acceptBidButton(bid, user)}
-                {this.rejectBidButton(bid, user)}
+                {!this.isRegulator && this.acceptBidButton(bid, user)}
+                {!this.isRegulator && this.rejectBidButton(bid, user)}
               </TableCell>
             </TableRow>
           )}

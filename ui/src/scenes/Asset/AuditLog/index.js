@@ -13,10 +13,19 @@ class AuditLog extends React.Component {
           State: {BID_STATE[parseInt(history.bidState)]}
         </Typography>)
     } else {
+      const isOwnerChanged = parseInt(history.assetState) === ASSET_STATE.OWNER_UPDATED;
       return (
-        <Typography>
-          State: {ASSET_STATE[parseInt(history.assetState)]}
-        </Typography>
+        <div>
+          <Typography>
+            State: {ASSET_STATE[parseInt(history.assetState)]}
+          </Typography>
+          {
+            isOwnerChanged &&
+            <Typography>
+              Owner: {history.owner}
+            </Typography>
+          }
+        </div>
       )
     }
   }

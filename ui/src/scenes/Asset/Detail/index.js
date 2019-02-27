@@ -19,6 +19,11 @@ class AssetDetail extends Component {
     this.props.getBids();
   }
 
+  get isRegulator() {
+    const { USER_ROLE } = this.props;
+    return parseInt(this.props.user['role'], 10) === USER_ROLE.REGULATOR;
+  }
+
   requestBid = (asset) => {
     const { ASSET_EVENT, assetEventRequest, ASSET_STATE, user, USER_ROLE } = this.props;
     const role = parseInt(this.props.user['role'], 10);
@@ -70,8 +75,8 @@ class AssetDetail extends Component {
                 <Chip label={ASSET_STATE[state]} className="status-chip" />
               </Typography>
               <div className="appbar-content">
-                {this.requestBid(asset)}
-                {this.placeBid(asset)}
+                {!this.isRegulator && this.requestBid(asset)}
+                {!this.isRegulator && this.placeBid(asset)}
               </div>
             </Toolbar>
           </AppBar>
@@ -119,6 +124,7 @@ class AssetDetail extends Component {
                 BID_STATE={BID_STATE}
                 handleEvent={this.handleEvent}
                 user={user}
+                isRegulator={this.isRegulator}
               />
             </Paper>
           </Grid>

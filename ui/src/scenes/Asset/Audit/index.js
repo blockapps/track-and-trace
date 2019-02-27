@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { Paper, Grid, Typography, Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
 import { getAssetDetail } from "../../../actions/asset.actions";
 
+// TODO: Remove if it is not needed
 class AuditTable extends Component {
 
   componentDidMount() {

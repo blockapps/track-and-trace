@@ -13,12 +13,8 @@ class AssetsList extends Component {
     this.props.getAssets();
   }
 
-  redirectToAssetDetail = (event, sku, name) => {
-    if (name) {
-      this.props.history.push(`/asset/audit/${sku}`)
-    } else {
-      this.props.history.push(`/asset/${sku}`);
-    }
+  redirectToAssetDetail = (event, sku) => {
+    this.props.history.push(`/asset/${sku}`);
   };
 
   renderTable = () => {
@@ -29,7 +25,7 @@ class AssetsList extends Component {
     const requestedAssets = assets.filter((asset) => parseInt(asset.assetState, 10) === ASSET_STATE.BIDS_REQUESTED);
 
     if (parseInt(user.role, 10) === USER_ROLE.REGULATOR) {
-      return (<AssetsTable assets={assets} name="regulator" title={'Audit Trail'} redirectToAssetDetail={this.redirectToAssetDetail} ASSET_STATE={ASSET_STATE} />)
+      return (<AssetsTable assets={assets} title={'Audit Trail'} redirectToAssetDetail={this.redirectToAssetDetail} ASSET_STATE={ASSET_STATE} />)
     }
 
     return (

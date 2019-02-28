@@ -48,6 +48,7 @@ class PlaceBidModal extends Component {
                 placeholder="Enter retailer email"
                 margin="normal"
                 component={ReduxedTextField}
+                disabled
                 fullWidth
                 required
               />
@@ -70,7 +71,10 @@ class PlaceBidModal extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    isOpen: state.bid.isBidOverlayOpen
+    isOpen: state.bid.isBidOverlayOpen,
+    initialValues: {
+      retailerEmail: 'regulator@tt.app'
+    }
   };
 };
 

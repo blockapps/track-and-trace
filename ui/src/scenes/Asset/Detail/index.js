@@ -42,7 +42,8 @@ class AssetDetail extends Component {
 
   placeBid = (asset) => {
     const { account } = this.props.user;
-    if (account !== asset.owner) {
+    
+    if (asset.owner && (asset.owner !== account)) {
       return (
         <PlaceBidModal asset={asset} />
       )

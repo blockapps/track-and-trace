@@ -25,7 +25,7 @@ class AssetsList extends Component {
     const requestedAssets = assets.filter((asset) => parseInt(asset.assetState, 10) === ASSET_STATE.BIDS_REQUESTED);
 
     if (parseInt(user.role, 10) === USER_ROLE.REGULATOR) {
-      return (<AssetsTable assets={assets} title={'Audit Trail'} redirectToAssetDetail={this.redirectToAssetDetail} ASSET_STATE={ASSET_STATE} />)
+      return (<AssetsTable assets={assets} title={'Asset List'} redirectToAssetDetail={this.redirectToAssetDetail} ASSET_STATE={ASSET_STATE} />)
     }
 
     return (

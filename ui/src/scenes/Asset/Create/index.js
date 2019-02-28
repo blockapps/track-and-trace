@@ -17,10 +17,7 @@ class CreateAssetModal extends Component {
   submit = (asset) => {
     const { specs } = asset;
 
-    let spec = specs.map((spec) => {
-      return ({ [spec.key]: spec.value });
-    });
-
+    // TODO: Add validations
     const params = {
       sku: asset.sku,
       description: asset.description,
@@ -101,7 +98,7 @@ class CreateAssetModal extends Component {
               <Field
                 name="sku"
                 type="text"
-                placeholder="sku"
+                placeholder="Stock Keeping Unit"
                 margin="normal"
                 component={ReduxedTextField}
                 fullWidth

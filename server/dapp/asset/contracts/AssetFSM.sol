@@ -6,6 +6,7 @@ contract AssetFSM is FSM, AssetState, AssetEvent {
     constructor() {
         addTransition(AssetState.CREATED, AssetEvent.REQUEST_BIDS, AssetState.BIDS_REQUESTED);
         addTransition(AssetState.BIDS_REQUESTED, AssetEvent.CHANGE_OWNER, AssetState.OWNER_UPDATED);
+        addTransition(AssetState.OWNER_UPDATED, AssetEvent.REQUEST_BIDS, AssetState.BIDS_REQUESTED);
     }
 
     function handleEvent(AssetState _state, AssetEvent _event) returns (AssetState){

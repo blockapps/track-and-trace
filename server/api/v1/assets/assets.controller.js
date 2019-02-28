@@ -25,11 +25,11 @@ const assetsController = {
       .catch(next);
   },
 
-  getAsset: (req, res,next) => {
-    const { app, accessToken} = req;
+  getAsset: (req, res, next) => {
+    const { app, accessToken } = req;
     const sku = req.params.sku;
 
-    if(!sku) {
+    if (!sku) {
       util.response.status400(res, 'Missing sku')
       return next();
     }
@@ -43,12 +43,12 @@ const assetsController = {
       const bidHistory = yield bidJs.getBidsHistory(accessToken, asset.address);
 
       const histories = [
-        ...assetHistory.map(h => { return {...h, type: 'ASSET'}}),
-        ...bidHistory.map(h => { return {...h, type: 'BID'}})
+        ...assetHistory.map(h => { return { ...h, type: 'ASSET' } }),
+        ...bidHistory.map(h => { return { ...h, type: 'BID' } })
       ];
 
-      asset.history = histories.sort( 
-        (h1,h2) => moment(h1.block_timestamp).unix() - moment(h2.block_timestamp).unix() 
+      asset.history = histories.sort(
+        (h1, h2) => moment(h1.block_timestamp).unix() - moment(h2.block_timestamp).unix()
       )
 
       util.response.status200(res, asset);
@@ -92,6 +92,23 @@ const assetsController = {
     co(function* () {
       const dapp = yield dappJs.bind(accessToken, deploy.contract);
       const newState = yield dapp.handleAssetEvent(args);
+      util.response.status200(res, newState);
+    })
+      .catch(next);
+  },
+
+  transferOwnership: (req, res, next) => {
+    const { app, accessToken, body } = req;
+    const { sku, owner } = body;
+
+    // Get sku and assetEvent
+    const args = { sku, owner };
+
+    const deploy = app.get('deploy');
+
+    co(function* () {
+      const dapp = yield dappJs.bind(accessToken, deploy.contract);
+      const newState = yield dapp.transferOwnership(args);
       util.response.status200(res, newState);
     })
       .catch(next);

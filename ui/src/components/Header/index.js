@@ -27,14 +27,14 @@ class Header extends Component {
   };
 
   render() {
-    const { user, classes, isAuthenticated, logout } = this.props;
+    const { user, classes, isAuthenticated, logout, history } = this.props;
     const { popoverEl } = this.state;
     const isOpen = Boolean(popoverEl);
 
     return (
       <AppBar position="static">
         <Toolbar className={classes.toolbar} >
-          <Typography variant="h6" color="inherit">
+          <Typography variant="h6" color="inherit" onClick={() => { history.push('/') }} className={classes.heading}>
             Track And Trace
           </Typography>
 
@@ -83,6 +83,11 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const styles = theme => ({
+  // (typography) is depricated. So immediate switch to typography v2 you can simply pass useNextVariants: true when calling 
+  typography: {
+    useNextVariants: true,
+    margin: '8px'
+  },
   accountIcon: {
     marginLeft: theme.spacing.unit
   },
@@ -93,15 +98,15 @@ const styles = theme => ({
     display: 'flex',
     justifyContent: 'space-between'
   },
-  typography: {
-    margin: '8px',
-  },
   loadingBar: {
     top: '0px',
     backgroundColor: '#E10050',
     zIndex: 999,
     height: '4px'
-  }
+  },
+  heading: {
+    cursor: 'pointer'
+  },
 });
 
 const connected = connect(mapStateToProps, {

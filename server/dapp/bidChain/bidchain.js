@@ -10,7 +10,8 @@ const port = 30303;
 const localIp = ip.address();
 const enode = `enode://${publicKey}@${localIp}:${port}`
 
-function* createChain(token, assetOwner) {
+
+function* createChain(token, assetOwner, regulatorAddress) {
   const getKeyResponse = yield rest.getKey(token);
 
   const governanceSrc = yield rest.getContractString(
@@ -28,6 +29,10 @@ function* createChain(token, assetOwner) {
       {
         address: getKeyResponse.address,
         enode
+      },
+      {
+        address: regulatorAddress,
+        enode
       }
     ],
     [
@@ -37,6 +42,10 @@ function* createChain(token, assetOwner) {
       },
       {
         address: getKeyResponse.address,
+        balance
+      },
+      {
+        address: regulatorAddress,
         balance
       }
     ],
@@ -113,13 +122,27 @@ function* getChainById(chainId) {
 // only return chains where current user is a member
 function* getChains(token) {
   const keyResponse = yield rest.getKey(token);
-  const chains = yield rest.getChainInfos();
+  let chains;
+
+  /* 
+    NOTE: getChainIfos returns a 500 error expected should be empty array
+    REFER: Strato JIRA ticket https://blockapps.atlassian.net/browse/STRATO-1304
+    TODO: Remove Try and catch once STRATO-1304 is done
+  */
+  try {
+    chains = yield rest.getChainInfos();
+  } catch (e) {
+    if (e.status === 500) {
+      chains = [];
+    }
+    console.error('Error getting chainInfo:', e);
+  }
 
   const filtered = chains.reduce((acc, c) => {
     const member = c.info.members.find((m) => {
       return m.address === keyResponse.address
     })
-    if(member !== undefined) {
+    if (member !== undefined) {
       acc.push(c)
     }
     return acc;

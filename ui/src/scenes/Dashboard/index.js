@@ -37,7 +37,10 @@ class Dashboard extends Component {
 }
 
 const styles = theme => ({
-  // any local styling classes would go here
+  // (typography) is depricated. So immediate switch to typography v2 you can simply pass useNextVariants: true when calling 
+  typography: {
+    useNextVariants: true,
+  },
 });
 
 const mapStateToProps = (state) => {

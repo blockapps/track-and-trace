@@ -1,30 +1,55 @@
 import React from 'react';
-import { Stepper, Step, StepLabel } from '@material-ui/core';
+import { Stepper, Step, StepLabel, StepContent, Typography } from '@material-ui/core';
 import './auditLog.css';
 
-function getSteps() {
-  // TODO: Change when actual API is integrated
-  return ['Distributer Requested bid', 'Distributer Requested bid', 'Distributer Requested bid'];
-}
-
 class AuditLog extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeStep: 0
-    };
+
+  renderContent(history) {
+    const { BID_STATE, ASSET_STATE } = this.props;
+
+    if (history.type === "BID") {
+      return (
+        <Typography>
+          State: {BID_STATE[parseInt(history.bidState)]}
+        </Typography>)
+    } else {
+      const isOwnerChanged = parseInt(history.assetState) === ASSET_STATE.OWNER_UPDATED;
+      return (
+        <div>
+          <Typography>
+            State: {ASSET_STATE[parseInt(history.assetState)]}
+          </Typography>
+          {
+            isOwnerChanged &&
+            <Typography>
+              Owner: {history.owner}
+            </Typography>
+          }
+        </div>
+      )
+    }
   }
 
   render() {
-    const steps = getSteps();
-    const { activeStep } = this.state;
+    const { history } = this.props;
+    const steps = history ? history : [];
 
     return (
       <div className="audit-container">
-        <Stepper activeStep={activeStep} orientation="vertical">
-          {steps.map((label, index) => (
-            <Step key={label} index={index}>
-              <StepLabel>{label}</StepLabel>
+        <Stepper activeStep={steps.length} orientation="vertical">
+          {steps.reverse().map((history, index) => (
+            <Step key={history.address} index={index}>
+              <StepLabel>
+                <b>
+                  {history.address} ({history.block_timestamp})
+                </b>
+              </StepLabel>
+              <StepContent active={true}>
+                <Typography>
+                  Type: {history.type}
+                </Typography>
+                {this.renderContent(history)}
+              </StepContent>
             </Step>
           ))}
         </Stepper>

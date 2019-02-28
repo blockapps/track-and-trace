@@ -6,6 +6,7 @@ import authReducer from './authentication.reducer';
 import assetReducer from './asset.reducer';
 import userMessageReducer from './user-message.reducer';
 import constantsReducer from './constants.reducer';
+import bidReducer from './bid.reducer';
 import { loadingBarReducer } from 'react-redux-loading-bar'
 
 export default (history) => combineReducers({
@@ -15,5 +16,6 @@ export default (history) => combineReducers({
   authentication: authReducer,
   asset: assetReducer,
   userMessage: userMessageReducer,
-  constants: constantsReducer
+  constants: constantsReducer,
+  bid: bidReducer
 });

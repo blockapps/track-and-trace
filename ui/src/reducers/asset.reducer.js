@@ -6,18 +6,37 @@ import {
   OPEN_CREATE_ASSET_OVERLAY,
   CLOSE_CREATE_ASSET_OVERLAY,
   CREATE_ASSET_SUCCESS,
-  CREATE_ASSET_FAILURE
+  CREATE_ASSET_FAILURE,
+  GET_ASSET_DETAIL_SUCCESS,
+  GET_ASSET_DETAIL_FAILURE,
+  GET_ASSET_DETAIL_REQUEST,
+  CHANGE_OWNER_SUCCESS
 } from '../actions/asset.actions';
 
 const initialState = {
   assets: [],
   error: null,
-  isCreateAssetModalOpen: false
+  isCreateAssetModalOpen: false,
+  isChangeOwnerModalOpen: false,
+  asset: {},
+  changedOwner: false
 }
 
 const reducer = (state = initialState, action) => {
   return producer(state, draft => {
     switch (action.type) {
+      case GET_ASSET_DETAIL_REQUEST:
+        draft.asset = action.isDataUpdate ? {} : draft.asset;
+        draft.error = null;
+        break;
+      case GET_ASSET_DETAIL_SUCCESS:
+        draft.asset = action.asset;
+        draft.error = null;
+        break;
+      case GET_ASSET_DETAIL_FAILURE:
+        draft.asset = {};
+        draft.error = action.error;
+        break;
       case OPEN_CREATE_ASSET_OVERLAY:
         draft.isCreateAssetModalOpen = action.isOpen;
         break;
@@ -39,6 +58,9 @@ const reducer = (state = initialState, action) => {
       case GET_ASSETS_FAILURE:
         draft.user = null;
         draft.error = action.error;
+        break
+      case CHANGE_OWNER_SUCCESS:
+        draft.changedOwner = true;
         break
       default:
         break

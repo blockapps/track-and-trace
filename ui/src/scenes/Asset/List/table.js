@@ -22,23 +22,26 @@ class AssetsTable extends Component {
 
   renderRows = (assets) => {
     const { page, rowsPerPage } = this.state;
-    const { redirectToAssetDetail } = this.props;
+    const { redirectToAssetDetail, ASSET_STATE } = this.props;
 
     if (assets.length) {
       return (assets.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .map((asset, key) => {
           return (
-            <TableRow key={key} hover onClick={event => redirectToAssetDetail(event, asset.address)}>
+            <TableRow key={key} hover onClick={event => redirectToAssetDetail(event, asset.sku)}>
               <TableCell align="left"> {asset.name} </TableCell>
               <TableCell align="left">{asset.description}</TableCell>
               <TableCell align="left">{asset.price}</TableCell>
+              <TableCell align="left">
+                {ASSET_STATE[asset.assetState]}
+              </TableCell>
             </TableRow>)
         }));
     }
 
     return (
       <TableRow>
-        <TableCell colSpan={3} align="center"> No Assets Found </TableCell>
+        <TableCell colSpan={4} align="center"> No Assets Found </TableCell>
       </TableRow>
     )
   }
@@ -59,6 +62,7 @@ class AssetsTable extends Component {
               <TableCell align="left">Name</TableCell>
               <TableCell align="left">Description</TableCell>
               <TableCell align="left">Price</TableCell>
+              <TableCell align="left">Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody className="assets-table-body">

@@ -103,6 +103,10 @@ function* bind(token, _contract) {
     return yield assetManager.handleAssetEvent(args);
   }
 
+  contract.transferOwnership = function* (args) {
+    return yield assetManager.transferOwnership(args);
+  }
+
   return contract;
 }
 

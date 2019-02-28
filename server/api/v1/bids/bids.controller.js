@@ -10,11 +10,11 @@ const bidsController = {
 
   createBid: (req, res, next) => {
     const { accessToken, body } = req;
-    const { address, owner, bidValue, retailerEmail } = body;
+    const { address, owner, bidValue, regulatorEmail } = body;
 
 
     co(function* () {
-      const getRegulatorKey = yield rest.getKey(accessToken, { username: retailerEmail });
+      const getRegulatorKey = yield rest.getKey(accessToken, { username: regulatorEmail });
       const bid = yield bidJs.createBid(accessToken, address, owner, bidValue, getRegulatorKey.address);
       util.response.status200(res, bid);
     })

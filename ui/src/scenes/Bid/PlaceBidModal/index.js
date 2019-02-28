@@ -9,9 +9,9 @@ import './placeBidModal.css'
 class PlaceBidModal extends Component {
 
   submit = (bid) => {
-    const { bidValue, retailerEmail } = bid;
+    const { bidValue, regulatorEmail } = bid;
     const { address, owner, sku } = this.props.asset;
-    this.props.bidSubmit({ bidValue, address, owner, retailerEmail }, sku);
+    this.props.bidSubmit({ bidValue, address, owner, regulatorEmail }, sku);
   }
 
   render() {
@@ -43,9 +43,9 @@ class PlaceBidModal extends Component {
                 required
               />
               <Field
-                name="retailerEmail"
+                name="regulatorEmail"
                 type="email"
-                placeholder="Enter retailer email"
+                placeholder="Enter regulator email"
                 margin="normal"
                 component={ReduxedTextField}
                 disabled
@@ -73,7 +73,7 @@ const mapStateToProps = (state) => {
   return {
     isOpen: state.bid.isBidOverlayOpen,
     initialValues: {
-      retailerEmail: 'regulator@tt.app'
+      regulatorEmail: 'regulator@tt.app'
     }
   };
 };

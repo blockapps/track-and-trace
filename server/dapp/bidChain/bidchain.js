@@ -11,7 +11,7 @@ const localIp = ip.address();
 const enode = `enode://${publicKey}@${localIp}:${port}`
 
 
-function* createChain(token, assetOwner, retailerAddress) {
+function* createChain(token, assetOwner, regulatorAddress) {
   const getKeyResponse = yield rest.getKey(token);
 
   const governanceSrc = yield rest.getContractString(
@@ -31,7 +31,7 @@ function* createChain(token, assetOwner, retailerAddress) {
         enode
       },
       {
-        address: retailerAddress,
+        address: regulatorAddress,
         enode
       }
     ],
@@ -45,7 +45,7 @@ function* createChain(token, assetOwner, retailerAddress) {
         balance
       },
       {
-        address: retailerAddress,
+        address: regulatorAddress,
         balance
       }
     ],

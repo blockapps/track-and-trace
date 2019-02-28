@@ -10,10 +10,11 @@ export const BID_EVENT_FAILURE = "BID_EVENT_FAILURE";
 export const OPEN_BID_OVERLAY = 'OPEN_BID_OVERLAY';
 export const CLOSE_BID_OVERLAY = 'CLOSE_BID_OVERLAY';
 
-export const bidSubmit = (payload) => {
+export const bidSubmit = (payload, sku) => {
   return {
     type: BID_SUBMIT_REQUEST,
-    payload
+    payload,
+    sku
   }
 }
 

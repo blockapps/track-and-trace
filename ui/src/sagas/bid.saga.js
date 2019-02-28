@@ -85,6 +85,8 @@ function* placeBid(action) {
       yield put(setUserMessage('Bid has been placed', true));
       // Update bids
       yield put(getBids());
+      // Update asset
+      yield put(getAssetDetail(action.sku));
     } else {
       yield put(bidSubmitFailure());
       yield put(setUserMessage(response.error));
@@ -115,7 +117,7 @@ function* bidEvent(action) {
       yield put(bidEventSuccess(response.data));
       // Check status accepted and request for change owner
       if (parseInt(response.data) === action.BID_STATE.ACCEPTED)
-        yield put(changeOwner({ sku: action.sku, owner: action.initiator}));
+        yield put(changeOwner({ sku: action.sku, owner: action.initiator }));
       // Check event and display snackbar
       if (action.payload.bidEvent === action.BID_EVENT.REJECT)
         yield put(setUserMessage('Bid has been Rejected', true));

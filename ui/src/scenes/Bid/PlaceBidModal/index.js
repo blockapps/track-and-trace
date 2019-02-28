@@ -10,8 +10,8 @@ class PlaceBidModal extends Component {
 
   submit = (bid) => {
     const { bidValue, retailerEmail } = bid;
-    const { address, owner } = this.props.asset;
-    this.props.bidSubmit({ bidValue, address, owner, retailerEmail });
+    const { address, owner, sku } = this.props.asset;
+    this.props.bidSubmit({ bidValue, address, owner, retailerEmail }, sku);
   }
 
   render() {

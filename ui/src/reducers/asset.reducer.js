@@ -9,7 +9,8 @@ import {
   CREATE_ASSET_FAILURE,
   GET_ASSET_DETAIL_SUCCESS,
   GET_ASSET_DETAIL_FAILURE,
-  GET_ASSET_DETAIL_REQUEST
+  GET_ASSET_DETAIL_REQUEST,
+  CHANGE_OWNER_SUCCESS
 } from '../actions/asset.actions';
 
 const initialState = {
@@ -17,14 +18,15 @@ const initialState = {
   error: null,
   isCreateAssetModalOpen: false,
   isChangeOwnerModalOpen: false,
-  asset: {}
+  asset: {},
+  changedOwner: false
 }
 
 const reducer = (state = initialState, action) => {
   return producer(state, draft => {
     switch (action.type) {
       case GET_ASSET_DETAIL_REQUEST:
-        draft.asset = {};
+        draft.asset = action.isDataUpdate ? {} : draft.asset;
         draft.error = null;
         break;
       case GET_ASSET_DETAIL_SUCCESS:
@@ -56,6 +58,9 @@ const reducer = (state = initialState, action) => {
       case GET_ASSETS_FAILURE:
         draft.user = null;
         draft.error = action.error;
+        break
+      case CHANGE_OWNER_SUCCESS:
+        draft.changedOwner = true;
         break
       default:
         break

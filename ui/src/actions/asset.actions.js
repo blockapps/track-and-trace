@@ -37,10 +37,11 @@ export const getAssetsFailure = (error) => {
   }
 }
 
-export const getAssetDetail = (sku) => {
+export const getAssetDetail = (sku, isDataUpdate) => {
   return {
     type: GET_ASSET_DETAIL_REQUEST,
-    sku
+    sku,
+    isDataUpdate
   }
 }
 

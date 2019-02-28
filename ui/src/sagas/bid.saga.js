@@ -18,7 +18,7 @@ import {
   bidEventFailure,
   getBids
 } from '../actions/bid.actions';
-import { changeOwner } from '../actions/asset.actions';
+import { changeOwner, getAssetDetail } from '../actions/asset.actions';
 
 const placeBidUrl = `${apiUrl}/bids`;
 const bidEventUrl = `${apiUrl}/bids/:address/event`;
@@ -120,7 +120,8 @@ function* bidEvent(action) {
       if (action.payload.bidEvent === action.BID_EVENT.REJECT)
         yield put(setUserMessage('Bid has been Rejected', true));
 
-      yield delay(500);
+      yield put(getAssetDetail(action.sku))
+      yield delay(1000);
       yield put(getBids());
     } else {
       yield put(bidEventFailure(response.error));

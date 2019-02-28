@@ -15,8 +15,14 @@ class AssetDetail extends Component {
 
   componentDidMount() {
     const sku = this.props.match.params.sku;
-    this.props.getAssetDetail(sku);
+    this.props.getAssetDetail(sku, true);
     this.props.getBids();
+  }
+
+  componentWillReceiveProps(newProps) {
+    if (this.props.isOwnerChanged !== newProps.isOwnerChanged) {
+      this.props.history.push('/')
+    }
   }
 
   get isRegulator() {
@@ -42,7 +48,7 @@ class AssetDetail extends Component {
 
   placeBid = (asset) => {
     const { account } = this.props.user;
-    
+
     if (asset.owner && (asset.owner !== account)) {
       return (
         <PlaceBidModal asset={asset} />
@@ -145,7 +151,8 @@ const mapStateToProps = (state, ownProps) => {
     BID_STATE: state.constants.Bid.BidState,
     ASSET_EVENT: state.constants.Asset.AssetEvent,
     ASSET_STATE: state.constants.Asset.AssetState,
-    bids: state.bid.bids
+    bids: state.bid.bids,
+    isOwnerChanged: state.asset.changedOwner
   };
 };
 

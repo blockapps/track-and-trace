@@ -124,7 +124,7 @@ function* getChains(token) {
   const keyResponse = yield rest.getKey(token);
   let chains;
 
-  /* 
+  /*
     NOTE: getChainIfos returns a 500 error expected should be empty array
     REFER: Strato JIRA ticket https://blockapps.atlassian.net/browse/STRATO-1304
     TODO: Remove Try and catch once STRATO-1304 is done

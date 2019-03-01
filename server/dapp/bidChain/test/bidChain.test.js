@@ -15,6 +15,7 @@ describe('Bid Chain Tests', function() {
   const distributorToken = process.env.DISTRIBUTOR_TOKEN;
   const manufacturerToken = process.env.MANUFACTURER_TOKEN;
   const adminToken = process.env.ADMIN_TOKEN;
+  const regulatorToken = process.env.REGULATOR_TOKEN;
 
   function* createUser(userToken) {
     const userEmail = getEmailIdFromToken(userToken);
@@ -26,14 +27,17 @@ describe('Bid Chain Tests', function() {
   before(function* () {
     assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
     assert.isDefined(distributorToken, 'distributor token is not defined');
+    assert.isDefined(adminToken, 'admin token is not defined');
+    assert.isDefined(regulatorToken, 'regulator token is not defined');
 
     manufacturerUser = yield createUser(manufacturerToken);
     distributorUser = yield createUser(distributorToken);
     adminUser = yield createUser(adminToken);
+    regulatorUser = yield createUser(regulatorToken)
   })
 
   it('should create a bidding chain', function* () {
-    const chainId = yield bidChain.createChain(distributorToken, manufacturerUser.address)
+    const chainId = yield bidChain.createChain(distributorToken, manufacturerUser.address, regulatorUser.address)
 
     // takes a few to populate
     yield util.sleep(2*1000);
@@ -41,7 +45,7 @@ describe('Bid Chain Tests', function() {
     const chain = yield bidChain.getChainById(chainId);
 
     assert.equal(chain.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match')
-    assert.equal(chain.members.length, 2, 'Chain should have 2 members');
+    assert.equal(chain.members.length, 3, 'Chain should have 3 members');
 
     const chains = yield bidChain.getChains(distributorToken);
 
@@ -55,13 +59,13 @@ describe('Bid Chain Tests', function() {
 
   // TODO: test does not pass. member is not being removed.
   it('should remove a member from bidding chain', function* () {
-    const chainId = yield bidChain.createChain(distributorToken, manufacturerUser.address)
+    const chainId = yield bidChain.createChain(distributorToken, manufacturerUser.address, regulatorUser.address)
     // takes a few to populate
     yield util.sleep(2*1000);
 
     const chain = yield bidChain.getChainById(chainId);
     assert.equal(chain.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match');
-    assert.equal(chain.members.length, 2, 'Chain should have 2 members');
+    assert.equal(chain.members.length, 3, 'Chain should have 3 members');
 
     const govContract = yield rest.uploadContract(
       distributorToken,
@@ -85,18 +89,18 @@ describe('Bid Chain Tests', function() {
 
     const updatedChain = yield bidChain.getChainById(chainId);
     assert.equal(updatedChain.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match');
-    assert.equal(updatedChain.members.length, 1, 'Chain should have 1 member');
+    assert.equal(updatedChain.members.length, 2, 'Chain should have 2 members');
   })
 
   it('should add a member from bidding chain', function* () {
-    const chainId = yield bidChain.createChain(distributorToken, manufacturerUser.address)
+    const chainId = yield bidChain.createChain(distributorToken, manufacturerUser.address, regulatorUser.address)
 
     // takes a few to populate
     yield util.sleep(2*1000);
 
     const chain = yield bidChain.getChainById(chainId);
     assert.equal(chain.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match');
-    assert.equal(chain.members.length, 2, 'Chain should have 2 members');
+    assert.equal(chain.members.length, 3, 'Chain should have 3 members');
 
     const govContract = yield rest.uploadContract(
       distributorToken,
@@ -121,7 +125,7 @@ describe('Bid Chain Tests', function() {
     const updatedChain = yield bidChain.getChainById(chainId);
 
     assert.equal(updatedChain.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match')
-    assert.equal(updatedChain.members.length, 3, 'Chain should have 3 members');
+    assert.equal(updatedChain.members.length, 4, 'Chain should have 4 members');
   })
 
 })

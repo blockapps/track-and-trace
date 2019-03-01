@@ -25,6 +25,7 @@ describe('Bid Tests', function() {
   const manufacturerToken = process.env.DISTRIBUTOR_TOKEN;
   const distributorToken = process.env.MANUFACTURER_TOKEN;
   const retailerToken = process.env.RETAILER_TOKEN;
+  const regulatorToken = process.env.REGULATOR_TOKEN;
 
   let assetManagerContract, manufacturerAssetManagerContract, distributorAssetManagerContract;
 
@@ -59,6 +60,7 @@ describe('Bid Tests', function() {
 
     manufacturerUser = yield createUser(manufacturerToken);
     distributorUser = yield createUser(distributorToken);
+    regulatorUser = yield createUser(regulatorToken);
 
     const ttPermissionManager = yield ttPermissionManagerJs.uploadContract(adminToken, masterToken);
     assetManagerContract = yield assetManagerJs.uploadContract(adminToken, ttPermissionManager);
@@ -107,7 +109,7 @@ describe('Bid Tests', function() {
     assert.equal(newState, AssetState.BIDS_REQUESTED);
 
     const bidValue = 100;
-    const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue);
+    const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
 
     assert.isDefined(bid.chainId, "Chain id should be defined")
     assert.equal(bid.assetOwner, asset.owner, 'Asset owner should match')
@@ -138,7 +140,7 @@ describe('Bid Tests', function() {
     assert.equal(newState, AssetState.BIDS_REQUESTED);
 
     const bidValue = 100;
-    const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue);
+    const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
 
     const bidContract = bidJs.bind(distributorToken, bid.chainId, {
       name: 'Bid',
@@ -163,7 +165,7 @@ describe('Bid Tests', function() {
     assert.equal(newState, AssetState.BIDS_REQUESTED);
 
     const bidValue = 100;
-    const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue);
+    const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
 
     const bidContract = bidJs.bind(manufacturerToken, bid.chainId, {
       name: 'Bid',
@@ -187,7 +189,7 @@ describe('Bid Tests', function() {
     assert.equal(newState, AssetState.BIDS_REQUESTED);
 
     const bidValue = 100;
-    const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue);
+    const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
 
     const bidContract = bidJs.bind(manufacturerToken, bid.chainId, {
       name: 'Bid',
@@ -221,7 +223,7 @@ describe('Bid Tests', function() {
     assert.equal(newState, AssetState.BIDS_REQUESTED);
 
     const bidValue = 100;
-    const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue);
+    const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
 
     const bidContract = bidJs.bind(manufacturerToken, bid.chainId, {
       name: 'Bid',

@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y yarn
 
 COPY . /usr/src/track-and-trace-ui/
 
-WORKDIR /usr/src/track-and-trace-ui
+WORKDIR /usr/src/track-and-trace-ui/
 RUN yarn global add serve
 RUN yarn install
 

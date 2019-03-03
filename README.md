@@ -1,9 +1,17 @@
 # Track and Trace Demo App
 Demo app that uses STRATO to track products through a supply chain using OAuth and Private chains.
 
+
+
 # Setup
 
-## Instructions for Development using OAuth
+## Running Demo Application
+
+```
+Add instructions here
+```
+
+## Running project for development using OAuth
 
 ### Start STRATO
 

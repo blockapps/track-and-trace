@@ -96,9 +96,16 @@ The above tokens correspond to four different users in in four different roles:
 5. This same process then repeats between the distributor and retailer.
 
 ### Creating an asset
+![Manufacturer creating an asset](docs/manufacturer-create-asset.gif)
+
+### Request Bids
+![Manufacturer requesting bids](docs/manufacturer-request-bids.gif)
 
 ### Placing a Bid
+![Distributor placing a bid](docs/distributor-place-bid.gif)
 
 ### Accepting a Bid
+![Manufacturer accepting a bid](docs/manufacturer-accept-bid.gif)
 
 ### Viewing Audit Logs
+![Regulator views audit trail](docs/regulator-view-audit-trail.gif)

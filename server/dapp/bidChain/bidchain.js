@@ -72,7 +72,7 @@ function bind(token, contract) {
   return contract;
 }
 
-function* addMember(token, contract, member) {
+function* addMember(token, contract, member, chainId) {
   rest.verbose('exists', member);
 
   const method = 'addMember';
@@ -85,13 +85,16 @@ function* addMember(token, contract, member) {
     token,
     contract,
     method,
-    util.usc(args)
+    util.usc(args),
+    {
+      chainId
+    }
   );
 
   return result
 }
 
-function* removeMember(token, contract, member) {
+function* removeMember(token, contract, member, chainId) {
   rest.verbose('removeMember', member);
   const method = 'removeMember';
   const args = {
@@ -102,7 +105,10 @@ function* removeMember(token, contract, member) {
     token,
     contract,
     method,
-    util.usc(args)
+    util.usc(args),
+    {
+      chainId
+    }
   );
 
   return result
@@ -118,7 +124,7 @@ function* getChains(token) {
   const keyResponse = yield rest.getKey(token);
   let chains;
 
-  /* 
+  /*
     NOTE: getChainIfos returns a 500 error expected should be empty array
     REFER: Strato JIRA ticket https://blockapps.atlassian.net/browse/STRATO-1304
     TODO: Remove Try and catch once STRATO-1304 is done
@@ -149,5 +155,7 @@ module.exports = {
   createChain,
   bind,
   getChainById,
-  getChains
+  getChains,
+  removeMember,
+  addMember
 }

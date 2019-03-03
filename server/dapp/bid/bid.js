@@ -59,26 +59,26 @@ function* handleBidEvent(token, chainId, contract, bidEvent) {
   rest.verbose('handleBidEvent', bidEvent)
 
   const method = 'handleBidEvent';
-  
+
   const args = {
     bidEvent
   }
 
   const [restStatus, newState] = yield rest.callMethod(
-    token, 
-    contract, 
+    token,
+    contract,
     method,
     util.usc(args),
     {
       chainId
-    } 
+    }
   );
 
   if(restStatus != RestStatus.OK)  {
     throw new rest.RestError(
-      restStatus, 
-      'Invalid transition', 
-      { method, args } 
+      restStatus,
+      'Invalid transition',
+      { method, args }
     )
   }
 

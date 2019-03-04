@@ -34,7 +34,7 @@ Now create `.env` file and add all the tokens here. [Copy tokens only. You don't
 
 ```
 cd track-and-trace
-docker-compose up -d
+HOST_IP=<YOUR_IP> docker-compose up -d
 
 Open a browser and go to http://localhost
 ```

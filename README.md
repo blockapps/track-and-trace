@@ -30,8 +30,6 @@ cd track-and-trace/server
 
 Now create `.env` file and add all the tokens here. [Copy tokens only. You don't need to use token-getter](README.md#tokens)
 
-```
-
 #### Start track and trace using:
 
 ```

@@ -8,11 +8,11 @@ Demo app that uses STRATO to track products through a supply chain using OAuth a
 #### First clone strato-getting-started:
 ```
 git clone https://github.com/blockapps/strato-getting-started.git
-
-Start strato on Port 8080:
 cd strato-getting-started
+```
 
-Run following command to start the strato:
+#### Run following command to start the strato:
+```
 HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration OAUTH_JWT_USERNAME_PROPERTY=email ./strato.sh --single
 
 ```
@@ -20,12 +20,21 @@ HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_
 #### Clone track and trace demo application:
 ```
 git clone https://github.com/blockapps/track-and-trace.git
+```
 
-Token setup:
+#### Token setup:
+
+```
 cd track-and-trace/server
-Now create `.env` file and add all the tokens here.  and copy [See tokens section below](https://github.com/git/git/blob/master/README#L92-L97)
+```
 
-Now start track and trace using:
+Now create `.env` file and add all the tokens here. [Copy tokens only. You don't need to use token-getter](README.md#tokens)
+
+```
+
+#### Start track and trace using:
+
+```
 cd track-and-trace
 docker-compose up -d
 

@@ -2,6 +2,7 @@
 Demo app that uses STRATO to track products through a supply chain using OAuth and Private chains.
 
 ## Setup
+Asuming you have docker and docker-compose installed on your machine. if not visit https://docs.docker.com/compose/install/
 
 ### Running Demo Application
 
@@ -19,6 +20,7 @@ HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_
 
 #### Clone track and trace demo application:
 ```
+cd ..
 git clone https://github.com/blockapps/track-and-trace.git
 ```
 
@@ -26,18 +28,50 @@ git clone https://github.com/blockapps/track-and-trace.git
 
 ```
 cd track-and-trace/server
+git submodule update --init --recursive
 ```
 
 Now create `.env` file and add all the tokens here. [Copy tokens only. You don't need to use token-getter](README.md#tokens)
 
-#### Start track and trace using:
+#### SSL mounting (Only for mac):
+
+
+Copy and paste the following to file sharing:
+```
+<root-dir>/blockapps/track-and-trace/nginx-docker/ssl
+```
+
+
+### Add ssl link 
+![Regulator views audit trail](docs/mount.png)
+
+
+#### Start track and trace:
 
 ```
-cd track-and-trace
-HOST_IP=<YOUR_IP> docker-compose up -d
+cd ../../track-and-trace
+docker rm -f $(docker ps -aq)
+```
+
+##### For Mac:
+```
+HOST_IP=$(ipconfig getifaddr en1) docker-compose up -d
+```
+
+##### For Linux:
+```
+HOST_IP=$(ip -o route get to 8.8.8.8 | sed -n 's/.*src \([0-9.]\+\).*/\1/p') docker-compose up -d
+```
+
+##### For Windows:
+```
+HOST_IP=$(for /f "tokens=2 delims=[]" %a in ('ping -n 1 -4 "%computername%"') do @echo %a) docker-compose up -d
+```
 
 Open a browser and go to http://localhost
-```
+
+**NOTE:** 
+It would take about 4-5 mins on first run
 
 ### Running project for development using OAuth
 

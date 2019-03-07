@@ -3,7 +3,8 @@ import { RESET_USER_MESSAGE, SET_USER_MESSAGE } from '../actions/user-message.ac
 
 const initialState = {
   success: false,
-  message: null
+  message: null,
+  isOpen: false
 }
 
 const reducer = (state = initialState, action) => {
@@ -11,11 +12,12 @@ const reducer = (state = initialState, action) => {
     switch (action.type) {
       case RESET_USER_MESSAGE:
         draft.success = false
-        draft.message = null
+        draft.isOpen = false
         break
       case SET_USER_MESSAGE:
         draft.success = action.success
         draft.message = action.message
+        draft.isOpen = true;
         break
       default:
         break

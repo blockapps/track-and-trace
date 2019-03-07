@@ -28,8 +28,7 @@ class SnackbarMessage extends Component {
   }
 
   render() {
-    const { userMessage, classes, className, messageStatus } = this.props;
-    const isOpen = Boolean(userMessage);
+    const { userMessage, classes, className, messageStatus, isOpen } = this.props;
     const Icon = messageStatus ? CheckCircleIcon : ErrorIcon;
     const snackBarContentClass = classNames(classes[this.state.snackClass], className);
 
@@ -92,6 +91,7 @@ const mapStateToProps = (state) => {
     authentication: state.authentication,
     userMessage: state.userMessage.message,
     messageStatus: state.userMessage.success,
+    isOpen: state.userMessage.isOpen,
   };
 };
 

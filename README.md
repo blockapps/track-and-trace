@@ -2,7 +2,10 @@
 Demo app that uses STRATO to track products through a supply chain using OAuth and Private chains.
 
 ## Setup
-Asuming you have docker and docker-compose installed on your machine. if not visit https://docs.docker.com/compose/install/
+
+### Pre-requisites
+1. Install Docker from https://www.docker.com
+2. Install `docker-compose` from https://docs.docker.com/compose/install/
 
 ### Running Demo Application
 
@@ -43,27 +46,20 @@ Copy and paste the following to file sharing:
 
 
 ### Add ssl link 
-![Regulator views audit trail](docs/mount.png)
+![SSL Mounting for mac](docs/mount.png)
 
 
-#### Start track and trace:
-
-```
-cd ../../track-and-trace
-docker rm -f $(docker ps -aq)
-```
-
-##### For Mac:
+#### For Mac:
 ```
 HOST_IP=$(ipconfig getifaddr en1) docker-compose up -d
 ```
 
-##### For Linux:
+#### For Linux:
 ```
 HOST_IP=$(ip -o route get to 8.8.8.8 | sed -n 's/.*src \([0-9.]\+\).*/\1/p') docker-compose up -d
 ```
 
-##### For Windows:
+#### For Windows:
 ```
 HOST_IP=$(for /f "tokens=2 delims=[]" %a in ('ping -n 1 -4 "%computername%"') do @echo %a) docker-compose up -d
 ```
@@ -71,7 +67,7 @@ HOST_IP=$(for /f "tokens=2 delims=[]" %a in ('ping -n 1 -4 "%computername%"') do
 Open a browser and go to http://localhost
 
 **NOTE:** 
-It would take about 4-5 mins on first run
+It could take about 4-5 mins on first run
 
 ### Running project for development using OAuth
 

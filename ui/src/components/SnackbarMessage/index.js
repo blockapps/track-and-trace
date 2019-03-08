@@ -10,27 +10,20 @@ import { resetUserMessage } from "../../actions/user-message.actions";
 import classNames from 'classnames';
 import green from '@material-ui/core/colors/green';
 class SnackbarMessage extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      snackClass: ''
-    }
-  }
 
   handleClose = () => {
     this.props.resetUserMessage();
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      snackClass: this.props.messageStatus !== nextProps.messageStatus ? 'success' : 'error'
-    })
-  }
-
   render() {
-    const { userMessage, classes, className, messageStatus, isOpen } = this.props;
+    const { userMessage, classes, className, messageStatus } = this.props;
+    const isOpen = Boolean(userMessage);
     const Icon = messageStatus ? CheckCircleIcon : ErrorIcon;
-    const snackBarContentClass = classNames(classes[this.state.snackClass], className);
+    const snackBarContentClass = classNames(messageStatus ? classes['success'] : classes['error'], className);
+
+    if (!userMessage) {
+      return null;
+    }
 
     return (
       <Snackbar
@@ -91,7 +84,6 @@ const mapStateToProps = (state) => {
     authentication: state.authentication,
     userMessage: state.userMessage.message,
     messageStatus: state.userMessage.success,
-    isOpen: state.userMessage.isOpen,
   };
 };
 

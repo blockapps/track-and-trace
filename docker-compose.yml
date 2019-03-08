@@ -32,4 +32,8 @@ services:
     - HOST_IP=${HOST_IP}
     - SSL=${SSL:-false}
     - SSL_CERT_TYPE=${SSL_CERT_TYPE:-crt}
+networks:
     network_mode: "host"
+  default:
+    external:
+      name: strato_default

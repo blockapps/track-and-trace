@@ -36,16 +36,14 @@ git submodule update --init --recursive
 
 Now create `.env` file and add all the tokens here. [Copy tokens only. You don't need to use token-getter](README.md#tokens)
 
-#### SSL mounting (Only for mac):
+#### SSL mounting (Only for older versions of OS X - pre Sierra):
 
 
-Copy and paste the following to file sharing:
+Add the following path to docker's file sharing settings:
 ```
 <root-dir>/blockapps/track-and-trace/nginx-docker/ssl
 ```
 
-
-### Add ssl link 
 ![SSL Mounting for mac](docs/mount.png)
 
 
@@ -53,6 +51,8 @@ Copy and paste the following to file sharing:
 ```
 HOST_IP=$(ipconfig getifaddr en1) docker-compose up -d
 ```
+
+NOTE: Your interface maybe something different than `en1`. Check the output of `ifconfig`.
 
 #### For Linux:
 ```

@@ -17,7 +17,7 @@ class AuditTable extends Component {
     const history = Object.keys(asset).length ? asset.history : [];
 
     return (
-      <div className="asset-container">
+      <div className="audit-container">
         <Grid container spacing={24} className="asset-detail">
           <Grid item xs={1}></Grid>
           <Grid item xs={10}>

@@ -87,7 +87,7 @@ class AssetDetail extends Component {
             </Toolbar>
           </AppBar>
         </Grid>
-        <Grid container spacing={24} className="asset-detail">
+        <Grid container className="asset-section">
           <Grid item xs={1}></Grid>
           <Grid item xs={4}>
             <Paper elevation={1} className="asset-description">
@@ -107,7 +107,7 @@ class AssetDetail extends Component {
             </Paper>
           </Grid>
           <Grid item xs={1}></Grid>
-          <Grid item xs={4}>
+          <Grid item xs={5}>
             <Card>
               <Typography variant="h5" component="h3" className="audit-log">
                 Audit Log
@@ -115,9 +115,9 @@ class AssetDetail extends Component {
               <AuditLog activeStep={state} history={asset && asset.history} ASSET_STATE={ASSET_STATE} BID_STATE={BID_STATE} />
             </Card>
           </Grid>
-          <Grid item xs={2}></Grid>
+          <Grid item xs={1}></Grid>
         </Grid>
-        <Grid container spacing={24} className="asset-detail">
+        <Grid container className="asset-section">
           <Grid item xs={1}></Grid>
           <Grid item xs={10}>
             <Paper elevation={1} className="asset-description asset-spec">

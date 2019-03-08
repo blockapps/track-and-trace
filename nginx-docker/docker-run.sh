@@ -11,7 +11,7 @@ else
 fi
 
 # Copy the correct nginx file
-ln -sf nginx-$(${SSL:-false} || echo "no")ssl.conf /etc/nginx/nginx.conf
+ln -sf nginx-$(${SSL:-false} || echo "no")ssl$(${DEVELOP:-false} || echo "-docker").conf /etc/nginx/nginx.conf
 
 # Copy certs if SSL is true 
 if [ "$SSL" = true ] ; then

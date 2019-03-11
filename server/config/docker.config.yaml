@@ -8,15 +8,15 @@ deployFilename: ./config/docker.deploy.yaml
 
 nodes:
 - id: 0
-  stratoUrl: 'http://localhost:8080/strato-api'
-  blocUrl: 'http://localhost:8080/bloc/v2.2'
-  searchUrl: 'http://localhost:8080/cirrus'
+  stratoUrl: 'http://nginx:80/strato-api'
+  blocUrl: 'http://nginx:80/bloc/v2.2'
+  searchUrl: 'http://nginx:80/cirrus'
 
 oauth:
   appTokenCookieName: "tt_session"
   scope: 'email openid'
   appTokenCookieMaxAge: 7776000000 # 90 days: 90 * 24 * 60 * 60 * 1000
-  stratoUrl: "http://localhost:8080"
+  stratoUrl: "http://nginx:80"
   clientId: "tt-localhost"
   clientSecret: "10352ea6-f286-47cf-936c-2cb7ce6c1c39"
   openIdDiscoveryUrl: "https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration"

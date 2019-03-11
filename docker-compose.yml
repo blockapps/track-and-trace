@@ -6,7 +6,6 @@ services:
     restart: always
     environment:
     - SERVER=${SERVER:-docker}
-    network_mode: "host"
   track-and-trace-ui:
     depends_on:
     - track-and-trace-server
@@ -16,7 +15,6 @@ services:
     environment: 
     - APP_URL=${APP_URL:-http://$HOST_IP}
     - NODE_ENV=${NODE_ENV:-production}
-    network_mode: "host"
   track-and-trace-nginx:
     depends_on:
     - track-and-trace-ui
@@ -33,7 +31,6 @@ services:
     - SSL=${SSL:-false}
     - SSL_CERT_TYPE=${SSL_CERT_TYPE:-crt}
 networks:
-    network_mode: "host"
   default:
     external:
       name: strato_default

@@ -20,6 +20,7 @@ cd strato-getting-started
 HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration OAUTH_JWT_USERNAME_PROPERTY=email ./strato.sh --single
 
 ```
+Wait for all containers to report healthy status in the output of `docker ps`
 
 #### Clone track and trace demo application:
 ```
@@ -37,7 +38,6 @@ git submodule update --init --recursive
 Now create `.env` file and add all the tokens here. [Copy tokens only. You don't need to use token-getter](README.md#tokens)
 
 #### SSL mounting (Only for older versions of OS X - pre Sierra):
-
 
 Add the following path to docker's file sharing settings:
 ```
@@ -76,6 +76,8 @@ It could take about 4-5 mins on first run
 ```
 HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration OAUTH_JWT_USERNAME_PROPERTY=email ./strato.sh --single
 ```
+
+Wait for all containers to report healthy status in the output of `docker ps`
 
 #### Start api server
 ```

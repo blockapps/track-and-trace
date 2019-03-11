@@ -17,7 +17,6 @@ class CreateAssetModal extends Component {
   submit = (asset) => {
     const { specs } = asset;
 
-    // TODO: Add validations
     const params = {
       sku: asset.sku,
       description: asset.description,
@@ -31,6 +30,11 @@ class CreateAssetModal extends Component {
   }
 
   renderSpec = ({ fields }) => {
+
+    if (!fields.length) {
+      fields.push({});
+    }
+
     return (
       <div>
         {fields.map((user, index) =>
@@ -44,6 +48,7 @@ class CreateAssetModal extends Component {
                 margin="normal"
                 className="spec-field"
                 component={ReduxedTextField}
+                required
               />
               <Field
                 id={`${user}.value`}
@@ -52,11 +57,15 @@ class CreateAssetModal extends Component {
                 margin="normal"
                 label="Value"
                 component={ReduxedTextField}
+                required
               />
               <span className="spec-delete">
-                <IconButton aria-label="Delete" className="remove-button" onClick={() => fields.remove(index)}>
-                  <Icon color="action">delete</Icon>
-                </IconButton>
+                {
+                  index ?
+                    <IconButton aria-label="Delete" className="remove-button" onClick={() => fields.remove(index)}>
+                      <Icon color="action">delete</Icon>
+                    </IconButton> : ''
+                }
               </span>
             </div>
           </div>

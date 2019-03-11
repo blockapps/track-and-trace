@@ -1,17 +1,83 @@
 # Track and Trace Demo App
 Demo app that uses STRATO to track products through a supply chain using OAuth and Private chains.
 
-# Setup
+## Setup
 
-## Instructions for Development using OAuth
+### Pre-requisites
+1. Install Docker from https://www.docker.com
+2. Install `docker-compose` from https://docs.docker.com/compose/install/
 
-### Start STRATO
+### Running Demo Application
+
+#### First clone strato-getting-started:
+```
+git clone https://github.com/blockapps/strato-getting-started.git
+cd strato-getting-started
+```
+
+#### Run following command to start the strato:
+```
+HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration OAUTH_JWT_USERNAME_PROPERTY=email ./strato.sh --single
+
+```
+
+#### Clone track and trace demo application:
+```
+cd ..
+git clone https://github.com/blockapps/track-and-trace.git
+```
+
+#### Token setup:
+
+```
+cd track-and-trace/server
+git submodule update --init --recursive
+```
+
+Now create `.env` file and add all the tokens here. [Copy tokens only. You don't need to use token-getter](README.md#tokens)
+
+#### SSL mounting (Only for older versions of OS X - pre Sierra):
+
+
+Add the following path to docker's file sharing settings:
+```
+<root-dir>/blockapps/track-and-trace/nginx-docker/ssl
+```
+
+![SSL Mounting for mac](docs/mount.png)
+
+
+#### For Mac:
+```
+HOST_IP=$(ipconfig getifaddr en1) docker-compose up -d
+```
+
+NOTE: Your interface maybe something different than `en1`. Check the output of `ifconfig`.
+
+#### For Linux:
+```
+HOST_IP=$(ip -o route get to 8.8.8.8 | sed -n 's/.*src \([0-9.]\+\).*/\1/p') docker-compose up -d
+```
+
+#### For Windows:
+```
+HOST_IP=$(for /f "tokens=2 delims=[]" %a in ('ping -n 1 -4 "%computername%"') do @echo %a) docker-compose up -d
+```
+
+Open a browser and go to http://localhost
+
+**NOTE:** 
+It could take about 4-5 mins on first run
+
+### Running project for development using OAuth
+
+#### Start STRATO
 
 ```
 HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration OAUTH_JWT_USERNAME_PROPERTY=email ./strato.sh --single
 ```
 
-### Start api server
+#### Start api server
 ```
 cd server
 git submodule update --init --recursive
@@ -20,14 +86,14 @@ yarn deploy
 yarn start
 ```
 
-### Start UI
+#### Start UI
 ```
 cd ui
 yarn install
 APP_URL=http://localhost yarn start
 ```
 
-### Start nginx
+#### Start nginx
 ```
 cd nginx-docker
 HOST_IP=<YOUR_IP> docker-compose up -d
@@ -35,7 +101,7 @@ HOST_IP=<YOUR_IP> docker-compose up -d
 
 Your ip can be obtained by `ifconfig`.
 
-### Usernames for oauth server
+#### Usernames for oauth server
 administrator@tt.app
 distributor@tt.app 	
 manufacturer@tt.app 	
@@ -45,7 +111,7 @@ retailer@tt.app
 
 Password for all users is `1234`
 
-## Tokens
+### Tokens
 
 This app uses oauth for authentication. To get admin token and master tokens, use
 
@@ -73,3 +139,33 @@ RETAILER_TOKEN=eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJTTlRQNXpMTzNHV
 ```
 yarn test:asset
 ```
+
+## Usage Guide
+
+The above tokens correspond to four different users in in four different roles:
+1. manufacturer@tt.app in Manufacturer role : This user can create the original asset
+2. distributor@tt.app in Distributor role : This user can bid on an asset after its creation
+3. retailer@tt.app in Retailer role : Similar to the distributor role but could be expanded in the future.
+4. regulator@tt.app in Regulator role: This user can see the audit history for all assets and bidding activity
+
+### Basic flow
+1. A manufacturer logs in and creates an asset
+2. Manufacturer makes asset available for bidding
+3. A Distributor can then bid on this asset. The bid is created on private chain (state channel) and the bid information can only be accessed by the asset owner (manufacturer), distributor and regulator
+4. The owner of the asset (manufacturer) can accept or reject the bid. If the bid is accepted, the owner of the asset changes to the user that placed the bid.
+5. This same process then repeats between the distributor and retailer.
+
+### Creating an asset
+![Manufacturer creating an asset](docs/manufacturer-create-asset.gif)
+
+### Request Bids
+![Manufacturer requesting bids](docs/manufacturer-request-bids.gif)
+
+### Placing a Bid
+![Distributor placing a bid](docs/distributor-place-bid.gif)
+
+### Accepting a Bid
+![Manufacturer accepting a bid](docs/manufacturer-accept-bid.gif)
+
+### Viewing Audit Logs
+![Regulator views audit trail](docs/regulator-view-audit-trail.gif)

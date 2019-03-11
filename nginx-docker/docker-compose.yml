@@ -13,3 +13,4 @@ services:
     volumes:
     - ./ssl:/tmp/ssl:ro
     restart: always
+    network_mode: "host"

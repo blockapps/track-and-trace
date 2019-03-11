@@ -9,7 +9,6 @@ import ErrorIcon from '@material-ui/icons/Error';
 import { resetUserMessage } from "../../actions/user-message.actions";
 import classNames from 'classnames';
 import green from '@material-ui/core/colors/green';
-
 class SnackbarMessage extends Component {
 
   handleClose = () => {
@@ -21,6 +20,10 @@ class SnackbarMessage extends Component {
     const isOpen = Boolean(userMessage);
     const Icon = messageStatus ? CheckCircleIcon : ErrorIcon;
     const snackBarContentClass = classNames(messageStatus ? classes['success'] : classes['error'], className);
+
+    if (!userMessage) {
+      return null;
+    }
 
     return (
       <Snackbar

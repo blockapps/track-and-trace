@@ -5,8 +5,8 @@ const contractName = 'Asset';
 const contractFilename = `${process.cwd()}/${config.dappPath}/asset/contracts/Asset.sol`;
 const encodingHelpers = require('../../helpers/encoding');
 
-function* uploadContract(token, ttPermissionManagerContract, args) {
-  const getKeyResponse = yield rest.getKey(token);
+async function uploadContract(token, ttPermissionManagerContract, args) {
+  const getKeyResponse = await rest.getKey(token);
   
   const contractArgs = Object.assign(
     {}, 
@@ -17,7 +17,7 @@ function* uploadContract(token, ttPermissionManagerContract, args) {
     }
   );
 
-  const contract = yield rest.uploadContract(
+  const contract = await rest.uploadContract(
     token, 
     contractName, 
     contractFilename, 
@@ -29,8 +29,8 @@ function* uploadContract(token, ttPermissionManagerContract, args) {
 }
 
 function bind(token, contract) {
-  contract.getState = function* () {
-    return yield rest.getState(contract);
+  contract.getState = async function() {
+    return await rest.getState(contract);
   };
 
   return contract;
@@ -44,9 +44,9 @@ function bindAddress(token, address) {
   return bind(token, contract);
 }
 
-function* waitForRequiredUpdate(sku, searchCounter) {
+async function waitForRequiredUpdate(sku, searchCounter) {
   const queryString = `${contractName}?and=(sku.eq.${sku},searchCounter.gte.${searchCounter})`;
-  const results = yield rest.waitQuery(queryString, 1);
+  const results = await rest.waitQuery(queryString, 1);
 
   const asset = fromBytes32(results[0])
 

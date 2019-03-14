@@ -6,8 +6,8 @@ const { rest6: rest } = require('blockapps-rest');
  * @param {string} address contract address.
  * @returns {Object} contract state.
  */
-function* waitForAddress(contractName, address) {
-  const result = yield rest.waitQuery(`${contractName}?address=eq.${address}`, 1);
+async function waitForAddress(contractName, address) {
+  const result = await rest.waitQuery(`${contractName}?address=eq.${address}`, 1);
   return result[0];
 }
 

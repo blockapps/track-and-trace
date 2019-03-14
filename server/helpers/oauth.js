@@ -6,10 +6,11 @@ const getEmailIdFromToken = function(accessToken) {
   return (jwtDecode(accessToken)['email']);
 };
 
-const createStratoUser = function* (accessToken, userIdOptional = null) {
+async function createStratoUser(accessToken, userIdOptional = null) {
   let address = null;
   try {
-    const getKeyResponse = yield rest.getKey(accessToken);
+    const getKeyResponse = rest.getKey(accessToken);
+    console.log("-------------------------------", getKeyResponse)
     if (getKeyResponse && getKeyResponse.address) {
       address = getKeyResponse.address;
     } else {
@@ -18,14 +19,14 @@ const createStratoUser = function* (accessToken, userIdOptional = null) {
   } catch (getKeyErr) {
     if (getKeyErr.status == 400) {
       try {
-        const createKeyResponse = yield rest.createKey(accessToken);
+        const createKeyResponse = await rest.createKey(accessToken);
         address = createKeyResponse.address;
         const userId = userIdOptional || getEmailIdFromToken(accessToken);
-        yield rest.fill({ name: userId, address });
-        if ((yield rest.getBalance(address)) < 1) {
+        await rest.fill({ name: userId, address });
+        if ((await rest.getBalance(address)) < 1) {
           do {
-            yield new Promise(resolve => setTimeout(resolve, 1000));
-          } while ((yield rest.getBalance(address)) < 1);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          } while ((await rest.getBalance(address)) < 1);
         }
       } catch (createKeyErr) {
         return { status: createKeyErr.status, message: 'error creating user key or faucet account' };
@@ -37,7 +38,7 @@ const createStratoUser = function* (accessToken, userIdOptional = null) {
   return { status: 200, message: 'success', address: address };
 };
 
-module.exports = {
+export default {
   getEmailIdFromToken,
   createStratoUser
 }

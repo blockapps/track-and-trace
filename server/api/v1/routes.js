@@ -1,7 +1,7 @@
 const authHandler = require('../middleware/authHandler');
 const router = require('express').Router();
 const moment = require('moment');
-const package = require('../../package.json');
+import packages from '../../package.json';
 
 const authentication = require(`./authentication`);
 const user = require(`./users`)
@@ -40,9 +40,9 @@ router.use(
 // set health handler
 router.get(`/health`, (req, res) => {
   res.json({
-    name: package.name,
-    description: package.description,
-    version: package.version,
+    name: packages.name,
+    description: packages.description,
+    version: packages.version,
     timestamp: moment().unix()
   })
 });

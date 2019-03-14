@@ -1,19 +1,18 @@
-const { rest6: rest, common } = require('blockapps-rest');
-const { util, config } = common;
+import { rest6 as rest, common } from 'blockapps-rest';
+// const { util, config } = common;
 
-const permissionManagerJs = require(`${process.cwd()}/${config.libPath}/auth/permission/permissionManager`);
-
-const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
-const TtRole = rest.getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`).TtRole;
+const permissionManagerJs = require(`${process.cwd()}/${common.config.libPath}/auth/permission/permissionManager`);
+const RestStatus = rest.getFields(`${process.cwd()}/${common.config.libPath}/rest/contracts/RestStatus.sol`);
+const TtRole = rest.getEnums(`${process.cwd()}/${common.config.dappPath}/ttPermission/contracts/TtRole.sol`).TtRole;
 
 const contractName = 'TtPermissionManager';
 const contractFilename = `${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtPermissionManager.sol`;
 
-function* uploadContract(admin, master) {
-  const adminAddressResponse = yield rest.getKey(admin);
-  const masterAddressResponse = yield rest.getKey(master);
+async function uploadContract(admin, master) {
+  const adminAddressResponse = await rest.getKey(admin);
+  const masterAddressResponse = await rest.getKey(master);
   const args = { admin: adminAddressResponse.address, master: masterAddressResponse.address };
-  const contract = yield rest.uploadContract(admin, contractName, contractFilename, util.usc(args));
+  const contract = await rest.uploadContract(admin, contractName, contractFilename, common.util.usc(args));
   contract.src = 'removed';
   return bind(admin, contract);
 }
@@ -21,42 +20,42 @@ function* uploadContract(admin, master) {
 function bind(admin, _contract) {
   const contract = permissionManagerJs.bind(admin, _contract); // inherit base functionality
 
-  contract.grantRole = function* (user, role) {
-    return yield grantRole(admin, contract, user, role);
+  contract.grantRole = async function(user, role) {
+    return await grantRole(admin, contract, user, role);
   }
-  contract.canCreateAsset = function* (user) {
-    return yield canCreateAsset(admin, contract, user);
+  contract.canCreateAsset = async function(user) {
+    return await canCreateAsset(admin, contract, user);
   }
-  contract.canTransferOwnership = function* (user) {
-    return yield canTransferOwnership(admin, contract, user);
+  contract.canTransferOwnership = async function(user) {
+    return await canTransferOwnership(admin, contract, user);
   }
-  contract.canModifyAsset = function* (user) {
-    return yield canModifyAsset(admin, contract, user);
+  contract.canModifyAsset = async function(user) {
+    return await canModifyAsset(admin, contract, user);
   }
-  contract.canModifyMap = function* (user) {
-    return yield canModifyMap(admin, contract, user);
+  contract.canModifyMap = async function(user) {
+    return await canModifyMap(admin, contract, user);
   }
-  contract.canCreateUser = function* (user) {
-    return yield canCreateUser(admin, contract, user);
+  contract.canCreateUser = async function(user) {
+    return await canCreateUser(admin, contract, user);
   }
-  contract.grantAdminRole = function* (user) {
-    return yield grantRole(admin, contract, user, TtRole.ADMIN);
+  contract.grantAdminRole = async function(user) {
+    return await grantRole(admin, contract, user, TtRole.ADMIN);
   }
-  contract.grantManufacturerRole = function* (user) {
-    return yield grantRole(admin, contract, user, TtRole.MANUFACTURER);
-  }
-
-  contract.grantDistributorRole = function* (user) {
-    return yield grantRole(admin, contract, user, TtRole.DISTRIBUTOR);
+  contract.grantManufacturerRole = async function(user) {
+    return await grantRole(admin, contract, user, TtRole.MANUFACTURER);
   }
 
-  contract.grantAssetManager = function* (user) {
-    return yield grantRole(admin, contract, user, TtRole.ASSET_MANAGER);
+  contract.grantDistributorRole = async function(user) {
+    return await grantRole(admin, contract, user, TtRole.DISTRIBUTOR);
+  }
+
+  contract.grantAssetManager = async function(user) {
+    return await grantRole(admin, contract, user, TtRole.ASSET_MANAGER);
   }
   return contract;
 }
 
-function* grantRole(admin, contract, user, role) {
+async function grantRole(admin, contract, user, role) {
   rest.verbose('grantRole', {user, role});
   // function grantRole(string _id, address _address, EchoRole _role) public returns (uint, uint)
   const method = 'grantRole';
@@ -65,50 +64,50 @@ function* grantRole(admin, contract, user, role) {
     address: user.account? user.account:user.address,
     role: role,
   }
-  const [restStatus, permissions] = yield rest.callMethod(admin, contract, method, util.usc(args));
+  const [restStatus, permissions] = await rest.callMethod(admin, contract, method, common.util.usc(args));
   if (restStatus != RestStatus.OK) {
     throw new rest.RestError(restStatus, method, args);
   }
   return parseInt(permissions);
 }
 
-function* canCreateAsset(admin, contract, user) {
+async function canCreateAsset(admin, contract, user) {
   // function canCreateAsset() returns (address)
   const method = 'canCreateAsset';
   const args = {address: user.address};
-  const [isPermitted] = yield rest.callMethod(admin, contract, method, util.usc(args));
+  const [isPermitted] = await rest.callMethod(admin, contract, method, common.util.usc(args));
   return isPermitted;
 }
 
-function* canTransferOwnership(admin, contract, user) {
+async function canTransferOwnership(admin, contract, user) {
   // function canCreateTransferOwnership() returns (address)
   const method = 'canTransferOwnership';
   const args = {address: user.address};
-  const [isPermitted] = yield rest.callMethod(admin, contract, method, util.usc(args));
+  const [isPermitted] = await rest.callMethod(admin, contract, method, common.util.usc(args));
   return isPermitted;
 }
 
-function* canModifyAsset(admin, contract, user) {
+async function canModifyAsset(admin, contract, user) {
   // function canModifyAsset() returns (address)
   const method = 'canModifyAsset';
   const args = {address: user.address};
-  const [isPermitted] = yield rest.callMethod(admin, contract, method, util.usc(args));
+  const [isPermitted] = await rest.callMethod(admin, contract, method, common.util.usc(args));
   return isPermitted;
 }
 
-function* canModifyMap(admin, contract, user) {
+async function canModifyMap(admin, contract, user) {
   // function canModifyMap() returns (address)
   const method = 'canModifyMap';
   const args = {address: user.address};
-  const [isPermitted] = yield rest.callMethod(admin, contract, method, util.usc(args));
+  const [isPermitted] = await rest.callMethod(admin, contract, method, common.util.usc(args));
   return isPermitted;
 }
 
-function* canCreateUser(admin, contract, user) {
+async function canCreateUser(admin, contract, user) {
   // function canCreateUser() returns (address)
   const method = 'canCreateUser';
   const args = {address: user.address};
-  const [isPermitted] = yield rest.callMethod(admin, contract, method, util.usc(args));
+  const [isPermitted] = await rest.callMethod(admin, contract, method, common.util.usc(args));
   return isPermitted;
 }
 

@@ -11,15 +11,15 @@ const localIp = ip.address();
 const enode = `enode://${publicKey}@${localIp}:${port}`
 
 
-function* createChain(token, assetOwner, regulatorAddress) {
-  const getKeyResponse = yield rest.getKey(token);
+async function createChain(token, assetOwner, regulatorAddress) {
+  const getKeyResponse = await rest.getKey(token);
 
-  const governanceSrc = yield rest.getContractString(
+  const governanceSrc = await rest.getContractString(
     contractName,
     contractFileName
   );
 
-  const chain = yield rest.createChain(
+  const chain = await rest.createChain(
     `bid_${getKeyResponse.address}_${assetOwner}`,
     [
       {
@@ -61,18 +61,18 @@ function* createChain(token, assetOwner, regulatorAddress) {
 }
 
 function bind(token, contract) {
-  contract.addMember = function* (member) {
-    return yield addMember(token, contract, member)
+  contract.addMember = async function (member) {
+    return await addMember(token, contract, member)
   }
 
-  contract.removeMember = function* (member) {
-    return yield removeMember(token, contract, member)
+  contract.removeMember = async function (member) {
+    return await removeMember(token, contract, member)
   }
 
   return contract;
 }
 
-function* addMember(token, contract, member, chainId) {
+async function addMember(token, contract, member, chainId) {
   rest.verbose('exists', member);
 
   const method = 'addMember';
@@ -81,7 +81,7 @@ function* addMember(token, contract, member, chainId) {
     enode
   }
 
-  const result = yield rest.callMethod(
+  const result = await rest.callMethod(
     token,
     contract,
     method,
@@ -94,14 +94,14 @@ function* addMember(token, contract, member, chainId) {
   return result
 }
 
-function* removeMember(token, contract, member, chainId) {
+async function removeMember(token, contract, member, chainId) {
   rest.verbose('removeMember', member);
   const method = 'removeMember';
   const args = {
     member
   }
 
-  const result = yield rest.callMethod(
+  const result = await rest.callMethod(
     token,
     contract,
     method,
@@ -114,14 +114,14 @@ function* removeMember(token, contract, member, chainId) {
   return result
 }
 
-function* getChainById(chainId) {
-  const chainInfo = yield rest.getChainInfo(chainId);
+async function getChainById(chainId) {
+  const chainInfo = await rest.getChainInfo(chainId);
   return chainInfo;
 }
 
 // only return chains where current user is a member
-function* getChains(token) {
-  const keyResponse = yield rest.getKey(token);
+async function getChains(token) {
+  const keyResponse = await rest.getKey(token);
   let chains;
 
   /*
@@ -130,7 +130,7 @@ function* getChains(token) {
     TODO: Remove Try and catch once STRATO-1304 is done
   */
   try {
-    chains = yield rest.getChainInfos();
+    chains = await rest.getChainInfos();
   } catch (e) {
     if (e.status === 500) {
       chains = [];

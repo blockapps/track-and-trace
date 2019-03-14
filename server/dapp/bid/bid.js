@@ -10,15 +10,15 @@ const assetJs = require(`${process.cwd()}/${config.dappPath}/asset/asset`);
 const queryHelper = require('../../helpers/query');
 
 // TODO: prevent bid from getting created if the asset is not in BIDS_REQUESTED state
-function* createBid(token, assetAddress, ownerAddress, bidValue, regulatorAddress) {
-  const chainId = yield bidChainJs.createChain(token, ownerAddress, regulatorAddress)
+async function createBid(token, assetAddress, ownerAddress, bidValue, regulatorAddress) {
+  const chainId = await bidChainJs.createChain(token, ownerAddress, regulatorAddress)
 
   // NOTE: This is here to resolve a timing issue, where the balance is not assigned to the address in new chain causing low balance issue \
   // in next call. `sleep` is is just a workaround to let the things settle after chain creation
   // This is explaind in STRATO-1300, once the original issue is resolved, this should be removed.
-  yield util.sleep(500);
+  await util.sleep(500);
 
-  const bid = yield uploadContract(
+  const bid = await uploadContract(
     token,
     chainId,
     {
@@ -28,12 +28,12 @@ function* createBid(token, assetAddress, ownerAddress, bidValue, regulatorAddres
     }
   );
 
-  const result = yield rest.waitQuery(`${contractName}?address=eq.${bid.address}&chainId=eq.${chainId}`, 1);
+  const result = await rest.waitQuery(`${contractName}?address=eq.${bid.address}&chainId=eq.${chainId}`, 1);
   return result[0];
 }
 
-function* uploadContract(token, chainId, args) {
-  const contract = yield rest.uploadContract(
+async function uploadContract(token, chainId, args) {
+  const contract = await rest.uploadContract(
     token,
     contractName,
     contractFilename,
@@ -48,14 +48,14 @@ function* uploadContract(token, chainId, args) {
 }
 
 function bind(token, chainId, contract) {
-  contract.handleBidEvent = function* (bidEvent) {
-    return yield handleBidEvent(token, chainId, contract, bidEvent);
+  contract.handleBidEvent = async function(bidEvent) {
+    return await handleBidEvent(token, chainId, contract, bidEvent);
   }
 
   return contract;
 }
 
-function* handleBidEvent(token, chainId, contract, bidEvent) {
+async function handleBidEvent(token, chainId, contract, bidEvent) {
   rest.verbose('handleBidEvent', bidEvent)
 
   const method = 'handleBidEvent';
@@ -64,7 +64,7 @@ function* handleBidEvent(token, chainId, contract, bidEvent) {
     bidEvent
   }
 
-  const [restStatus, newState] = yield rest.callMethod(
+  const [restStatus, newState] = await rest.callMethod(
     token,
     contract,
     method,
@@ -85,20 +85,20 @@ function* handleBidEvent(token, chainId, contract, bidEvent) {
   return newState;
 }
 
-function* getBids(token, searchParams) {
-  const chains = yield bidChainJs.getChains(token);
+async function getBids(token, searchParams) {
+  const chains = await bidChainJs.getChains(token);
 
   const queryParams = {
     ...searchParams,
     chainId: chains.map(c => c.id)
   }
 
-  const results = yield rest.query(`${contractName}?${queryHelper.getPostgrestQueryString(queryParams)}`)
+  const results = await rest.query(`${contractName}?${queryHelper.getPostgrestQueryString(queryParams)}`)
   return results;
 }
 
-function* getBidsHistory(token, assetAddress) {
-  const chains = yield bidChainJs.getChains(token);
+async function getBidsHistory(token, assetAddress) {
+  const chains = await bidChainJs.getChains(token);
 
   if(chains.length === 0) {
     return []
@@ -109,7 +109,7 @@ function* getBidsHistory(token, assetAddress) {
     chainId: chains.map(c => c.id)
   }
 
-  const results = yield rest.query(`history@${contractName}?${queryHelper.getPostgrestQueryString(queryParams)}`)
+  const results = await rest.query(`history@${contractName}?${queryHelper.getPostgrestQueryString(queryParams)}`)
   return results;
 }
 

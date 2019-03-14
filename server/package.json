@@ -9,6 +9,7 @@
   "dependencies": {
     "@babel/core": "^7.3.4",
     "@babel/node": "^7.2.2",
+    "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.3.4",
     "blockapps-rest": "git://github.com/blockapps/blockapps-rest#barf-develop",
     "body-parser": "^1.18.3",
@@ -26,7 +27,7 @@
   },
   "scripts": {
     "deploy": "mocha dapp/dapp/dapp.deploy.js --config config/${SERVER:-localhost}.config.yaml -b --compilers js:@babel/register && cp config/${SERVER:-localhost}.config.yaml config.yaml",
-    "start": "node index.js",
+    "start": "babel-node index.js",
     "token-getter": "PORT=${PORT:-443} node node_modules/blockapps-rest/oauth-token-getter/index.js",
     "test:asset": "mocha dapp/asset/test --config config/${SERVER:-localhost}.config.yaml -b",
     "test:bid": "mocha dapp/bid/test --config config/${SERVER:-localhost}.config.yaml -b",

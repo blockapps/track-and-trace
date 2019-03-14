@@ -1,3 +1,4 @@
+import "@babel/polyfill";
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -9,7 +10,7 @@ const winston = require('winston');
 const cors = require('cors');
 const errorHandler = require('./api/middleware/errorHandler');
 
-const { common } = require('blockapps-rest');
+import { common } from 'blockapps-rest';
 const { config, fsutil } = common;
 
 const app = express();

@@ -1,15 +1,18 @@
 const ba = require('blockapps-rest');
 
-const { rest6: rest } = ba;
-const { config, util, fsutil, cwd } = ba.common;
+import { rest, util, importer } from 'blockapps-rest';
+const { createContract, getState, call } = rest;
+
+import { getYamlFile } from '../../helpers/config';
+const config = getYamlFile('config.yaml');
 
 const contractName = 'TtDapp';
 const contractFilename = `${config.dappPath}/dapp/contracts/ttDapp.sol`;
 const managersNames = ['userManager', 'assetManager', 'ttPermissionManager'];
 
-const userManagerJs = require(`${process.cwd()}/${config.libPath}/auth/user/userManager`);
-const assetManagerJs = require(`${process.cwd()}/${config.dappPath}/asset/assetManager`);
-const ttPermissionManagerJs = require(`${process.cwd()}/${config.dappPath}/ttPermission/ttPermissionManager`);
+// const userManagerJs = require(`${process.cwd()}/${config.libPath}/auth/user/userManager`);
+// const assetManagerJs = require(`${process.cwd()}/${config.dappPath}/asset/assetManager`);
+// const ttPermissionManagerJs = require(`${process.cwd()}/${config.dappPath}/ttPermission/ttPermissionManager`);
 
 async function calllistBatch(token, txs) {
   const batchSize = 60;
@@ -26,7 +29,14 @@ async function uploadContract(token, ttPermissionManager) {
   const args = {
     ttPermissionManager: ttPermissionManager.address,
   };
-  const contract = await rest.uploadContract(token, contractName, contractFilename, util.usc(args));
+  
+  const contractArgs = {
+    name: contractName,
+    source: await importer.combine(contractFilename),
+    args: util.usc(args)
+  }
+
+  const contract = await createContract(token, contractArgs, { config });
   contract.src = 'removed';
   await util.sleep(5 * 1000);
   return await bind(token, contract);
@@ -34,7 +44,7 @@ async function uploadContract(token, ttPermissionManager) {
 
 async function getManagers(contract) {
   rest.verbose('getManagers', { contract, managersNames });
-  const state = await rest.getState(contract);
+  const state = await getState(contract, { config });
   const managers = {};
   managersNames.forEach((name) => {
     const address = state[name];

@@ -24,7 +24,9 @@
     "ip": "^1.1.5",
     "jwt-decode": "^2.2.0",
     "moment": "^2.24.0",
-    "winston": "^3.2.0"
+    "winston": "^3.2.0",
+    "fs": "^0.0.1-security",
+    "js-yaml": "^3.12.2"
   },
   "scripts": {
     "deploy": "mocha dapp/dapp/dapp.deploy.js --config config/${SERVER:-localhost}.config.yaml -b --compilers js:@babel/register && cp config/${SERVER:-localhost}.config.yaml config.yaml",

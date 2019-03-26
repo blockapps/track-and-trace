@@ -1,4 +1,4 @@
-import "/blockapps-sol/auth/permission/contracts/PermissionManager.sol";
+import "/blockapps-sol/dist/auth/permission/contracts/PermissionManager.sol";
 import "./TtPermission.sol";
 import "./TtRolePermissions.sol";
 

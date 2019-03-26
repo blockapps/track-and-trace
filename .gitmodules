@@ -1,3 +1,4 @@
 [submodule "server/blockapps-sol"]
 	path = server/blockapps-sol
 	url = https://github.com/blockapps/blockapps-sol
+	branch = SER-25_compatibilityWithRest

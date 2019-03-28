@@ -53,18 +53,22 @@ function bind(admin, _contract) {
     return await canCreateUser(admin, contract, user);
   }
   contract.grantAdminRole = async function (user) {
-    return await grantRole(admin, contract, user, 'ADMIN');
+    // TODO: 'ADMIN' : 1
+    return await grantRole(admin, contract, user, 1);
   }
   contract.grantManufacturerRole = async function (user) {
-    return await grantRole(admin, contract, user, 'MANUFACTURER');
+    // TODO: 'MANUFACTURER' : 3
+    return await grantRole(admin, contract, user, 3);
   }
 
   contract.grantDistributorRole = async function (user) {
-    return await grantRole(admin, contract, user, 'DISTRIBUTOR');
+    // TODO: 'DISTRIBUTOR' : 4
+    return await grantRole(admin, contract, user, 4);
   }
 
   contract.grantAssetManager = async function (user) {
-    return await grantRole(admin, contract, user, 'ASSET_MANAGER');
+    // TODO: 'ASSET_MANAGER' : 2
+    return await grantRole(admin, contract, user, 2);
   }
   return contract;
 }
@@ -149,7 +153,7 @@ async function canCreateUser(admin, contract, user) {
     args: util.usc(args)
   }
 
-  const [isPermitted] = await rest.callMethod(admin, callArgs, options);
+  const [isPermitted] = await rest.call(admin, callArgs, options);
   return isPermitted;
 }
 

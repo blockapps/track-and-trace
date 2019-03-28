@@ -1,4 +1,4 @@
-import { rest } from 'blockapps-rest';
+import { rest, fsUtil, parser } from 'blockapps-rest';
 import { assert } from 'chai';
 import { uploadContract } from '../ttPermissionManager';
 import oauthHelper from '../../../helpers/oauth';
@@ -10,9 +10,6 @@ import dotenv from 'dotenv';
 
 const loadEnv = dotenv.config()
 assert.isUndefined(loadEnv.error)
-
-// TODO: get TT roles using API
-// const { TtRole } = rest.getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`);
 
 const adminToken = { token: process.env.ADMIN_TOKEN };
 const masterToken = { token: process.env.MASTER_TOKEN };
@@ -26,8 +23,13 @@ const distributorToken = { token: process.env.DISTRIBUTOR_TOKEN };
 describe('TTPermissionManager tests', function () {
   this.timeout(config.timeout)
   let adminUser, masterUser, manufacturerUser, distributorUser;
+  let TtRole;
 
   before(async function () {
+    // get TtRole Enums
+    const ttRoleSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`)
+    TtRole = await parser.parseEnum(ttRoleSource);
+
     assert.isDefined(adminToken, 'admin token is not defined');
     assert.isDefined(masterToken, 'master token is not defined');
     assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
@@ -59,14 +61,14 @@ describe('TTPermissionManager tests', function () {
     {
       const permissions = await contract.getPermissions({ address: adminUser.address })
       const { rolePermissions } = await contract.getState()
-      const expected = rolePermissions[ADMIN]
+      const expected = rolePermissions[TtRole.ADMIN]
       assert.equal(permissions, expected, 'admin permissions')
     }
   })
 
   it('Grant Role - Asset Manager', async function () {
-    const contract = await uploadContract(adminToken, masterToken)
-    const username = oauthHelper.getEmailIdFromToken(masterToken);
+    const contract = await uploadContract(adminUser, masterUser)
+    const username = oauthHelper.getEmailIdFromToken(masterToken.token);
     Object.assign(masterUser, { username: username })
     // not yet permitted
     {
@@ -91,14 +93,14 @@ describe('TTPermissionManager tests', function () {
     {
       const permissions = await contract.getPermissions({ address: masterUser.address })
       const { rolePermissions } = await contract.getState()
-      const expected = rolePermissions[ASSET_MANAGER]
+      const expected = rolePermissions[TtRole.ASSET_MANAGER]
       assert.equal(permissions, expected, 'asset manager permissions')
     }
   })
 
   it('Grant Role - Manufacturer', async function () {
     const contract = await uploadContract(adminToken, masterToken)
-    const username = oauthHelper.getEmailIdFromToken(manufacturerToken);
+    const username = oauthHelper.getEmailIdFromToken(manufacturerToken.token);
     const address = manufacturerUser.address;
     Object.assign(manufacturerUser, { username: username })
     // not yet permitted
@@ -123,14 +125,14 @@ describe('TTPermissionManager tests', function () {
     {
       const permissions = await contract.getPermissions({ address: manufacturerUser.address })
       const { rolePermissions } = await contract.getState()
-      const expected = rolePermissions[MANUFACTURER]
+      const expected = rolePermissions[TtRole.MANUFACTURER]
       assert.equal(permissions, expected, 'manufacturer permissions')
     }
   })
 
   it('Grant Role - Distributor', async function () {
     const contract = await uploadContract(adminToken, masterToken)
-    const username = oauthHelper.getEmailIdFromToken(distributorToken);
+    const username = oauthHelper.getEmailIdFromToken(distributorToken.token);
     const address = distributorUser.address;
     Object.assign(distributorUser, { username: username })
     // not yet permitted
@@ -152,7 +154,7 @@ describe('TTPermissionManager tests', function () {
     {
       const permissions = await contract.getPermissions({ address: distributorUser.address })
       const { rolePermissions } = await contract.getState()
-      const expected = rolePermissions[DISTRIBUTOR]
+      const expected = rolePermissions[TtRole.DISTRIBUTOR]
       assert.equal(permissions, expected, 'distributor permissions')
     }
   })

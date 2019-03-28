@@ -1,38 +1,39 @@
-require('dotenv').config();
-require('co-mocha');
+import { rest, fsUtil, parser, util } from 'blockapps-rest';
+import { assert } from 'chai';
+import RestStatus from 'http-status-codes';
 
-const { common, rest6: rest } = require('blockapps-rest');
-const { assert, config, fsutil, util } = common;
+import { getYamlFile } from '../../../helpers/config';
+const config = getYamlFile('config.yaml');
 
-const { getEmailIdFromToken, createStratoUser } = require(`${process.cwd()}/helpers/oauth`);
+import dotenv from 'dotenv';
 
-const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
-const AssetError = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`).AssetError;
-const AssetState = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`).AssetState;
-const AssetEvent = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`).AssetEvent;
+const loadEnv = dotenv.config()
+assert.isUndefined(loadEnv.error)
 
-const ttPermissionManagerJs = require(`${process.cwd()}/${config.dappPath}/ttPermission/ttPermissionManager`);
-const assetManagerJs = require(`${process.cwd()}/${config.dappPath}/asset/assetManager`);
-const assetJs = require(`${process.cwd()}/${config.dappPath}/asset/asset`);
-const assetFactory = require(`${process.cwd()}/${config.dappPath}/asset/asset.factory`);
+import oauthHelper from '../../../helpers/oauth';
+import ttPermissionManagerJs from '../../ttPermission/ttPermissionManager';
+import assetManagerJs from '../../asset/assetManager';
+import assetJs from '../asset';
+import assetFactory from '../asset.factory';
 
+const adminToken = { token: process.env.ADMIN_TOKEN };
+const masterToken = { token: process.env.MASTER_TOKEN };
+const manufacturerToken = { token: process.env.DISTRIBUTOR_TOKEN };
+const distributorToken = { token: process.env.MANUFACTURER_TOKEN };
 
-const adminToken = process.env.ADMIN_TOKEN;
-const masterToken = process.env.MASTER_TOKEN;
-const manufacturerToken = process.env.DISTRIBUTOR_TOKEN;
-const distributorToken = process.env.MANUFACTURER_TOKEN;
-
-const TEST_TIMEOUT = 60000;
 let existingSku;
 
 describe('Asset Manager Tests', function () {
-  this.timeout(TEST_TIMEOUT);
+  this.timeout(config.timeout);
 
   let assetManagerContract, manufacturerAssetManagerContract, distributorAssetManagerContract;
+  let AssetError, AssetState, AssetEvent;
+  let adminUser, masterUser, manufacturerUser, distributorUser;
 
-  function* createUser(userToken) {
-    const userEmail = getEmailIdFromToken(userToken);
-    const createAccountResponse = yield createStratoUser(userToken, userEmail);
+  // TODO: check wheater it is needed or not
+  async function createUser(userToken) {
+    const userEmail = oauthHelper.getEmailIdFromToken(userToken.token);
+    const createAccountResponse = await oauthHelper.createStratoUser(userToken, userEmail);
     assert.equal(createAccountResponse.status, 200, createAccountResponse.message);
     return { address: createAccountResponse.address, username: userEmail };
   }
@@ -43,113 +44,148 @@ describe('Asset Manager Tests', function () {
     return assetManagerJs.bind(user, copy);
   }
 
-  before(function* () {
+  before(async function () {
+    // get assertError Enums
+    const assetErrorSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`)
+    AssetError = await parser.parseEnum(assetErrorSource);
+
+    // get assertError Enums
+    const assetStateSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`)
+    AssetState = await parser.parseEnum(assetStateSource);
+
+    // get assertError Enums
+    const assetEventSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`)
+    AssetEvent = await parser.parseEnum(assetEventSource);
+
+    assert.isDefined(adminToken, 'admin token is not defined');
+    assert.isDefined(masterToken, 'master token is not defined');
     assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
     assert.isDefined(distributorToken, 'distributor token is not defined');
 
-    manufacturerUser = yield createUser(manufacturerToken);
-    distributorUser = yield createUser(distributorToken);
+    // TODO: refactor this code or remove createStratoUser util
+    adminUser = await rest.createUser(adminToken, { config });
+    masterUser = await rest.createUser(masterToken, { config });
+    manufacturerUser = await rest.createUser(manufacturerToken, { config });
+    distributorUser = await rest.createUser(distributorToken, { config });
 
-    const ttPermissionManager = yield ttPermissionManagerJs.uploadContract(adminToken, masterToken);
-    assetManagerContract = yield assetManagerJs.uploadContract(adminToken, ttPermissionManager);
+    const ttPermissionManager = await ttPermissionManagerJs.uploadContract(adminUser, masterUser);
+    assetManagerContract = await assetManagerJs.uploadContract(adminUser, ttPermissionManager);
 
-    yield ttPermissionManager.grantManufacturerRole(manufacturerUser);
-    yield ttPermissionManager.grantDistributorRole(distributorUser);
+    const manufacturerUsername = oauthHelper.getEmailIdFromToken(manufacturerUser.token);
+    Object.assign(manufacturerUser, { username: manufacturerUsername })
 
-    manufacturerAssetManagerContract = bindAssetManagerContractToUser(manufacturerToken, assetManagerContract);
-    distributorAssetManagerContract = bindAssetManagerContractToUser(distributorToken, assetManagerContract);
+    await ttPermissionManager.grantManufacturerRole(manufacturerUser);
+
+    const distributorUsername = oauthHelper.getEmailIdFromToken(distributorUser.token);
+    Object.assign(distributorUser, { username: distributorUsername })
+    await ttPermissionManager.grantDistributorRole(distributorUser);
+
+    manufacturerAssetManagerContract = bindAssetManagerContractToUser(manufacturerUser, assetManagerContract);
+    distributorAssetManagerContract = bindAssetManagerContractToUser(distributorUser, assetManagerContract);
   });
 
-  it('Does Asset Exist -- asset does not exist ', function* () {
+  it('Does Asset Exist -- asset does not exist ', async function () {
     const sku = `${util.iuid}`
 
-    const exists = yield assetManagerContract.exists(sku);
+    const exists = await assetManagerContract.exists(sku);
     assert.equal(exists, false, 'contract does not exists');
   });
 
-  it('Create Asset -- unauthorized', function* () {
+  it('Create Asset -- unauthorized', async function () {
     const assetArgs = assetFactory.getAssetArgs();
 
-    yield assert.shouldThrowRest(function* () {
-      yield distributorAssetManagerContract.createAsset(assetArgs);
-    }, RestStatus.UNAUTHORIZED, AssetError.NULL);
+    try {
+      await distributorAssetManagerContract.createAsset(assetArgs);
+    } catch (e) {
+      assert.equal(RestStatus.UNAUTHORIZED, e.response.status, "should be unauthorized")
+      assert.equal(AssetError.NULL, e.response.statusText, "assert error should be null")
+    }
   });
 
-  it('Create Asset', function* () {
+  it('Create Asset', async function () {
     const assetArgs = assetFactory.getAssetArgs();
 
-    const asset = yield manufacturerAssetManagerContract.createAsset(assetArgs);
+    const asset = await manufacturerAssetManagerContract.createAsset(assetArgs);
     assert.equal(asset.sku, assetArgs.sku, 'sku');
 
     existingSku = asset.sku;
 
   });
 
-  it('Create Asset -- empty sku', function* () {
+  it('Create Asset -- empty sku', async function () {
     const assetArgs = assetFactory.getAssetArgs({
       sku: ''
     });
 
-    yield assert.shouldThrowRest(function* () {
-      yield manufacturerAssetManagerContract.createAsset(assetArgs);
-    }, RestStatus.BAD_REQUEST, AssetError.SKU_EMPTY);
+    try {
+      await manufacturerAssetManagerContract.createAsset(assetArgs);
+    } catch (e) {
+      assert.equal(RestStatus.BAD_REQUEST, e.response.status, "should be unauthorized")
+      assert.equal(AssetError.SKU_EMPTY, e.response.statusText, "assert error should be null")
+    }
   });
 
-  it('Create Asset -- already exists', function* () {
+  it('Create Asset -- already exists', async function () {
     const assetArgs = assetFactory.getAssetArgs();
     assetArgs.sku = existingSku;
 
-    yield assert.shouldThrowRest(function* () {
-      yield manufacturerAssetManagerContract.createAsset(assetArgs);
-    }, RestStatus.BAD_REQUEST, AssetError.SKU_EXISTS);
+    try {
+      await manufacturerAssetManagerContract.createAsset(assetArgs);
+    } catch (e) {
+      assert.equal(RestStatus.BAD_REQUEST, e.response.status, "should be unauthorized")
+      assert.equal(AssetError.SKU_EXISTS, e.response.statusText, "assert error should be null")
+    }
   });
 
-  it('Handle Asset Event', function* () {
+  it('Handle Asset Event', async function () {
     const assetArgs = assetFactory.getAssetArgs();
-    const asset = yield manufacturerAssetManagerContract.createAsset(assetArgs);
+    const asset = await manufacturerAssetManagerContract.createAsset(assetArgs);
     const assetContract = assetJs.bindAddress(manufacturerToken, asset.address);
 
-    const assertHandleAssertEvent = function* (assetEvent, expectedState) {
+    const assertHandleAssertEvent = async function (assetEvent, expectedState) {
       const handleAssetEventArgs = {
         sku: assetArgs.sku,
         assetEvent,
       };
 
-      const newState = yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
+      const newState = await manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
       assert.equal(newState, expectedState, 'returned new state');
 
-      const state = yield assetContract.getState();
+      const state = await assetContract.getState();
       assert.equal(state.assetState, expectedState, 'new state');
     }
 
-    yield assertHandleAssertEvent(AssetEvent.REQUEST_BIDS, AssetState.BIDS_REQUESTED);
-    yield assertHandleAssertEvent(AssetEvent.CHANGE_OWNER, AssetState.OWNER_UPDATED);
+    await assertHandleAssertEvent(AssetEvent.REQUEST_BIDS, AssetState.BIDS_REQUESTED);
+    await assertHandleAssertEvent(AssetEvent.CHANGE_OWNER, AssetState.OWNER_UPDATED);
   });
 
-  it('Handle Asset Event -- invalid event', function* () {
+  it('Handle Asset Event -- invalid event', async function () {
     const assetArgs = assetFactory.getAssetArgs();
-    yield manufacturerAssetManagerContract.createAsset(assetArgs);
+    await manufacturerAssetManagerContract.createAsset(assetArgs);
 
     const handleAssetEventArgs = {
       sku: assetArgs.sku,
       assetEvent: AssetEvent.CHANGE_OWNER,
     };
 
-    yield assert.shouldThrowRest(function* () {
-      yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
-    }, RestStatus.BAD_REQUEST, AssetError.NULL);
+    try {
+      await manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
+    } catch (e) {
+      assert.equal(RestStatus.BAD_REQUEST, e.response.status, "should be unauthorized")
+      assert.equal(AssetError.NULL, e.response.statusText, "assert error should be null")
+    }
   });
 
   // TODO: fix this
-  it.skip('Handle Asset Event -- asset not fonund', function* () {
+  it.skip('Handle Asset Event -- asset not fonund', async function () {
     const assetArgs = assetFactory.getAssetArgs();
     const handleAssetEventArgs = {
       sku: assetArgs.sku,
       assetEvent: AssetEvent.REQUEST_BIDS,
     };
 
-    yield assert.shouldThrowRest(function* () {
-      yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
+    await assert.shouldThrowRest(async function () {
+      await manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
     }, RestStatus.NOT_FOUND, AssetError.SKU_NOT_FOUND);
   });
 

@@ -1,55 +1,69 @@
-require('co-mocha');
-require('dotenv').config();
+import { rest, fsUtil, parser, util } from 'blockapps-rest';
+import { assert } from 'chai';
+import RestStatus from 'http-status-codes';
 
-const { rest6: rest, common } = require('blockapps-rest');
-const { assert, config, util } = common;
+import { getYamlFile } from '../../../helpers/config';
+const config = getYamlFile('config.yaml');
 
-const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
-const AssetError = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`).AssetError;
-const AssetState = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`).AssetState;
+import dotenv from 'dotenv';
 
-const ttPermissionManagerJs = require(`${process.cwd()}/${config.dappPath}/ttPermission/ttPermissionManager`);
-const assetJs = require(`${process.cwd()}/${config.dappPath}/asset/asset`);
-const assetFactory = require(`${process.cwd()}/${config.dappPath}/asset/asset.factory`);
+const loadEnv = dotenv.config()
+assert.isUndefined(loadEnv.error)
 
+import ttPermissionManagerJs from '../../ttPermission/ttPermissionManager';
+import assetJs from '../asset';
+import assetFactory from '../asset.factory';
 
-const adminToken = process.env.ADMIN_TOKEN;
-const masterToken = process.env.MASTER_TOKEN;
-
-const TEST_TIMEOUT = 60000;
+const adminToken = { token: process.env.ADMIN_TOKEN };
+const masterToken = { token: process.env.MASTER_TOKEN };
 
 describe('Asset Tests', function () {
-  this.timeout(TEST_TIMEOUT);
+  this.timeout(config.timeout);
 
-  let ttPermissionManagerContract;
+  let ttPermissionManagerContract, AssetError, AssetState;
+  let adminUser, masterUser;
 
-  before(function* () {
-    ttPermissionManagerContract = yield ttPermissionManagerJs.uploadContract(adminToken, masterToken);
+  before(async function () {
+    // get assertError Enums
+    const assetErrorSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`)
+    AssetError = await parser.parseEnum(assetErrorSource);
+
+    // get assetState Enums
+    const assetStateSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`)
+    AssetState = await parser.parseEnum(assetStateSource);
+
+    adminUser = await rest.createUser(adminToken, { config });
+    masterUser = await rest.createUser(masterToken, { config });
+    ttPermissionManagerContract = await ttPermissionManagerJs.uploadContract(adminUser, masterUser);
   });
 
-  it('Create Asset', function* () {
+  it('Create Asset', async function () {
     const args = assetFactory.getAssetArgs();
-    const contract = yield assetJs.uploadContract(adminToken, ttPermissionManagerContract, args);
+    const contract = await assetJs.uploadContract(adminToken, ttPermissionManagerContract, args);
 
-    const state = yield contract.getState();
+    const state = await contract.getState();
 
     assert.equal(state.ttPermissionManager, ttPermissionManagerContract.address, 'permission manager address');
     assert.equal(state.sku, args.sku, 'sku');
     assert.equal(state.assetState, AssetState.CREATED, 'asset state');
   });
 
-  it('Set Asset State', function* () {
+  it('Set Asset State', async function () {
     const assetArgs = assetFactory.getAssetArgs();
-    const contract = yield assetJs.uploadContract(adminToken, ttPermissionManagerContract, assetArgs);
+    const contract = await assetJs.uploadContract(adminToken, ttPermissionManagerContract, assetArgs);
 
     const setAssetStateArgs = {
       assetState: AssetState.BIDS_REQUESTED
     };
 
-    const [restStatus, assetError, ] = yield rest.callMethod(adminToken, contract, 'setAssetState', util.usc(setAssetStateArgs));
+    const callArgs = {
+      contract,
+      method: 'setAssetState',
+      args: util.usc(setAssetStateArgs)
+    }
+
+    const [restStatus, assetError] = await rest.call(adminToken, callArgs, { config });
     assert.equal(restStatus, RestStatus.FORBIDDEN, 'rest status');
     assert.equal(assetError, AssetError.NULL, 'tt error');
-
-
   });
 });

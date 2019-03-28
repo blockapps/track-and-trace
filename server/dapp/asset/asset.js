@@ -1,36 +1,41 @@
-const { rest6: rest, common } = require('blockapps-rest');
-const { util, config } = common;
+import { rest, util, importer } from 'blockapps-rest';
+import encodingHelpers from '../../helpers/encoding';
+
+import { getYamlFile } from '../../helpers/config';
+const config = getYamlFile('config.yaml');
 
 const contractName = 'Asset';
 const contractFilename = `${process.cwd()}/${config.dappPath}/asset/contracts/Asset.sol`;
-const encodingHelpers = require('../../helpers/encoding');
+
+const options = { config, logger: console }
 
 async function uploadContract(token, ttPermissionManagerContract, args) {
-  const getKeyResponse = await rest.getKey(token);
-  
+  const getKeyResponse = await rest.getKey(token, options);
+
   const contractArgs = Object.assign(
-    {}, 
-    toBytes32(args), 
+    {},
+    toBytes32(args),
     {
       ttPermissionManager: ttPermissionManagerContract.address,
-      owner: getKeyResponse.address 
+      owner: getKeyResponse
     }
   );
 
-  const contract = await rest.uploadContract(
-    token, 
-    contractName, 
-    contractFilename, 
-    util.usc(contractArgs)
-  );
+  const contractArgs1 = {
+    name: contractName,
+    source: await importer.combine(contractFilename),
+    args: util.usc(contractArgs)
+  }
+
+  const contract = await rest.createContract(token, contractArgs1, options);
   contract.src = 'removed';
 
   return bind(token, contract);
 }
 
 function bind(token, contract) {
-  contract.getState = async function() {
-    return await rest.getState(contract);
+  contract.getState = async function () {
+    return await rest.getState(contract, options);
   };
 
   return contract;
@@ -44,10 +49,18 @@ function bindAddress(token, address) {
   return bind(token, contract);
 }
 
+// TODO: change and made compatible with new version
 async function waitForRequiredUpdate(sku, searchCounter) {
-  const queryString = `${contractName}?and=(sku.eq.${sku},searchCounter.gte.${searchCounter})`;
-  const results = await rest.waitQuery(queryString, 1);
+  function predicate(response) {
+    if (response.length)
+      return response;
+  }
 
+  const contract = {
+    name: contractName
+  }
+
+  const results = await rest.searchUntil(contract, predicate, { config, query: { searchCounter: `gte.${searchCounter}`, sku: `eq.${sku}` } });
   const asset = fromBytes32(results[0])
 
   return asset;

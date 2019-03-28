@@ -1,6 +1,6 @@
-import "/blockapps-sol/util/contracts/Util.sol";
-import "/blockapps-sol/rest/contracts/RestStatus.sol";
-import "/blockapps-sol/meta/searchable/contracts/Searchable.sol";
+import "/blockapps-sol/dist/util/contracts/Util.sol";
+import "/blockapps-sol/dist/rest/contracts/RestStatus.sol";
+import "/blockapps-sol/dist/meta/searchable/contracts/Searchable.sol";
 
 import "/dapp/ttPermission/contracts/TtPermissionManager.sol";
 import "./AssetError.sol";

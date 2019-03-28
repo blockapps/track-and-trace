@@ -1,14 +1,20 @@
-const { rest6: rest } = require('blockapps-rest');
+import { rest } from 'blockapps-rest';
 
-/**
- * Wait until contract with given address became available for search.
- * @param {string} contractName contract name.
- * @param {string} address contract address.
- * @returns {Object} contract state.
- */
+import { getYamlFile } from '../../helpers/config';
+const config = getYamlFile('config.yaml');
+
 async function waitForAddress(contractName, address) {
-  const result = await rest.waitQuery(`${contractName}?address=eq.${address}`, 1);
-  return result[0];
+  function predicate(response) {
+    if (response.length)
+      return response;
+  }
+
+  const contract = {
+    name: contractName
+  }
+
+  const results = await rest.searchUntil(contract, predicate, { config, logger: console, query: { address: `eq.${address}` } });
+  return results[0];
 }
 
 module.exports = {

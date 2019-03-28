@@ -2,9 +2,9 @@
 // handleEvent
 // Store a hashmap of the assets
 // TODO: make this an ERC 721
-import "/blockapps-sol/auth/permission/contracts/PermissionedHashmap.sol";
-import "/blockapps-sol/util/contracts/Util.sol";
-import "/blockapps-sol/rest/contracts/RestStatus.sol";
+import "/blockapps-sol/dist/auth/permission/contracts/PermissionedHashmap.sol";
+import "/blockapps-sol/dist/util/contracts/Util.sol";
+import "/blockapps-sol/dist/rest/contracts/RestStatus.sol";
 
 import "/dapp/ttPermission/contracts/TtPermissionManager.sol";
 import "./AssetError.sol";

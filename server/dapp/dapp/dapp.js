@@ -1,5 +1,3 @@
-const ba = require('blockapps-rest');
-
 import { rest, util, importer } from 'blockapps-rest';
 const { createContract, getState, call } = rest;
 

@@ -1,8 +1,8 @@
 // asset manager
 // permission manager
 // user manager
-import "/blockapps-sol/rest/contracts/RestStatus.sol";
-import "/blockapps-sol/auth/user/contracts/UserManager.sol";
+import "/blockapps-sol/dist/rest/contracts/RestStatus.sol";
+import "/blockapps-sol/dist/auth/user/contracts/UserManager.sol";
 import "/dapp/asset/contracts/AssetManager.sol";
 import "/dapp/ttPermission/contracts/TtPermissionManager.sol";
 /**

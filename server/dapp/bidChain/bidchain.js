@@ -12,9 +12,12 @@ const port = 30303;
 const localIp = ip.address();
 const enode = `enode://${publicKey}@${localIp}:${port}`
 
-async function createChain(token, assetOwner, regulatorAddress) {
-  const getKeyResponse = await rest.getKey(token, { config, logger: console });
+const options = { config, logger: console };
 
+async function createChain(token, assetOwner, regulatorAddress) {
+  const getKeyResponse = await rest.getKey(token, options);
+
+  // TODO: is this needed to create a chain
   // const governanceSrc = await rest.getContractString(
   //   contractName,
   //   contractFileName
@@ -57,57 +60,21 @@ async function createChain(token, assetOwner, regulatorAddress) {
 
   const contractArgs = { name: contractName }
 
-  const chain = await rest.createChain(chainArgs, contractArgs, { config, logger: console })
+  const chain = await rest.createChain(chainArgs, contractArgs, {config: options.config, history: [contractName]})
 
-  // const chain = await rest.createChain(
-  //   `bid_${getKeyResponse.address}_${assetOwner}`,
-  //   [
-  //     {
-  //       address: assetOwner,
-  //       enode
-  //     },
-  //     {
-  //       address: getKeyResponse.address,
-  //       enode
-  //     },
-  //     {
-  //       address: regulatorAddress,
-  //       enode
-  //     }
-  //   ],
-  //   [
-  //     {
-  //       address: assetOwner,
-  //       balance
-  //     },
-  //     {
-  //       address: getKeyResponse.address,
-  //       balance
-  //     },
-  //     {
-  //       address: regulatorAddress,
-  //       balance
-  //     }
-  //   ],
-  //   governanceSrc,
-  //   {},
-  //   {
-  //     enableHistory: true,
-  //     contract: contractName
-  //   }
-  // );
-
-  return bind(token, chain);
+  // TODO: createChain is returing string. so binding is little tricky
+  // is that something we need to createContract here. @samrit please confirm
+  return bind(token, {chainId: chain});
 }
 
 function bind(token, contract) {
-  // contract.addMember = async function (member) {
-  //   return await addMember(token, contract, member)
-  // }
+  contract.addMember = async function (member) {
+    return await addMember(token, contract, member)
+  }
 
-  // contract.removeMember = async function (member) {
-  //   return await removeMember(token, contract, member)
-  // }
+  contract.removeMember = async function (member) {
+    return await removeMember(token, contract, member)
+  }
 
   return contract;
 }
@@ -147,20 +114,20 @@ async function removeMember(token, contract, member, chainId) {
   const result = await rest.call(
     token,
     callArgs,
-    { config, chainIds: [chainId] }
+    { config, logger: console, chainIds: [chainId] }
   );
 
   return result
 }
 
 async function getChainById(chainId) {
-  const chainInfo = await rest.getChain(chainId, { config });
+  const chainInfo = await rest.getChain(chainId, options);
   return chainInfo;
 }
 
 // only return chains where current user is a member
 async function getChains(token) {
-  const keyResponse = await rest.getKey(token, { config });
+  const keyResponse = await rest.getKey(token, options);
   let chains;
 
   /*
@@ -169,7 +136,7 @@ async function getChains(token) {
     TODO: Remove Try and catch once STRATO-1304 is done
   */
   try {
-    chains = await rest.getChains([], { config });
+    chains = await rest.getChains([], options);
   } catch (e) {
     if (e.status === 500) {
       chains = [];

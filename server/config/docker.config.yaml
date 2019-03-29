@@ -2,7 +2,7 @@ apiDebug: false
 restVersion: 6
 timeout: 120000
 dappPath: ./dapp
-libPath: ./blockapps-sol
+libPath: blockapps-sol/dist
 apiUrl: /api/v1
 deployFilename: ./config/docker.deploy.yaml
 

@@ -6,6 +6,22 @@ function getYamlFile(yamlFilename) {
   return yaml.safeLoad(fs.readFileSync(yamlFilename, 'utf8'));
 }
 
+function yamlSafeDumpSync(object) {
+  return yaml.safeDump(object);
+}
+
+function yamlWrite(object, filename) {
+  const yaml = yamlSafeDumpSync(object);
+  writeFileSync(filename, yaml, 'utf8');
+}
+
+function writeFileSync(file, data, options) {
+  fs.writeFileSync(file, data, options);
+}
+
 export {
-  getYamlFile
+  getYamlFile,
+  yamlSafeDumpSync,
+  yamlWrite,
+  writeFileSync
 };

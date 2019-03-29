@@ -1,8 +1,7 @@
 import { assert } from 'chai';
-import { rest, fsUtil, parser } from 'blockapps-rest';
-import jwtDecode from 'jwt-decode';
+import { fsUtil, parser } from 'blockapps-rest';
 import oauthHelper from '../../helpers/oauth';
-import ttPermissionManagerJs from '../../dapp/ttPermission/ttPermissionManager';
+import ttPermissionManagerJs from '../ttPermission/ttPermissionManager';
 import dappJs from './dapp';
 
 import { getYamlFile } from '../../helpers/config';
@@ -78,8 +77,8 @@ describe('Track and Trace - deploy contracts', function () {
     console.log('Permission Manager');
     const ttPermissionManager = await ttPermissionManagerJs.uploadContract(adminCreated.user, masterCreated.user);
     console.log('Uploading dapp');
-    const dapp = await dappJs.uploadContract(process.env.ADMIN_TOKEN, ttPermissionManager);
-    const dappBind = await dappJs.bind(process.env.ADMIN_TOKEN, {
+    const dapp = await dappJs.uploadContract(adminCreated.user, ttPermissionManager);
+    const dappBind = await dappJs.bind(adminCreated.user, {
       name: dapp.name,
       address: dapp.address
     });
@@ -90,21 +89,21 @@ describe('Track and Trace - deploy contracts', function () {
 
     console.log('Create Admin TTUser');
     Object.assign(args, {
-      account: adminCreated.address,
+      account: adminCreated.user.address,
       username: adminEmail
     });
     const ttAdminUser = await dappBind.createUser(args);
 
     console.log('Create Master TTUser');
     Object.assign(args, {
-      account: masterCreated.address,
+      account: masterCreated.user.address,
       username: masterEmail
     });
     await dappBind.createUser(args);
 
     console.log('Create Distributor TTUser');
     Object.assign(args, {
-      account: distributorCreated.address,
+      account: distributorCreated.user.address,
       username: distributorEmail,
       role: TtRole.DISTRIBUTOR
     });
@@ -112,7 +111,7 @@ describe('Track and Trace - deploy contracts', function () {
 
     console.log('Create Manufacturer TTUser');
     Object.assign(args, {
-      account: manufacturerCreated.address,
+      account: manufacturerCreated.user.address,
       username: manufacturerEmail,
       role: TtRole.MANUFACTURER
     });
@@ -120,7 +119,7 @@ describe('Track and Trace - deploy contracts', function () {
 
     console.log('Create Retailer TTUser');
     Object.assign(args, {
-      account: retailerCreated.address,
+      account: retailerCreated.user.address,
       username: retailerEmail,
       role: TtRole.RETAILER
     });
@@ -128,7 +127,7 @@ describe('Track and Trace - deploy contracts', function () {
 
     console.log('Create Regulator TTUser');
     Object.assign(args, {
-      account: regulatorCreated.address,
+      account: regulatorCreated.user.address,
       username: regulatorEmail,
       role: TtRole.REGULATOR
     });

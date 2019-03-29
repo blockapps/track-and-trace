@@ -1,16 +1,16 @@
 import { rest, util, importer } from 'blockapps-rest';
 const { createContract, getState, call } = rest;
 
-import { getYamlFile } from '../../helpers/config';
+import { getYamlFile, yamlSafeDumpSync, yamlWrite } from '../../helpers/config';
 const config = getYamlFile('config.yaml');
 
 const contractName = 'TtDapp';
 const contractFilename = `${config.dappPath}/dapp/contracts/ttDapp.sol`;
 const managersNames = ['userManager', 'assetManager', 'ttPermissionManager'];
 
-// const userManagerJs = require(`${process.cwd()}/${config.libPath}/auth/user/userManager`);
-// const assetManagerJs = require(`${process.cwd()}/${config.dappPath}/asset/assetManager`);
-// const ttPermissionManagerJs = require(`${process.cwd()}/${config.dappPath}/ttPermission/ttPermissionManager`);
+import userManagerJs from '../../blockapps-sol/dist/auth/user/userManager';
+import assetManagerJs from '../asset/assetManager';
+import ttPermissionManagerJs from '../ttPermission/ttPermissionManager';
 
 async function calllistBatch(token, txs) {
   const batchSize = 60;
@@ -27,7 +27,7 @@ async function uploadContract(token, ttPermissionManager) {
   const args = {
     ttPermissionManager: ttPermissionManager.address,
   };
-  
+
   const contractArgs = {
     name: contractName,
     source: await importer.combine(contractFilename),
@@ -41,7 +41,6 @@ async function uploadContract(token, ttPermissionManager) {
 }
 
 async function getManagers(contract) {
-  rest.verbose('getManagers', { contract, managersNames });
   const state = await getState(contract, { config });
   const managers = {};
   managersNames.forEach((name) => {
@@ -56,7 +55,6 @@ async function getManagers(contract) {
 }
 
 async function bind(token, _contract) {
-  rest.verbose('bind', { admin: token, _contract });
   const contract = _contract;
   // set the managers
   const unboundManagers = await getManagers(contract);
@@ -65,7 +63,7 @@ async function bind(token, _contract) {
   const ttPermissionManager = ttPermissionManagerJs.bind(token, unboundManagers.ttPermissionManager);
 
   // deploy
-  contract.deploy = async function(deployFilename) {
+  contract.deploy = async function (deployFilename) {
     const managers = {
       userManager,
       assetManager,
@@ -75,43 +73,43 @@ async function bind(token, _contract) {
   }
 
   // create user
-  contract.createUser = async function(args) {
+  contract.createUser = async function (args) {
     const user = await userManager.createUser(args);
     await ttPermissionManager.grantRole(user, args.role);
     return user;
   };
   // get all users
-  contract.getUsers = async function(args) {
+  contract.getUsers = async function (args) {
     const user = await userManager.getUsers(args);
     return user;
   };
 
-  contract.getUser = async function(username) {
+  contract.getUser = async function (username) {
     const user = await userManager.getUser(username);
     return user;
   };
 
-  contract.getAssets = async function(args) {
+  contract.getAssets = async function (args) {
     return await assetManager.getAssets(args);
   }
 
-  contract.getAsset = async function(sku) {
+  contract.getAsset = async function (sku) {
     return await assetManager.getAsset(sku);
   }
 
-  contract.getAssetHistory = async function(sku) {
+  contract.getAssetHistory = async function (sku) {
     return await assetManager.getAssetHistory(sku);
   }
 
-  contract.createAsset = async function(args) {
+  contract.createAsset = async function (args) {
     return await assetManager.createAsset(args);
   }
 
-  contract.handleAssetEvent = async function(args) {
+  contract.handleAssetEvent = async function (args) {
     return await assetManager.handleAssetEvent(args);
   }
 
-  contract.transferOwnership = async function(args) {
+  contract.transferOwnership = async function (args) {
     return await assetManager.transferOwnership(args);
   }
 
@@ -120,7 +118,6 @@ async function bind(token, _contract) {
 
 // =========================== deployment ========================
 async function deploy(token, contract, deployFilename, managers) {
-  rest.verbose('dapp: deploy');
   const { assetManager, ttPermissionManager, userManager } = managers;
 
   // grant permissions
@@ -128,7 +125,7 @@ async function deploy(token, contract, deployFilename, managers) {
 
   // authoring the deployment
   let deployment = {
-    url: config.getBlocUrl(),
+    url: config.nodes[0].url,
     contract: {
       name: contract.name,
       address: contract.address,
@@ -137,10 +134,10 @@ async function deploy(token, contract, deployFilename, managers) {
   // write
   if (config.apiDebug) {
     console.log('deploy filename:', deployFilename);
-    console.log(fsutil.yamlSafeDumpSync(deployment));
+    console.log(yamlSafeDumpSync(deployment));
   }
 
-  fsutil.yamlWrite(deployment, deployFilename);
+  yamlWrite(deployment, deployFilename);
 
   return deployment;
 }

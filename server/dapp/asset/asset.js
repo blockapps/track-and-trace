@@ -7,7 +7,7 @@ const config = getYamlFile('config.yaml');
 const contractName = 'Asset';
 const contractFilename = `${process.cwd()}/${config.dappPath}/asset/contracts/Asset.sol`;
 
-const options = { config, logger: console }
+const options = { config }
 
 async function uploadContract(token, ttPermissionManagerContract, args) {
   const getKeyResponse = await rest.getKey(token, options);

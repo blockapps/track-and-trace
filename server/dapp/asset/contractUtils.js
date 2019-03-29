@@ -13,7 +13,7 @@ async function waitForAddress(contractName, address) {
     name: contractName
   }
 
-  const results = await rest.searchUntil(contract, predicate, { config, logger: console, query: { address: `eq.${address}` } });
+  const results = await rest.searchUntil(contract, predicate, { config, query: { address: `eq.${address}` } });
   return results[0];
 }
 

@@ -5,15 +5,14 @@ import RestStatus from 'http-status-codes';
 import { getYamlFile } from '../../helpers/config';
 const config = getYamlFile('config.yaml');
 
-const permissionManagerJs = require(`${process.cwd()}/${config.libPath}/auth/permission/permissionManager`);
+import * as permissionManagerJs from '../../blockapps-sol/dist/auth/permission/permissionManager';
 // TODO: call method to get roles
 // const TtRole = rest.getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`).TtRole;
 
 const contractName = 'TtPermissionManager';
 const contractFilename = `${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtPermissionManager.sol`;
 
-const logger = console
-const options = { config, logger }
+const options = { config }
 
 async function uploadContract(admin, master) {
   const adminAddressResponse = await rest.getKey(admin, options);

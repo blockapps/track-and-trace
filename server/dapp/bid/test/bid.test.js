@@ -1,45 +1,46 @@
-require('dotenv').config();
-require('co-mocha');
+import { fsUtil, parser } from 'blockapps-rest';
+import { assert } from 'chai';
+import RestStatus from 'http-status-codes';
 
-const { common, rest6: rest } = require('blockapps-rest');
-const { assert, config } = common;
+import { getYamlFile } from '../../../helpers/config';
+const config = getYamlFile('config.yaml');
 
-const { getEmailIdFromToken, createStratoUser } = require(`${process.cwd()}/helpers/oauth`);
-const ttPermissionManagerJs = require(`${process.cwd()}/${config.dappPath}/ttPermission/ttPermissionManager`);
-const assetManagerJs = require(`${process.cwd()}/${config.dappPath}/asset/assetManager`);
-const assetFactory = require(`${process.cwd()}/${config.dappPath}/asset/asset.factory`);
-const bidJs = require(`${process.cwd()}/${config.dappPath}/bid/bid`);
+import dotenv from 'dotenv';
 
-const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
-const AssetError = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`).AssetError;
-const AssetState = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`).AssetState;
-const AssetEvent = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`).AssetEvent;
-const BidState = rest.getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidState.sol`).BidState;
-const BidEvent = rest.getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`).BidEvent;
+const loadEnv = dotenv.config()
+assert.isUndefined(loadEnv.error)
 
-describe('Bid Tests', function() {
-  this.timeout(60*1000)
+import oauthHelper from '../../../helpers/oauth';
+import ttPermissionManagerJs from '../../ttPermission/ttPermissionManager';
+import assetManagerJs from '../../asset/assetManager';
+import assetFactory from '../../asset/asset.factory';
+import bidJs from '../../bid/bid';
 
-  const adminToken = process.env.ADMIN_TOKEN;
-  const masterToken = process.env.MASTER_TOKEN;
-  const manufacturerToken = process.env.DISTRIBUTOR_TOKEN;
-  const distributorToken = process.env.MANUFACTURER_TOKEN;
-  const retailerToken = process.env.RETAILER_TOKEN;
-  const regulatorToken = process.env.REGULATOR_TOKEN;
+describe('Bid Tests', function () {
+  this.timeout(config.timeout)
+
+  const adminToken = { token: process.env.ADMIN_TOKEN };
+  const masterToken = { token: process.env.MASTER_TOKEN };
+  const manufacturerToken = { token: process.env.DISTRIBUTOR_TOKEN };
+  const distributorToken = { token: process.env.MANUFACTURER_TOKEN };
+  const retailerToken = { token: process.env.RETAILER_TOKEN };
+  const regulatorToken = { token: process.env.REGULATOR_TOKEN };
 
   let assetManagerContract, manufacturerAssetManagerContract, distributorAssetManagerContract;
+  let manufacturerUser, distributorUser, regulatorUser;
+  let AssetError, AssetState, AssetEvent, BidState, BidEvent
 
   // TODO: refactor all these test helpers functions into helper/test.js
-  function* createUser(userToken) {
-    const userEmail = getEmailIdFromToken(userToken);
-    const createAccountResponse = yield createStratoUser(userToken, userEmail);
+  async function createUser(userToken) {
+    const userEmail = oauthHelper.getEmailIdFromToken(userToken.token);
+    const createAccountResponse = await oauthHelper.createStratoUser(userToken, userEmail);
     assert.equal(createAccountResponse.status, 200, createAccountResponse.message);
-    return { address: createAccountResponse.address, username: userEmail };
+    return { address: createAccountResponse.user.address, username: userEmail };
   }
 
-  function* createAsset() {
+  async function createAsset() {
     const assetArgs = assetFactory.getAssetArgs();
-    const asset = yield manufacturerAssetManagerContract.createAsset(assetArgs);
+    const asset = await manufacturerAssetManagerContract.createAsset(assetArgs);
     assert.equal(asset.sku, assetArgs.sku, 'sku');
     assert.equal(asset.assetState, AssetState.CREATED);
     return asset;
@@ -51,65 +52,89 @@ describe('Bid Tests', function() {
     return assetManagerJs.bind(user, copy);
   }
 
-  before(function* () {
+  before(async function () {
     assert.isDefined(adminToken, 'admin token is not defined');
     assert.isDefined(masterToken, 'master token is not defined');
     assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
     assert.isDefined(distributorToken, 'distributor token is not defined');
     assert.isDefined(retailerToken, 'retailer token is not defined');
+    assert.isDefined(regulatorToken, 'retailer token is not defined');
 
-    manufacturerUser = yield createUser(manufacturerToken);
-    distributorUser = yield createUser(distributorToken);
-    regulatorUser = yield createUser(regulatorToken);
+    // get assertError Enums
+    const assetErrorSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`)
+    AssetError = await parser.parseEnum(assetErrorSource);
 
-    const ttPermissionManager = yield ttPermissionManagerJs.uploadContract(adminToken, masterToken);
-    assetManagerContract = yield assetManagerJs.uploadContract(adminToken, ttPermissionManager);
+    // get assetState Enums
+    const assetStateSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`)
+    AssetState = await parser.parseEnum(assetStateSource);
 
-    yield ttPermissionManager.grantManufacturerRole(manufacturerUser);
-    yield ttPermissionManager.grantDistributorRole(distributorUser);
+    // get AssetEvent Enums
+    const assetEventSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`)
+    AssetEvent = await parser.parseEnum(assetEventSource);
+
+    // get BidState Enums
+    const bidStateSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/bid/contracts/BidState.sol`)
+    BidState = await parser.parseEnum(bidStateSource);
+
+    // get BidEvent Enums
+    const bidEventSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`)
+    BidEvent = await parser.parseEnum(bidEventSource);
+
+    manufacturerUser = await createUser(manufacturerToken);
+    distributorUser = await createUser(distributorToken);
+    regulatorUser = await createUser(regulatorToken);
+
+    const ttPermissionManager = await ttPermissionManagerJs.uploadContract(adminToken, masterToken);
+    assetManagerContract = await assetManagerJs.uploadContract(adminToken, ttPermissionManager);
+
+    await ttPermissionManager.grantManufacturerRole(manufacturerUser);
+    await ttPermissionManager.grantDistributorRole(distributorUser);
 
     manufacturerAssetManagerContract = bindAssetManagerContractToUser(manufacturerToken, assetManagerContract);
     distributorAssetManagerContract = bindAssetManagerContractToUser(distributorToken, assetManagerContract);
   });
 
-  it('Distributor should not be able to open asset for bidding', function* () {
-    const asset = yield createAsset();
+  it('Distributor should not be able to open asset for bidding', async function () {
+    const asset = await createAsset();
 
     const handleAssetEventArgs = {
       sku: asset.sku,
       assetEvent: AssetEvent.REQUEST_BIDS
     }
 
-    yield assert.shouldThrowRest(function* () {
-      yield distributorAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
-    }, RestStatus.FORBIDDEN, AssetError.NULL);
+    try {
+      await distributorAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
+    } catch (e) {
+      assert.equal(e.response.status, RestStatus.FORBIDDEN, 'should Throws 403 Forbidden');
+      assert.equal(e.response.statusText, AssetError.NULL, 'should be NULL');
+    }
   })
 
-  it('Manufacturer should be able to open asset for bidding', function* () {
-    const asset = yield createAsset();
+  it('Manufacturer should be able to open asset for bidding', async function () {
+    const asset = await createAsset();
 
     const handleAssetEventArgs = {
       sku: asset.sku,
       assetEvent: AssetEvent.REQUEST_BIDS
     }
-    const newState = yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
+    const newState = await manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
     assert.equal(newState, AssetState.BIDS_REQUESTED);
   })
 
   // TODO: test that bid should only be created when asset is in the correct state
 
-  it('Distributor should be able to create a bid', function* () {
-    const asset = yield createAsset();
+  it('Distributor should be able to create a bid', async function () {
+    const asset = await createAsset();
 
     const handleAssetEventArgs = {
       sku: asset.sku,
       assetEvent: AssetEvent.REQUEST_BIDS
     }
-    const newState = yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
+    const newState = await manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
     assert.equal(newState, AssetState.BIDS_REQUESTED);
 
     const bidValue = 100;
-    const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
+    const bid = await bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
 
     assert.isDefined(bid.chainId, "Chain id should be defined")
     assert.equal(bid.assetOwner, asset.owner, 'Asset owner should match')
@@ -119,28 +144,28 @@ describe('Bid Tests', function() {
     assert.equal(bid.value, bidValue, 'Bid value should be correct')
 
     // manufacturer should be able to view this bid
-    const mBids = yield bidJs.getBids(manufacturerToken)
+    const mBids = await bidJs.getBids(manufacturerToken)
     const mBid = mBids.find((b) => b.address === bid.address)
     assert.isDefined(mBid, "Manufacturer should be able to view the bid")
 
     // retailer should not be able to view this bid
-    const rBids = yield bidJs.getBids(retailerToken)
+    const rBids = await bidJs.getBids(retailerToken)
     const rBid = rBids.find((b) => b.address === bid.address)
-    assert.notExists(rBid,  "Retailer should not be able to view the bid")
+    assert.notExists(rBid, "Retailer should not be able to view the bid")
   })
 
-  it("Distributor should not be able to accept a bid", function* () {
-    const asset = yield createAsset();
+  it("Distributor should not be able to accept a bid", async function () {
+    const asset = await createAsset();
 
     const handleAssetEventArgs = {
       sku: asset.sku,
       assetEvent: AssetEvent.REQUEST_BIDS
     }
-    const newState = yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
+    const newState = await manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
     assert.equal(newState, AssetState.BIDS_REQUESTED);
 
     const bidValue = 100;
-    const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
+    const bid = await bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
 
     const bidContract = bidJs.bind(distributorToken, bid.chainId, {
       name: 'Bid',
@@ -148,100 +173,103 @@ describe('Bid Tests', function() {
       src: 'removed'
     })
 
-    yield assert.shouldThrowRest(function* () {
-      yield bidContract.handleBidEvent(BidEvent.ACCEPT)
-    }, RestStatus.FORBIDDEN);
-
+    try {
+      await bidContract.handleBidEvent(BidEvent.ACCEPT)
+    } catch (e) {
+      assert.equal(e.response.status, RestStatus.FORBIDDEN, 'should Throws 403 Forbidden');
+    }
   });
 
-  it("Manufacturer be able to accept a bid", function* () {
-    const asset = yield createAsset();
+  it("Manufacturer be able to accept a bid", async function () {
+    const asset = await createAsset();
 
     const handleAssetEventArgs = {
       sku: asset.sku,
       assetEvent: AssetEvent.REQUEST_BIDS
     }
-    const newState = yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
+    const newState = await manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
     assert.equal(newState, AssetState.BIDS_REQUESTED);
 
     const bidValue = 100;
-    const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
+    const bid = await bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
 
     const bidContract = bidJs.bind(manufacturerToken, bid.chainId, {
       name: 'Bid',
       address: bid.address,
       src: 'removed'
     })
-    const newBidState = yield bidContract.handleBidEvent(BidEvent.ACCEPT)
+    const newBidState = await bidContract.handleBidEvent(BidEvent.ACCEPT)
     assert.equal(newBidState, BidState.ACCEPTED, 'Bid should be in accepted state')
   });
 
   // TODO: check that an accepted bid with the correct props exists before transfering ownership
-
-  it("Manufacturer should be able to change ownership", function* () {
-    const asset = yield createAsset();
+  // TODO: TBD
+  xit("Manufacturer should be able to change ownership", async function () {
+    const asset = await createAsset();
 
     const handleAssetEventArgs = {
       sku: asset.sku,
       assetEvent: AssetEvent.REQUEST_BIDS
     }
-    const newState = yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
+    const newState = await manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
     assert.equal(newState, AssetState.BIDS_REQUESTED);
 
     const bidValue = 100;
-    const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
+    const bid = await bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
 
     const bidContract = bidJs.bind(manufacturerToken, bid.chainId, {
       name: 'Bid',
       address: bid.address,
       src: 'removed'
     })
-    const newBidState = yield bidContract.handleBidEvent(BidEvent.ACCEPT)
+    const newBidState = await bidContract.handleBidEvent(BidEvent.ACCEPT)
     assert.equal(newBidState, BidState.ACCEPTED, 'Bid should be in accepted state')
 
-    transferOwnershipArgs = {
+    let transferOwnershipArgs = {
       sku: asset.sku,
       owner: distributorUser.address
     }
 
     const newAssetState =
-      yield manufacturerAssetManagerContract.transferOwnership(transferOwnershipArgs);
+      await manufacturerAssetManagerContract.transferOwnership(transferOwnershipArgs);
 
     assert(newAssetState, AssetState.OWNER_UPDATED, 'State should match')
     // TODO: test new owner. Might have to write a get asset call.
   });
 
-
-  it("Distributor should not be able to change ownership", function* () {
-    const asset = yield createAsset();
+  // TODO: TBD
+  xit("Distributor should not be able to change ownership", async function () {
+    const asset = await createAsset();
 
     const handleAssetEventArgs = {
       sku: asset.sku,
       assetEvent: AssetEvent.REQUEST_BIDS
     }
-    const newState = yield manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
+    const newState = await manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
     assert.equal(newState, AssetState.BIDS_REQUESTED);
 
     const bidValue = 100;
-    const bid = yield bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
+    const bid = await bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
 
     const bidContract = bidJs.bind(manufacturerToken, bid.chainId, {
       name: 'Bid',
       address: bid.address,
       src: 'removed'
     })
-    const newBidState = yield bidContract.handleBidEvent(BidEvent.ACCEPT)
+    const newBidState = await bidContract.handleBidEvent(BidEvent.ACCEPT)
     assert.equal(newBidState, BidState.ACCEPTED, 'Bid should be in accepted state')
 
-    transferOwnershipArgs = {
+    let transferOwnershipArgs = {
       sku: asset.sku,
       owner: distributorUser.address
     }
 
-    yield assert.shouldThrowRest(function* () {
-      yield distributorAssetManagerContract.transferOwnership(transferOwnershipArgs);
-    }, RestStatus.FORBIDDEN, AssetError.NULL);
-
+    try {
+      await distributorAssetManagerContract.transferOwnership(transferOwnershipArgs);
+    } catch (e) {
+      assert.equal(e.response.status, RestStatus.FORBIDDEN, 'should Throws 403 Forbidden');
+      assert.equal(e.response.statusText, AssetError.NULL, 'should be NULL');
+    }
     // TODO: test new owner. Might have to write a get asset call.
   });
 })

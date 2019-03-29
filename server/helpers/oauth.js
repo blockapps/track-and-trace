@@ -16,7 +16,7 @@ async function createStratoUser(accessToken, userIdOptional = null) {
     let user = await rest.createUser(accessToken, options);
     return { status: 200, message: 'success', user };
   } catch (e) {
-    return { status: e.status, message: `error while creating user` };
+    return { status: e.response.status, message: `error while creating user` };
   }
 };
 

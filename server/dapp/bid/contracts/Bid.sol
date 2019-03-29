@@ -1,4 +1,4 @@
-import "/blockapps-sol/rest/contracts/RestStatus.sol";
+import "/blockapps-sol/dist/rest/contracts/RestStatus.sol";
 
 import "./BidFSM.sol";
 import "./BidState.sol";

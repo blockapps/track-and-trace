@@ -28,7 +28,7 @@ describe('Bid Tests', function () {
   const regulatorToken = { token: process.env.REGULATOR_TOKEN };
 
   let assetManagerContract, manufacturerAssetManagerContract, distributorAssetManagerContract;
-  let manufacturerUser, distributorUser, regulatorUser;
+  let adminUser, masterUser, manufacturerUser, distributorUser, regulatorUser, retailerUser;
   let AssetError, AssetState, AssetEvent, BidState, BidEvent
 
   // TODO: refactor all these test helpers functions into helper/test.js
@@ -81,9 +81,12 @@ describe('Bid Tests', function () {
     const bidEventSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`)
     BidEvent = await parser.parseEnum(bidEventSource);
 
+    adminUser = await createUser(adminToken);
+    masterUser = await createUser(masterToken);
     manufacturerUser = await createUser(manufacturerToken);
     distributorUser = await createUser(distributorToken);
     regulatorUser = await createUser(regulatorToken);
+    retailerUser = await createUser(retailerToken);
 
     const ttPermissionManager = await ttPermissionManagerJs.uploadContract(adminToken, masterToken);
     assetManagerContract = await assetManagerJs.uploadContract(adminToken, ttPermissionManager);

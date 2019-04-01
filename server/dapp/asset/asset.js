@@ -49,7 +49,6 @@ function bindAddress(token, address) {
   return bind(token, contract);
 }
 
-// TODO: change and made compatible with new version
 async function waitForRequiredUpdate(sku, searchCounter) {
   function predicate(response) {
     if (response.length)

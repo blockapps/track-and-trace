@@ -188,7 +188,7 @@ async function transferOwnership(token, contract, args) {
   const callArgs = {
     contract,
     method: 'transferOwnership',
-    args: util.usc({ args })
+    args: util.usc(args)
   }
 
   const [restStatus, assetError, searchCounter, newState] = await rest.call(token, callArgs, options);

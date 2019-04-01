@@ -203,8 +203,7 @@ describe('Bid Tests', function () {
   });
 
   // TODO: check that an accepted bid with the correct props exists before transfering ownership
-  // TODO: TBD
-  xit("Manufacturer should be able to change ownership", async function () {
+  it("Manufacturer should be able to change ownership", async function () {
     const asset = await createAsset();
 
     const handleAssetEventArgs = {
@@ -230,15 +229,13 @@ describe('Bid Tests', function () {
       owner: distributorUser.address
     }
 
-    const newAssetState =
-      await manufacturerAssetManagerContract.transferOwnership(transferOwnershipArgs);
+    const newAssetState = await manufacturerAssetManagerContract.transferOwnership(transferOwnershipArgs);
 
     assert(newAssetState, AssetState.OWNER_UPDATED, 'State should match')
     // TODO: test new owner. Might have to write a get asset call.
   });
 
-  // TODO: TBD
-  xit("Distributor should not be able to change ownership", async function () {
+  it("Distributor should not be able to change ownership", async function () {
     const asset = await createAsset();
 
     const handleAssetEventArgs = {

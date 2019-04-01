@@ -1,6 +1,6 @@
 import { rest, fsUtil, parser } from 'blockapps-rest';
 import { assert } from 'chai';
-import { uploadContract } from '../ttPermissionManager';
+import ttPermissionManager from '../ttPermissionManager';
 import oauthHelper from '../../../helpers/oauth';
 
 import { getYamlFile } from '../../../helpers/config';
@@ -42,7 +42,7 @@ describe('TTPermissionManager tests', function () {
   });
 
   it('Grant Role - Admin', async function () {
-    const contract = await uploadContract(adminUser, masterUser);
+    const contract = await ttPermissionManager.uploadContract(adminUser, masterUser);
     const username = oauthHelper.getEmailIdFromToken(adminToken.token);
     const address = adminUser.address;
     Object.assign(adminUser, { username: username })
@@ -61,7 +61,7 @@ describe('TTPermissionManager tests', function () {
   })
 
   it('Grant Role - Asset Manager', async function () {
-    const contract = await uploadContract(adminUser, masterUser)
+    const contract = await ttPermissionManager.uploadContract(adminUser, masterUser)
     const username = oauthHelper.getEmailIdFromToken(masterToken.token);
     Object.assign(masterUser, { username: username })
     // not yet permitted
@@ -93,7 +93,7 @@ describe('TTPermissionManager tests', function () {
   })
 
   it('Grant Role - Manufacturer', async function () {
-    const contract = await uploadContract(adminToken, masterToken)
+    const contract = await ttPermissionManager.uploadContract(adminToken, masterToken)
     const username = oauthHelper.getEmailIdFromToken(manufacturerToken.token);
     const address = manufacturerUser.address;
     Object.assign(manufacturerUser, { username: username })
@@ -125,7 +125,7 @@ describe('TTPermissionManager tests', function () {
   })
 
   it('Grant Role - Distributor', async function () {
-    const contract = await uploadContract(adminToken, masterToken)
+    const contract = await ttPermissionManager.uploadContract(adminToken, masterToken)
     const username = oauthHelper.getEmailIdFromToken(distributorToken.token);
     const address = distributorUser.address;
     Object.assign(distributorUser, { username: username })

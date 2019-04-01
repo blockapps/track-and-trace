@@ -142,7 +142,7 @@ async function deploy(token, contract, deployFilename, managers) {
   return deployment;
 }
 
-module.exports = {
+export default {
   bind,
   uploadContract,
 };

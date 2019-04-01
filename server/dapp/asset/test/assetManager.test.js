@@ -14,7 +14,7 @@ import oauthHelper from '../../../helpers/oauth';
 import ttPermissionManagerJs from '../../ttPermission/ttPermissionManager';
 import assetManagerJs from '../../asset/assetManager';
 import assetJs from '../asset';
-import assetFactory from '../asset.factory';
+import { factory } from '../asset.factory';
 import { assertRestStatus } from '../../../helpers/assertRestStatus';
 
 const adminToken = { token: process.env.ADMIN_TOKEN };
@@ -93,7 +93,7 @@ describe('Asset Manager Tests', function () {
   });
 
   it('Create Asset -- unauthorized', async function () {
-    const assetArgs = assetFactory.getAssetArgs();
+    const assetArgs = factory.getAssetArgs();
 
     await assertRestStatus(async function () {
       await distributorAssetManagerContract.createAsset(assetArgs);
@@ -101,7 +101,7 @@ describe('Asset Manager Tests', function () {
   });
 
   it('Create Asset', async function () {
-    const assetArgs = assetFactory.getAssetArgs();
+    const assetArgs = factory.getAssetArgs();
 
     const asset = await manufacturerAssetManagerContract.createAsset(assetArgs);
     assert.equal(asset.sku, assetArgs.sku, 'sku');
@@ -111,7 +111,7 @@ describe('Asset Manager Tests', function () {
   });
 
   it('Create Asset -- empty sku', async function () {
-    const assetArgs = assetFactory.getAssetArgs({
+    const assetArgs = factory.getAssetArgs({
       sku: ''
     });
 
@@ -121,7 +121,7 @@ describe('Asset Manager Tests', function () {
   });
 
   it('Create Asset -- already exists', async function () {
-    const assetArgs = assetFactory.getAssetArgs();
+    const assetArgs = factory.getAssetArgs();
     assetArgs.sku = existingSku;
 
     await assertRestStatus(async function () {
@@ -130,7 +130,7 @@ describe('Asset Manager Tests', function () {
   });
 
   it('Handle Asset Event', async function () {
-    const assetArgs = assetFactory.getAssetArgs();
+    const assetArgs = factory.getAssetArgs();
     const asset = await manufacturerAssetManagerContract.createAsset(assetArgs);
     const assetContract = assetJs.bindAddress(manufacturerToken, asset.address);
 
@@ -152,7 +152,7 @@ describe('Asset Manager Tests', function () {
   });
 
   it('Handle Asset Event -- invalid event', async function () {
-    const assetArgs = assetFactory.getAssetArgs();
+    const assetArgs = factory.getAssetArgs();
     await manufacturerAssetManagerContract.createAsset(assetArgs);
 
     const handleAssetEventArgs = {
@@ -168,7 +168,7 @@ describe('Asset Manager Tests', function () {
 
   // TODO: fix this
   it.skip('Handle Asset Event -- asset not fonund', async function () {
-    const assetArgs = assetFactory.getAssetArgs();
+    const assetArgs = factory.getAssetArgs();
     const handleAssetEventArgs = {
       sku: assetArgs.sku,
       assetEvent: AssetEvent.REQUEST_BIDS,

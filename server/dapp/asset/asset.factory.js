@@ -15,4 +15,6 @@ const factory = {
   },
 }
 
-module.exports = factory;
+export {
+  factory
+};

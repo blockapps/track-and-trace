@@ -141,7 +141,7 @@ async function getBidsHistory(token, assetAddress) {
 
 
 
-module.exports = {
+export default {
   createBid,
   uploadContract,
   bind,

@@ -12,7 +12,7 @@ assert.isUndefined(loadEnv.error)
 
 import ttPermissionManagerJs from '../../ttPermission/ttPermissionManager';
 import assetJs from '../asset';
-import assetFactory from '../asset.factory';
+import { factory } from '../asset.factory';
 
 const adminToken = { token: process.env.ADMIN_TOKEN };
 const masterToken = { token: process.env.MASTER_TOKEN };
@@ -38,7 +38,7 @@ describe('Asset Tests', function () {
   });
 
   it('Create Asset', async function () {
-    const args = assetFactory.getAssetArgs();
+    const args = factory.getAssetArgs();
     const contract = await assetJs.uploadContract(adminToken, ttPermissionManagerContract, args);
 
     const state = await contract.getState();
@@ -49,7 +49,7 @@ describe('Asset Tests', function () {
   });
 
   it('Set Asset State', async function () {
-    const assetArgs = assetFactory.getAssetArgs();
+    const assetArgs = factory.getAssetArgs();
     const contract = await assetJs.uploadContract(adminToken, ttPermissionManagerContract, assetArgs);
 
     const setAssetStateArgs = {

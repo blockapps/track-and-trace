@@ -17,6 +17,6 @@ async function waitForAddress(contractName, address) {
   return results[0];
 }
 
-module.exports = {
+export {
   waitForAddress,
 }

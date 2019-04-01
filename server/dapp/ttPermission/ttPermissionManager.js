@@ -154,7 +154,7 @@ async function canCreateUser(admin, contract, user) {
   return isPermitted;
 }
 
-module.exports = {
+export default {
   bind,
   uploadContract
 };

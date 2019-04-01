@@ -157,7 +157,7 @@ async function getChains(token) {
   return filtered;
 }
 
-module.exports = {
+export default {
   createChain,
   bind,
   getChainById,

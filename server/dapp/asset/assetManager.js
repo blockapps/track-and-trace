@@ -6,7 +6,7 @@ const config = getYamlFile('config.yaml');
 
 import permissionHashmapJs from '../../blockapps-sol/dist/auth/permission/permissionedHashmap';
 import assetJs from './asset';
-import contractUtils from './contractUtils';
+import * as contractUtils from './contractUtils';
 import queryHelper from '../../helpers/query';
 
 const contractName = 'AssetManager';
@@ -216,7 +216,7 @@ function genAddressString(addresses) {
   return res;
 }
 
-module.exports = {
+export default {
   uploadContract,
   bind,
 }

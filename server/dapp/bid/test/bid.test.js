@@ -13,7 +13,7 @@ assert.isUndefined(loadEnv.error)
 import oauthHelper from '../../../helpers/oauth';
 import ttPermissionManagerJs from '../../ttPermission/ttPermissionManager';
 import assetManagerJs from '../../asset/assetManager';
-import assetFactory from '../../asset/asset.factory';
+import { factory } from '../../asset/asset.factory';
 import bidJs from '../../bid/bid';
 import { assertRestStatus } from '../../../helpers/assertRestStatus';
 
@@ -40,7 +40,7 @@ describe('Bid Tests', function () {
   }
 
   async function createAsset() {
-    const assetArgs = assetFactory.getAssetArgs();
+    const assetArgs = factory.getAssetArgs();
     const asset = await manufacturerAssetManagerContract.createAsset(assetArgs);
     assert.equal(asset.sku, assetArgs.sku, 'sku');
     assert.equal(asset.assetState, AssetState.CREATED);

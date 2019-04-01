@@ -83,7 +83,7 @@ function toBytes32(asset) {
   return converted
 }
 
-module.exports = {
+export default {
   uploadContract,
   bindAddress,
   contractName,

@@ -152,11 +152,11 @@ async function getAsset(token, contract, sku) {
 
   const address = await rest.call(token, callArgs, options);
 
-  const contract = {
+  const contractArgs = {
     name: assetJs.contractName
   }
 
-  const result = await rest.search(contract, { config, query: { address: `eq.${address}` } })
+  const result = await rest.search(contractArgs, { config, query: { address: `eq.${address}` } })
 
   if (result.length != 1) {
     throw new rest.RestError(RestStatus.NOT_FOUND, `Unable to retrieve state for address ${address}`);
@@ -183,11 +183,11 @@ async function getAssetHistory(token, contract, sku) {
 
   const address = await rest.call(token, callArgs, options)
 
-  const contract = {
+  const contractArgs = {
     name: `history@${assetJs.contractName}`
   }
 
-  const history = await rest.search(contract, { config, query: { address: `eq.${address}` } })
+  const history = await rest.search(contractArgs, { config, query: { address: `eq.${address}` } })
   return history.map(h => assetJs.fromBytes32(h));
 }
 

@@ -15,6 +15,7 @@ import ttPermissionManagerJs from '../../ttPermission/ttPermissionManager';
 import assetManagerJs from '../../asset/assetManager';
 import assetJs from '../asset';
 import assetFactory from '../asset.factory';
+import { assertRestStatus } from '../../../helpers/assertRestStatus';
 
 const adminToken = { token: process.env.ADMIN_TOKEN };
 const masterToken = { token: process.env.MASTER_TOKEN };
@@ -94,12 +95,9 @@ describe('Asset Manager Tests', function () {
   it('Create Asset -- unauthorized', async function () {
     const assetArgs = assetFactory.getAssetArgs();
 
-    try {
+    await assertRestStatus(async function () {
       await distributorAssetManagerContract.createAsset(assetArgs);
-    } catch (e) {
-      assert.equal(RestStatus.UNAUTHORIZED, e.response.status, "should be unauthorized")
-      assert.equal(AssetError.NULL, e.response.statusText, "assert error should be null")
-    }
+    }, RestStatus.UNAUTHORIZED, AssetError.NULL)
   });
 
   it('Create Asset', async function () {
@@ -117,24 +115,18 @@ describe('Asset Manager Tests', function () {
       sku: ''
     });
 
-    try {
+    await assertRestStatus(async function () {
       await manufacturerAssetManagerContract.createAsset(assetArgs);
-    } catch (e) {
-      assert.equal(RestStatus.BAD_REQUEST, e.response.status, "should be unauthorized")
-      assert.equal(AssetError.SKU_EMPTY, e.response.statusText, "assert error should be null")
-    }
+    }, RestStatus.BAD_REQUEST, AssetError.SKU_EMPTY)
   });
 
   it('Create Asset -- already exists', async function () {
     const assetArgs = assetFactory.getAssetArgs();
     assetArgs.sku = existingSku;
 
-    try {
+    await assertRestStatus(async function () {
       await manufacturerAssetManagerContract.createAsset(assetArgs);
-    } catch (e) {
-      assert.equal(RestStatus.BAD_REQUEST, e.response.status, "should be unauthorized")
-      assert.equal(AssetError.SKU_EXISTS, e.response.statusText, "assert error should be null")
-    }
+    }, RestStatus.BAD_REQUEST, AssetError.SKU_EXISTS)
   });
 
   it('Handle Asset Event', async function () {
@@ -168,12 +160,10 @@ describe('Asset Manager Tests', function () {
       assetEvent: AssetEvent.CHANGE_OWNER,
     };
 
-    try {
+    await assertRestStatus(async function () {
       await manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
-    } catch (e) {
-      assert.equal(RestStatus.BAD_REQUEST, e.response.status, "should be unauthorized")
-      assert.equal(AssetError.NULL, e.response.statusText, "assert error should be null")
-    }
+    }, RestStatus.BAD_REQUEST, AssetError.NULL)
+
   });
 
   // TODO: fix this

@@ -1,4 +1,4 @@
-import { rest, util, importer } from 'blockapps-rest';
+import { rest, util, importer, fsUtil, parser } from 'blockapps-rest';
 const { createContract } = rest;
 import RestStatus from 'http-status-codes';
 
@@ -6,8 +6,6 @@ import { getYamlFile } from '../../helpers/config';
 const config = getYamlFile('config.yaml');
 
 import * as permissionManagerJs from '../../blockapps-sol/dist/auth/permission/permissionManager';
-// TODO: call method to get roles
-// const TtRole = rest.getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`).TtRole;
 
 const contractName = 'TtPermissionManager';
 const contractFilename = `${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtPermissionManager.sol`;
@@ -52,21 +50,21 @@ function bind(admin, _contract) {
     return await canCreateUser(admin, contract, user);
   }
   contract.grantAdminRole = async function (user) {
-    // TODO: 'ADMIN' : 1
+    // INFO: 'ADMIN' : 1
     return await grantRole(admin, contract, user, 1);
   }
   contract.grantManufacturerRole = async function (user) {
-    // TODO: 'MANUFACTURER' : 3
+    // INFO: 'MANUFACTURER' : 3
     return await grantRole(admin, contract, user, 3);
   }
 
   contract.grantDistributorRole = async function (user) {
-    // TODO: 'DISTRIBUTOR' : 4
+    // INFO: 'DISTRIBUTOR' : 4
     return await grantRole(admin, contract, user, 4);
   }
 
   contract.grantAssetManager = async function (user) {
-    // TODO: 'ASSET_MANAGER' : 2
+    // INFO: 'ASSET_MANAGER' : 2
     return await grantRole(admin, contract, user, 2);
   }
   return contract;

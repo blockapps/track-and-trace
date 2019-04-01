@@ -15,6 +15,7 @@ import ttPermissionManagerJs from '../../ttPermission/ttPermissionManager';
 import assetManagerJs from '../../asset/assetManager';
 import assetFactory from '../../asset/asset.factory';
 import bidJs from '../../bid/bid';
+import { assertRestStatus } from '../../../helpers/assertRestStatus';
 
 describe('Bid Tests', function () {
   this.timeout(config.timeout)
@@ -102,12 +103,9 @@ describe('Bid Tests', function () {
       assetEvent: AssetEvent.REQUEST_BIDS
     }
 
-    try {
+    await assertRestStatus(async function () {
       await distributorAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
-    } catch (e) {
-      assert.equal(e.response.status, RestStatus.FORBIDDEN, 'should Throws 403 Forbidden');
-      assert.equal(e.response.statusText, AssetError.NULL, 'should be NULL');
-    }
+    }, RestStatus.FORBIDDEN, AssetError.NULL)
   })
 
   it('Manufacturer should be able to open asset for bidding', async function () {
@@ -122,7 +120,6 @@ describe('Bid Tests', function () {
   })
 
   // TODO: test that bid should only be created when asset is in the correct state
-
   it('Distributor should be able to create a bid', async function () {
     const asset = await createAsset();
 
@@ -173,11 +170,9 @@ describe('Bid Tests', function () {
       src: 'removed'
     })
 
-    try {
+    await assertRestStatus(async function () {
       await bidContract.handleBidEvent(BidEvent.ACCEPT)
-    } catch (e) {
-      assert.equal(e.response.status, RestStatus.FORBIDDEN, 'should Throws 403 Forbidden');
-    }
+    }, RestStatus.FORBIDDEN)
   });
 
   it("Manufacturer be able to accept a bid", async function () {
@@ -261,12 +256,9 @@ describe('Bid Tests', function () {
       owner: distributorUser.address
     }
 
-    try {
+    await assertRestStatus(async function () {
       await distributorAssetManagerContract.transferOwnership(transferOwnershipArgs);
-    } catch (e) {
-      assert.equal(e.response.status, RestStatus.FORBIDDEN, 'should Throws 403 Forbidden');
-      assert.equal(e.response.statusText, AssetError.NULL, 'should be NULL');
-    }
+    }, RestStatus.FORBIDDEN, AssetError.NULL)
     // TODO: test new owner. Might have to write a get asset call.
   });
 })

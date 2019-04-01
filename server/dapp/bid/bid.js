@@ -114,8 +114,7 @@ async function getBids(token, searchParams) {
     name: contractName
   }
 
-
-  const results = await rest.searchUntil(contract, predicate, { config, query: { chainId: `in.${queryParams.chainId.join()}` } });
+  const results = await rest.searchUntil(contract, predicate, { config, query: { chainId: `in.${util.toCsv(queryParams.chainId)}` } });
   return results;
 }
 

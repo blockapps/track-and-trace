@@ -35,12 +35,6 @@ describe('TTPermissionManager tests', function () {
     assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
     assert.isDefined(distributorToken, 'distributor token is not defined');
 
-    // TODO: add this if needed
-    // adminUser = await oauthHelper.createStratoUser(adminToken);
-    // masterUser = await oauthHelper.createStratoUser(masterToken);
-    // manufacturerUser = await oauthHelper.createStratoUser(manufacturerToken);
-    // distributorUser = await oauthHelper.createStratoUser(distributorToken);
-
     adminUser = await rest.createUser(adminToken, { config });
     masterUser = await rest.createUser(masterToken, { config });
     manufacturerUser = await rest.createUser(manufacturerToken, { config });

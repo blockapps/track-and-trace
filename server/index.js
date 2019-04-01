@@ -1,8 +1,7 @@
-import "@babel/polyfill";
-const express = require('express');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const { baseUrl, deployParamName } = require('./helpers/constants');
+import express from 'express';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import { baseUrl, deployParamName } from './helpers/constants';
 const routes = require('./api/v1/routes');
 const authHandler = require('./api/middleware/authHandler');
 const expressWinston = require('express-winston');

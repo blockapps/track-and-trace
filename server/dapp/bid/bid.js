@@ -119,6 +119,7 @@ async function getBids(token, searchParams) {
   return results;
 }
 
+// TODO: No testcases for this function. add one
 async function getBidsHistory(token, assetAddress) {
   const chains = await bidChainJs.getChains(token);
 
@@ -131,8 +132,11 @@ async function getBidsHistory(token, assetAddress) {
     chainId: chains.map(c => c.id)
   }
 
-  // TODO: use searchUntil here
-  const results = await rest.query(`history@${contractName}?${queryHelper.getPostgrestQueryString(queryParams)}`)
+  const contract = {
+    name: `history@${contractName}`
+  }
+
+  const results = await rest.search(contract, { config, query: { asset: `eq.${assetAddress}`, chainId: `in.${queryParams.chainId.join()}` } });
   return results;
 }
 

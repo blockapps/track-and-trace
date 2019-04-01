@@ -136,7 +136,7 @@ async function getAssets(token, contract, args) {
   return converted;
 }
 
-// TODO: No testcases yet
+// TODO: No testcases written yet
 async function getAsset(token, contract, sku) {
   const found = await exists(token, contract, sku);
 
@@ -152,11 +152,14 @@ async function getAsset(token, contract, sku) {
 
   const address = await rest.call(token, callArgs, options);
 
-  // TODO: replace it with searchUntil
-  const result = await rest.query(`${assetJs.contractName}?address=eq.${address}`);
+  const contract = {
+    name: assetJs.contractName
+  }
+
+  const result = await rest.search(contract, { config, query: { address: `eq.${address}` } })
 
   if (result.length != 1) {
-    throw new rest.RestError(restStatus.NOT_FOUND, `Unable to retrieve state for address ${address}`);
+    throw new rest.RestError(RestStatus.NOT_FOUND, `Unable to retrieve state for address ${address}`);
   }
 
   const converted = assetJs.fromBytes32(result[0]);
@@ -164,6 +167,7 @@ async function getAsset(token, contract, sku) {
   return converted;
 }
 
+// TODO: No testcases written yet
 async function getAssetHistory(token, contract, sku) {
   const found = await exists(token, contract, sku);
 
@@ -179,8 +183,11 @@ async function getAssetHistory(token, contract, sku) {
 
   const address = await rest.call(token, callArgs, options)
 
-  // TODO: replace it with searchUntil
-  const history = await rest.query(`history@${assetJs.contractName}?address=eq.${address}`);
+  const contract = {
+    name: `history@${assetJs.contractName}`
+  }
+
+  const history = await rest.search(contract, { config, query: { address: `eq.${address}` } })
   return history.map(h => assetJs.fromBytes32(h));
 }
 

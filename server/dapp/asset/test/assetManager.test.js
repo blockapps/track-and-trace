@@ -31,14 +31,6 @@ describe('Asset Manager Tests', function () {
   let AssetError, AssetState, AssetEvent;
   let adminUser, masterUser, manufacturerUser, distributorUser;
 
-  // TODO: check wheater it is needed or not
-  async function createUser(userToken) {
-    const userEmail = oauthHelper.getEmailIdFromToken(userToken.token);
-    const createAccountResponse = await oauthHelper.createStratoUser(userToken, userEmail);
-    assert.equal(createAccountResponse.status, 200, createAccountResponse.message);
-    return { address: createAccountResponse.address, username: userEmail };
-  }
-
   function bindAssetManagerContractToUser(user, contract) {
     let copy = Object.assign({}, contract);
 
@@ -63,7 +55,6 @@ describe('Asset Manager Tests', function () {
     assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
     assert.isDefined(distributorToken, 'distributor token is not defined');
 
-    // TODO: refactor this code or remove createStratoUser util
     adminUser = await rest.createUser(adminToken, { config });
     masterUser = await rest.createUser(masterToken, { config });
     manufacturerUser = await rest.createUser(manufacturerToken, { config });

@@ -135,7 +135,7 @@ async function getBidsHistory(token, assetAddress) {
     name: `history@${contractName}`
   }
 
-  const results = await rest.search(contract, { config, query: { asset: `eq.${assetAddress}`, chainId: `in.${queryParams.chainId.join()}` } });
+  const results = await rest.search(contract, { config, query: { asset: `eq.${assetAddress}`, chainId: `in.${util.toCsv(queryParams.chainId)}` } });
   return results;
 }
 

@@ -1,6 +1,9 @@
-const { common } = require('blockapps-rest');
-const { oauth, util, config } = common;
-const jwtDecode = require('jwt-decode');
+import { oauthUtil } from 'blockapps-rest';
+import jwtDecode from 'jwt-decode';
+
+// TODO: refactor same code.
+import { getYamlFile } from '../../helpers/config';
+const config = getYamlFile('config.yaml');
 
 const authHandler = {
   authorizeRequest: (req, res, next) => {
@@ -22,7 +25,7 @@ const authHandler = {
 
   init: (app) => {
     try {
-      app.oauth = oauth.init(config.oauth)
+      app.oauth = oauthUtil.init(config.oauth)
     }
     catch(err) {
       console.error('Error initializing oauth handlers');

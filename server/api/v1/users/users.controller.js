@@ -1,7 +1,8 @@
-const co = require('co');
+import { rest } from 'blockapps-rest';
 
-const { common } = require('blockapps-rest');
-const { config, util } = common;
+// TODO: refactor same code.
+import { getYamlFile } from '../../../helpers/config';
+const config = getYamlFile('config.yaml');
 
 const dappJs = require(`${process.cwd()}/${config.dappPath}/dapp/dapp`);
 
@@ -14,7 +15,7 @@ const userController = {
     co(function* () {
       const dapp = yield dappJs.bind(accessToken, deploy.contract);
       const user = yield dapp.getUser(username);
-      util.response.status200(res, user);
+      rest.response.status200(res, user);
     })
     .catch(next);
   },
@@ -28,7 +29,7 @@ const userController = {
     co(function* () {
       const dapp = yield dappJs.bind(accessToken, deploy.contract);
       const asset = yield dapp.createUser(args);
-      util.response.status200(res, asset);
+      rest.response.status200(res, asset);
     })
     .catch(next);
   },

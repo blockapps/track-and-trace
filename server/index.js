@@ -2,19 +2,22 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import { baseUrl, deployParamName } from './helpers/constants';
-const routes = require('./api/v1/routes');
-const authHandler = require('./api/middleware/authHandler');
-const expressWinston = require('express-winston');
-const winston = require('winston');
-const cors = require('cors');
-const errorHandler = require('./api/middleware/errorHandler');
+import routes from './api/v1/routes';
+import authHandler from './api/middleware/authHandler';
+import expressWinston from 'express-winston';
+import winston from 'winston';
+import cors from 'cors';
+import errorHandler from './api/middleware/errorHandler';
 
-import { common } from 'blockapps-rest';
-const { config, fsutil } = common;
+import { fsUtil } from 'blockapps-rest';
+
+// TODO: refactor same code.
+import { getYamlFile } from './helpers/config';
+const config = getYamlFile('config.yaml');
 
 const app = express();
 
-const deploy = fsutil.yamlSafeLoadSync(config.deployFilename);
+const deploy = fsUtil.getYaml(config.deployFilename);
 if (!deploy) throw new Error('Deploy config.deployFilename not found ', config.deployFilename);
 app.set(deployParamName, deploy);
 
@@ -51,4 +54,4 @@ const port = process.env.PORT || 3030;
 
 const server = app.listen(port, () => console.log(`Listening on ${port}`));
 
-module.exports = server;
+export { server }

@@ -1,13 +1,10 @@
-const co = require('co');
+import { rest, util } from 'blockapps-rest';
 
-const { common } = require('blockapps-rest');
-const { util, cwd } = common;
-
-const constants = require(`${cwd}/constants`);
+const constants = require(`${util.cwd}/constants`);
 
 const assetsController = {
   getConstants: (req, res) => {
-    util.response.status200(res, constants);
+    rest.response.status200(res, constants);
   },
 }
 

@@ -1,10 +1,11 @@
-const co = require('co');
+import { rest } from 'blockapps-rest';
 
-const { common, rest6: rest } = require('blockapps-rest');
-const { config, util } = common;
+// TODO: refactor same code.
+import { getYamlFile } from '../../../helpers/config';
+const config = getYamlFile('config.yaml');
 
 const bidJs = require(`${process.cwd()}/${config.dappPath}/bid/bid`);
-const BidEvent = rest.getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`).BidEvent;
+// const BidEvent = rest.getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`).BidEvent;
 
 const bidsController = {
 
@@ -16,7 +17,7 @@ const bidsController = {
     co(function* () {
       const getRegulatorKey = yield rest.getKey(accessToken, { username: regulatorEmail });
       const bid = yield bidJs.createBid(accessToken, address, owner, bidValue, getRegulatorKey.address);
-      util.response.status200(res, bid);
+      rest.response.status200(res, bid);
     })
       .catch(next);
   },
@@ -26,7 +27,7 @@ const bidsController = {
 
     co(function* () {
       const bids = yield bidJs.getBids(accessToken);
-      util.response.status200(res, bids);
+      rest.response.status200(res, bids);
     })
       .catch(next);
   },
@@ -42,7 +43,7 @@ const bidsController = {
     co(function* () {
       // response will contain only addressed data. Remove [0] while quering for multiple addresses
       const bids = (yield bidJs.getBids(accessToken, searchParams))[0];
-      util.response.status200(res, bids);
+      rest.response.status200(res, bids);
     })
       .catch(next);
   },
@@ -67,7 +68,7 @@ const bidsController = {
         default:
           bidState;
       }
-      util.response.status200(res, bidState);
+      rest.response.status200(res, bidState);
     })
       .catch(next);
 

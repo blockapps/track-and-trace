@@ -1,11 +1,12 @@
-const co = require('co');
+import { rest } from 'blockapps-rest';
 
-const { common, rest6: rest } = require('blockapps-rest');
-const { config, util } = common;
+// TODO: refactor same code.
+import { getYamlFile } from '../../../helpers/config';
+const config = getYamlFile('config.yaml');
 
 const dappJs = require(`${process.cwd()}/${config.dappPath}/dapp/dapp`);
 const encodingHelpers = require(`../../../helpers/encoding`);
-const AssetEvent = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`).AssetEvent;
+// const AssetEvent = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`).AssetEvent;
 const bidJs = require(`${process.cwd()}/${config.dappPath}/bid/bid`);
 
 const moment = require('moment');
@@ -20,7 +21,7 @@ const assetsController = {
     co(function* () {
       const dapp = yield dappJs.bind(accessToken, deploy.contract);
       const assets = yield dapp.getAssets(args);
-      util.response.status200(res, assets);
+      rest.response.status200(res, assets);
     })
       .catch(next);
   },
@@ -30,7 +31,7 @@ const assetsController = {
     const sku = req.params.sku;
 
     if (!sku) {
-      util.response.status400(res, 'Missing sku')
+      rest.response.status400(res, 'Missing sku')
       return next();
     }
 
@@ -51,7 +52,7 @@ const assetsController = {
         (h1, h2) => moment(h1.block_timestamp).unix() - moment(h2.block_timestamp).unix()
       )
 
-      util.response.status200(res, asset);
+      rest.response.status200(res, asset);
     })
       .catch(next);
   },
@@ -66,7 +67,7 @@ const assetsController = {
       || !Array.isArray(args.values)
       || args.keys.length !== args.values.length
     ) {
-      util.response.status400(res, 'Missing spec or bad spec format');
+      rest.response.status400(res, 'Missing spec or bad spec format');
       return next();
     }
 
@@ -75,7 +76,7 @@ const assetsController = {
     co(function* () {
       const dapp = yield dappJs.bind(accessToken, deploy.contract);
       const asset = yield dapp.createAsset(args);
-      util.response.status200(res, asset);
+      rest.response.status200(res, asset);
     })
       .catch(next);
   },
@@ -92,7 +93,7 @@ const assetsController = {
     co(function* () {
       const dapp = yield dappJs.bind(accessToken, deploy.contract);
       const newState = yield dapp.handleAssetEvent(args);
-      util.response.status200(res, newState);
+      rest.response.status200(res, newState);
     })
       .catch(next);
   },
@@ -109,7 +110,7 @@ const assetsController = {
     co(function* () {
       const dapp = yield dappJs.bind(accessToken, deploy.contract);
       const newState = yield dapp.transferOwnership(args);
-      util.response.status200(res, newState);
+      rest.response.status200(res, newState);
     })
       .catch(next);
   }

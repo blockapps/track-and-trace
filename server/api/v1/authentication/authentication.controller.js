@@ -1,12 +1,14 @@
-const jwtDecode = require('jwt-decode');
-const ba = require('blockapps-rest')
-const { common } = ba;
-const { config, util } = common;
+import jwtDecode from 'jwt-decode';
+import { rest } from 'blockapps-rest';
+
+// TODO: refactor same code.
+import { getYamlFile } from '../../../helpers/config';
+const config = getYamlFile('config.yaml');
 
 const authenticationController = {
   callback: async function (req, res, next) {
     const code = req.query['code'];
-
+    console.log("---------------------------", code)
     const tokensResponse = await req.app.oauth.oauthGetAccessTokenByAuthCode(code);
 
     const accessToken = tokensResponse.token['access_token'];
@@ -27,7 +29,7 @@ const authenticationController = {
     res.clearCookie(req.app.oauth.getCookieNameAccessToken());
     res.clearCookie(req.app.oauth.getCookieNameAccessTokenExpiry());
     res.clearCookie(req.app.oauth.getCookieNameRefreshToken());
-    util.response.status200(res, {logoutUrl: oauthSignOutUrl});
+    rest.response.status200(res, {logoutUrl: oauthSignOutUrl});
   }
 
 };

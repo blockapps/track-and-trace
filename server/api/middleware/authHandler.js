@@ -8,10 +8,8 @@ const config = getYamlFile('config.yaml');
 const authHandler = {
   authorizeRequest: (req, res, next) => {
     return async (req, res, next) => {
-      const token = req.app.oauth.getCookieNameAccessToken();
-      console.log("------------------------------------", token)
-      const accessTokenFromCookie = req.cookies[token];
-      console.log("-sdf-----------------------------------", accessTokenFromCookie)
+      const tokenName = req.app.oauth.getCookieNameAccessToken();
+      const accessTokenFromCookie = req.cookies[tokenName];
       if (!accessTokenFromCookie) {
         return rest.response.status('401', res, { loginUrl: req.app.oauth.getSigninURL() });
       }

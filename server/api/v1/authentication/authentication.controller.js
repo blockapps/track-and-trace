@@ -8,8 +8,7 @@ const config = getYamlFile('config.yaml');
 const authenticationController = {
   callback: async function (req, res, next) {
     const code = req.query['code'];
-    console.log("---------------------------", code)
-    const tokensResponse = await req.app.oauth.oauthGetAccessTokenByAuthCode(code);
+    const tokensResponse = await req.app.oauth.getAccessTokenByAuthCode(code);
 
     const accessToken = tokensResponse.token['access_token'];
     const refreshToken = tokensResponse.token['refresh_token'];

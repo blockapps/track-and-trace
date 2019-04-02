@@ -1,4 +1,4 @@
-import { oauthUtil } from 'blockapps-rest';
+import { rest, oauthUtil } from 'blockapps-rest';
 import jwtDecode from 'jwt-decode';
 
 // TODO: refactor same code.
@@ -7,15 +7,18 @@ const config = getYamlFile('config.yaml');
 
 const authHandler = {
   authorizeRequest: (req, res, next) => {
-    return async(req, res, next) => {
-      const accessTokenFromCookie = req.cookies[req.app.oauth.getCookieNameAccessToken()];
+    return async (req, res, next) => {
+      const token = req.app.oauth.getCookieNameAccessToken();
+      console.log("------------------------------------", token)
+      const accessTokenFromCookie = req.cookies[token];
+      console.log("-sdf-----------------------------------", accessTokenFromCookie)
       if (!accessTokenFromCookie) {
-        return util.response.status('401', res, {loginUrl: req.app.oauth.oauthGetSigninURL()});
+        return rest.response.status('401', res, { loginUrl: req.app.oauth.getSigninURL() });
       }
-      try  {
+      try {
         await req.app.oauth.validateAndGetNewToken(req, res);
-      } catch(err) {
-        return util.response.status('401', res, { loginUrl: req.app.oauth.oauthGetSigninURL() });
+      } catch (err) {
+        return rest.response.status('401', res, { loginUrl: req.app.oauth.getSigninURL() });
       }
       req.accessToken = accessTokenFromCookie;
       req.decodedToken = jwtDecode(accessTokenFromCookie);
@@ -27,7 +30,7 @@ const authHandler = {
     try {
       app.oauth = oauthUtil.init(config.oauth)
     }
-    catch(err) {
+    catch (err) {
       console.error('Error initializing oauth handlers');
       process.exit(1);
     }

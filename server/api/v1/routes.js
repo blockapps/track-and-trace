@@ -5,9 +5,9 @@ import packages from '../../package.json';
 
 const authentication = require(`./authentication`);
 const user = require(`./users`)
-// const assets = require(`./assets`);
-// const bids = require(`./bids`);
-// const constants = require(`./constants`);
+const assets = require(`./assets`);
+const bids = require(`./bids`);
+const constants = require(`./constants`);
 
 router.use(
   `/authentication`,
@@ -20,22 +20,22 @@ router.use(
   user
 )
 
-// router.use(
-//   `/assets`,
-//   authHandler.authorizeRequest(),
-//   assets
-// );
+router.use(
+  `/assets`,
+  authHandler.authorizeRequest(),
+  assets
+);
 
-// router.use(
-//   `/bids`,
-//   authHandler.authorizeRequest(),
-//   bids
-// );
+router.use(
+  `/bids`,
+  authHandler.authorizeRequest(),
+  bids
+);
 
-// router.use(
-//   `/constants`,
-//   constants
-// );
+router.use(
+  `/constants`,
+  constants
+);
 
 // set health handler
 router.get(`/health`, (req, res) => {

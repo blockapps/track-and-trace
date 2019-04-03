@@ -21,8 +21,8 @@ const userController = {
 
     const deploy = app.get('deploy');
 
-    const dapp = yield dappJs.bind(token, deploy.contract);
-    const asset = yield dapp.createUser(args);
+    const dapp = await dappJs.bind(token, deploy.contract);
+    const asset = await dapp.createUser(args);
     rest.response.status200(res, asset);
   },
 }

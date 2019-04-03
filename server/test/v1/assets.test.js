@@ -1,66 +1,75 @@
-require('dotenv').config();
-require('co-mocha');
+import { fsUtil, parser } from 'blockapps-rest';
+import { assert } from 'chai';
 
-const { rest6: rest, common } = require('blockapps-rest');
-const { assert, config } = common;
+import { getYamlFile } from '../../helpers/config';
+const config = getYamlFile('config.yaml');
 
-const { getEmailIdFromToken, createStratoUser } = require(`${process.cwd()}/helpers/oauth`);
+import dotenv from 'dotenv';
+
+const loadEnv = dotenv.config()
+assert.isUndefined(loadEnv.error)
+
+import oauthHelper from '../../helpers/oauth';
 const { get, post } = require(`${process.cwd()}/test/helpers/rest`);
 const endpoints = require(`${process.cwd()}/api/v1/endpoints`);
 
-const TtRole = rest.getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`).TtRole;
-const assetFactory = require(`${process.cwd()}/${config.dappPath}/asset/asset.factory`);
+import { factory } from '../../dapp/asset/asset.factory';
 
-const adminToken = process.env.ADMIN_TOKEN;
-const manufacturerToken = process.env.MANUFACTURER_TOKEN;
-
-const TEST_TIMEOUT = 60000;
+const adminToken = { token: process.env.ADMIN_TOKEN };
+const manufacturerToken = { token: process.env.MANUFACTURER_TOKEN };
 
 describe('Assets End-To-End Tests', function () {
-  this.timeout(TEST_TIMEOUT);
+  this.timeout(config.timeout);
 
-  const createUser = function* (userToken, role) {
+  let TtRole;
+
+  const createUser = async function (userToken, role) {
     try {
-      const user = yield get(endpoints.Users.me, userToken);
+      const user = await get(endpoints.Users.me, userToken.token);
       assert.equal(user.role, role, 'user already created with different role');
     } catch (err) {
       console.log(err);
-      const userEmail = getEmailIdFromToken(userToken);
-      const createAccountResponse = yield createStratoUser(userToken, userEmail);
+      const userEmail = oauthHelper.getEmailIdFromToken(userToken.token);
+      const createAccountResponse = await oauthHelper.createStratoUser(userToken, userEmail);
       const createTtUserArgs = {
         account: createAccountResponse.address,
         username: userEmail,
         role: role
       };
-      yield post(endpoints.Users.users, createTtUserArgs, adminToken);
+      await post(endpoints.Users.users, createTtUserArgs, adminToken.token);
     }
   }
 
-  before(function* () {
+  before(async function () {
     assert.isDefined(adminToken, 'admin token is not defined');
     assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
-    yield createUser(manufacturerToken, TtRole.MANUFACTURER);
+
+    // get assertError Enums
+    const ttRoleSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`)
+    TtRole = await parser.parseEnum(ttRoleSource);
+
+    await createUser(manufacturerToken, TtRole.MANUFACTURER);
   });
 
-  it('Get Assets', function* () {
-    const createAssetArgs = assetFactory.getAssetArgs();
-    yield post(endpoints.Assets.assets, {asset: createAssetArgs} , manufacturerToken);
+  it('Get Assets', async function () {
+    const createAssetArgs = factory.getAssetArgs();
+    await post(endpoints.Assets.assets, { asset: createAssetArgs }, manufacturerToken.token);
 
-    const assets = yield get(endpoints.Assets.assets, manufacturerToken);
+    const assets = await get(endpoints.Assets.assets, manufacturerToken.token);
     assert.isAtLeast(assets.length, 1, 'assets list non-empty');
   });
 
-  it('Get Asset', function* () {
-    const createAssetArgs = assetFactory.getAssetArgs();
-    const asset = yield post(endpoints.Assets.assets, {asset: createAssetArgs} , manufacturerToken);
+  it('Get Asset', async function () {
+    const createAssetArgs = factory.getAssetArgs();
+    const asset = await post(endpoints.Assets.assets, { asset: createAssetArgs }, manufacturerToken.token);
 
-    const retrieved = yield get(endpoints.Assets.asset.replace(':sku',asset.sku), manufacturerToken);
+    const retrieved = await get(endpoints.Assets.asset.replace(':sku', asset.sku), manufacturerToken.token);
     assert.equal(asset.sku, retrieved.sku, 'Asset sku should match');
   });
 
-  it('Create Asset', function* () {
-    const createAssetArgs = assetFactory.getAssetArgs();
-    const asset = yield post(endpoints.Assets.assets, {asset: createAssetArgs}, manufacturerToken);
+  it('Create Asset', async function () {
+    const createAssetArgs = factory.getAssetArgs();
+    const asset = await post(endpoints.Assets.assets, { asset: createAssetArgs }, manufacturerToken.token);
 
     assert.equal(asset.sku, createAssetArgs.sku, 'sku matches');
     assert.equal(asset.description, createAssetArgs.description, 'description matches');

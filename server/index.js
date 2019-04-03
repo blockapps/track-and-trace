@@ -54,4 +54,4 @@ const port = process.env.PORT || 3030;
 
 const server = app.listen(port, () => console.log(`Listening on ${port}`));
 
-export { server }
+export default server;

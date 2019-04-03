@@ -1,33 +1,29 @@
-require('co-mocha');
-const chai = require('chai');
-const chaiHttp = require('chai-http');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
 chai.use(chaiHttp);
 
-const { common } = require('blockapps-rest');
-const { assert, config } = common;
-const { apiUrl } = config;
+import { getYamlFile } from '../../helpers/config';
+const config = getYamlFile('config.yaml');
 
+import server from '../../index';
 
-const server = require(`${process.cwd()}`);
-
-const get = function* (endpoint, accessToken=null) {
-  const url = apiUrl + endpoint;
+const get = async function (endpoint, accessToken = null) {
+  const url = config.apiUrl + endpoint;
   const response = accessToken
-    ? yield chai.request(server).get(url).set('Cookie', `${config.oauth.appTokenCookieName}=${accessToken}`)
-    : yield chai.request(server).get(url);
-  assert.equal(response.statusCode, 200, `${url} should return status 200 OK`);
+    ? await chai.request(server).get(url).set('Cookie', `${config.oauth.appTokenCookieName}=${accessToken}`)
+    : await chai.request(server).get(url);
+  chai.assert.equal(response.statusCode, 200, `${url} should return status 200 OK`);
   return response.body.data;
 }
 
-const post = function* (endpoint, body, accessToken=null) {
-  const url = apiUrl + endpoint;
+const post = async function (endpoint, body, accessToken = null) {
+  const url = config.apiUrl + endpoint;
   const response = accessToken
-    ? yield chai.request(server).post(url).set('Cookie', `${config.oauth.appTokenCookieName}=${accessToken}`).send(body)
-    : yield chai.request(server).post(url).send(body);
-  assert.equal(response.statusCode, 200, `${url} should return status 200 OK`);
+    ? await chai.request(server).post(url).set('Cookie', `${config.oauth.appTokenCookieName}=${accessToken}`).send(body)
+    : await chai.request(server).post(url).send(body);
+  chai.assert.equal(response.statusCode, 200, `${url} should return status 200 OK`);
   return response.body.data;
 }
-
 
 module.exports = {
   get,

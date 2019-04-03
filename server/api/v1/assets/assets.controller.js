@@ -1,16 +1,13 @@
 import { rest } from 'blockapps-rest';
 
-// TODO: refactor same code.
-import { getYamlFile } from '../../../helpers/config';
-const config = getYamlFile('config.yaml');
-
 import dappJs from '../../../dapp/dapp/dapp';
 import bidJs from '../../../dapp/bid/bid';
 
-const moment = require('moment');
+import moment from 'moment';
 
-const assetsController = {
-  getAssets: async (req, res, next) => {
+class AssetsController {
+
+  static async getAssets(req, res, next) {
     const { app, accessToken, query } = req;
     const args = { ...query };
     // TODO: create token utils
@@ -25,9 +22,9 @@ const assetsController = {
     } catch (e) {
       next(e)
     }
-  },
+  }
 
-  getAsset: async (req, res, next) => {
+  static async getAsset(req, res, next) {
     const { app, accessToken } = req;
     const sku = req.params.sku;
     const token = { token: accessToken };
@@ -58,10 +55,10 @@ const assetsController = {
     } catch (e) {
       next(e)
     }
-  },
+  }
 
   // TODO: throw errors correctly from dapp
-  createAsset: async (req, res, next) => {
+  static async createAsset(req, res, next) {
     const { app, accessToken, body } = req;
     const args = { ...body.asset };
     const token = { token: accessToken };
@@ -83,9 +80,9 @@ const assetsController = {
     } catch (e) {
       next(e)
     }
-  },
+  }
 
-  handleAssetEvent: async (req, res, next) => {
+  static async handleAssetEvent(req, res, next) {
     const { app, accessToken, body } = req;
     const { sku, assetEvent } = body;
     const token = { token: accessToken };
@@ -101,9 +98,9 @@ const assetsController = {
     } catch (e) {
       next(e)
     }
-  },
+  }
 
-  transferOwnership: async (req, res, next) => {
+  static async transferOwnership(req, res, next) {
     const { app, accessToken, body } = req;
     const { sku, owner } = body;
     const token = { token: accessToken };
@@ -123,4 +120,4 @@ const assetsController = {
   }
 }
 
-module.exports = assetsController;
+export default AssetsController;

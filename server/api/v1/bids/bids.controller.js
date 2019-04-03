@@ -5,11 +5,12 @@ import { getYamlFile } from '../../../helpers/config';
 const config = getYamlFile('config.yaml');
 
 import bidJs from '../../../dapp/bid/bid';
+// TODO: use in constructor and init global variable
 // const BidEvent = rest.getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`).BidEvent;
 
-const bidsController = {
+class BidsController {
 
-  createBid: async (req, res, next) => {
+  static async createBid(req, res, next) {
     const { accessToken, body } = req;
     const { address, owner, bidValue, regulatorEmail } = body;
     const token = { token: accessToken };
@@ -21,9 +22,9 @@ const bidsController = {
     } catch (e) {
       next(e)
     }
-  },
+  }
 
-  list: async (req, res, next) => {
+  static async list(req, res, next) {
     const { accessToken } = req;
     const token = { token: accessToken };
 
@@ -33,9 +34,9 @@ const bidsController = {
     } catch (e) {
       next(e)
     }
-  },
+  }
 
-  get: async (req, res, next) => {
+  static async get(req, res, next) {
     const { accessToken, params } = req;
     const { address } = params;
     const token = { token: accessToken };
@@ -52,9 +53,9 @@ const bidsController = {
     } catch (e) {
       next(e)
     }
-  },
+  }
 
-  handleEvent: async (req, res, next) => {
+  static async handleEvent(req, res, next) {
     const { accessToken, params, body } = req;
     // Bid address
     const { address: bidAddress } = params;
@@ -79,8 +80,8 @@ const bidsController = {
     } catch (e) {
       next(e)
     }
-
   }
+
 }
 
-module.exports = bidsController;
+export default BidsController;

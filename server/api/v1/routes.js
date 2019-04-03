@@ -1,13 +1,15 @@
-const authHandler = require('../middleware/authHandler');
-const router = require('express').Router();
-const moment = require('moment');
+import express from 'express';
+const router = express.Router();
+
+import moment from 'moment';
+import authHandler from '../middleware/authHandler';
 import packages from '../../package.json';
 
-const authentication = require(`./authentication`);
-const user = require(`./users`)
-const assets = require(`./assets`);
-const bids = require(`./bids`);
-const constants = require(`./constants`);
+import authentication from './authentication';
+import user from './users';
+import assets from './assets';
+import bids from './bids';
+import constants from './constants';
 
 router.use(
   `/authentication`,
@@ -47,5 +49,5 @@ router.get(`/health`, (req, res) => {
   })
 });
 
-module.exports = router;
+export default router;
 

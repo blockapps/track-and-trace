@@ -5,8 +5,9 @@ import { rest } from 'blockapps-rest';
 import { getYamlFile } from '../../../helpers/config';
 const config = getYamlFile('config.yaml');
 
-const authenticationController = {
-  callback: async function (req, res, next) {
+class AuthenticationController {
+
+  static async callback(req, res, next) {
     const code = req.query['code'];
     const tokensResponse = await req.app.oauth.getAccessTokenByAuthCode(code);
 
@@ -17,20 +18,20 @@ const authenticationController = {
 
     const accessTokenExpiration = decodedToken['exp'];
 
-    res.cookie(req.app.oauth.getCookieNameAccessToken(), accessToken, {maxAge: config['oauth']['appTokenCookieMaxAge'], httpOnly: true});
-    res.cookie(req.app.oauth.getCookieNameAccessTokenExpiry(), accessTokenExpiration, {maxAge: config['oauth']['appTokenCookieMaxAge'], httpOnly: true});
-    res.cookie(req.app.oauth.getCookieNameRefreshToken(), refreshToken, {maxAge: config['oauth']['appTokenCookieMaxAge'], httpOnly: true});
+    res.cookie(req.app.oauth.getCookieNameAccessToken(), accessToken, { maxAge: config['oauth']['appTokenCookieMaxAge'], httpOnly: true });
+    res.cookie(req.app.oauth.getCookieNameAccessTokenExpiry(), accessTokenExpiration, { maxAge: config['oauth']['appTokenCookieMaxAge'], httpOnly: true });
+    res.cookie(req.app.oauth.getCookieNameRefreshToken(), refreshToken, { maxAge: config['oauth']['appTokenCookieMaxAge'], httpOnly: true });
     res.redirect('/');
-  },
+  }
 
-  logout: function (req, res) {
+  static async logout(req, res) {
     const oauthSignOutUrl = req.app.oauth.getLogOutUrl();
     res.clearCookie(req.app.oauth.getCookieNameAccessToken());
     res.clearCookie(req.app.oauth.getCookieNameAccessTokenExpiry());
     res.clearCookie(req.app.oauth.getCookieNameRefreshToken());
-    rest.response.status200(res, {logoutUrl: oauthSignOutUrl});
+    rest.response.status200(res, { logoutUrl: oauthSignOutUrl });
   }
 
 };
 
-module.exports = authenticationController;
+export default AuthenticationController;

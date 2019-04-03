@@ -2,8 +2,9 @@ import { rest } from 'blockapps-rest';
 
 import dappJs from '../../../dapp/dapp/dapp';
 
-const userController = {
-  me: async (req, res, next) => {
+class userController {
+
+  static async me(req, res, next) {
     const { app, accessToken, decodedToken } = req;
     const token = { token: accessToken };
 
@@ -17,8 +18,9 @@ const userController = {
     } catch (e) {
       next(e)
     }
-  },
-  createUser: async (req, res, next) => {
+  }
+
+  static async createUser(req, res, next) {
     const { app, accessToken, body } = req;
     const args = { ...body };
     const token = { token: accessToken };
@@ -32,7 +34,7 @@ const userController = {
     } catch (e) {
       next(e)
     }
-  },
+  }
 }
 
-module.exports = userController;
+export default userController;

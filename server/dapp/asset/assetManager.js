@@ -142,7 +142,7 @@ async function getAsset(token, contract, sku) {
   const found = await exists(token, contract, sku);
 
   if (!found) {
-    throw new rest.RestError(restStatus.NOT_FOUND, `SKU ${sku} not found`);
+    throw new rest.RestError(RestStatus.NOT_FOUND, `SKU ${sku} not found`);
   }
 
   const callArgs = {

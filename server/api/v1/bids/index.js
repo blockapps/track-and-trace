@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const controller = require('./bids.controller');
+import BidsController from './bids.controller';
 
-router.post('/', controller.createBid);
-router.get('/', controller.list);
-router.get('/:address', controller.get);
-router.post('/:address/event', controller.handleEvent);
+router.post('/', BidsController.createBid);
+router.get('/', BidsController.list);
+router.get('/:address', BidsController.get);
+router.post('/:address/event', BidsController.handleEvent);
 
-module.exports = router;
+export default router;

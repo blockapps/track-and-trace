@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import { baseUrl, deployParamName } from './helpers/constants';
+import constants from './helpers/constants';
 import routes from './api/v1/routes';
 import authHandler from './api/middleware/authHandler';
 import expressWinston from 'express-winston';
@@ -19,7 +19,7 @@ const app = express();
 
 const deploy = fsUtil.getYaml(config.deployFilename);
 if (!deploy) throw new Error('Deploy config.deployFilename not found ', config.deployFilename);
-app.set(deployParamName, deploy);
+app.set(constants.deployParamName, deploy);
 
 // remove x-powerd-by header
 app.disable('x-powered-by');
@@ -46,7 +46,7 @@ app.use(
 authHandler.init(app);
 
 // setup routes
-app.use(`${baseUrl}`, routes);
+app.use(`${constants.baseUrl}`, routes);
 
 app.use(errorHandler)
 

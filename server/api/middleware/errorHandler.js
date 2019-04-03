@@ -42,4 +42,4 @@ const handler = (
   rest.response.status(err.statusCode, res, err.message);
 }
 
-module.exports = handler;
+export default handler;

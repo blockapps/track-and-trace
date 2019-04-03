@@ -1,12 +1,11 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const controller = require('./assets.controller');
+import AssetsController from './assets.controller';
 
-router.get('/', controller.getAssets);
-router.get('/:sku', controller.getAsset);
-router.post('/', controller.createAsset);
-router.post('/handleEvent', controller.handleAssetEvent);
-router.post('/transferOwnership', controller.transferOwnership);
+router.get('/', AssetsController.getAssets);
+router.get('/:sku', AssetsController.getAsset);
+router.post('/', AssetsController.createAsset);
+router.post('/handleEvent', AssetsController.handleAssetEvent);
+router.post('/transferOwnership', AssetsController.transferOwnership);
 
-
-module.exports = router;
+export default router;

@@ -4,4 +4,4 @@ import controller from './constants.controller';
 
 router.get('', controller.getConstants);
 
-module.exports = router;
+export default router;

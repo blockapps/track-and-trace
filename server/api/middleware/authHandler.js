@@ -5,8 +5,9 @@ import jwtDecode from 'jwt-decode';
 import { getYamlFile } from '../../helpers/config';
 const config = getYamlFile('config.yaml');
 
-const authHandler = {
-  authorizeRequest: (req, res, next) => {
+class AuthHandler {
+
+  static authorizeRequest(req, res, next) {
     return async (req, res, next) => {
       const tokenName = req.app.oauth.getCookieNameAccessToken();
       const accessTokenFromCookie = req.cookies[tokenName];
@@ -22,9 +23,9 @@ const authHandler = {
       req.decodedToken = jwtDecode(accessTokenFromCookie);
       return next();
     }
-  },
+  }
 
-  init: (app) => {
+  static init(app) {
     try {
       app.oauth = oauthUtil.init(config.oauth)
     }
@@ -33,6 +34,7 @@ const authHandler = {
       process.exit(1);
     }
   }
+
 }
 
-module.exports = authHandler;
+export default AuthHandler

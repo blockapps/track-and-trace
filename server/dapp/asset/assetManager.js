@@ -4,7 +4,7 @@ import RestStatus from 'http-status-codes';
 import { getYamlFile } from '../../helpers/config';
 const config = getYamlFile('config.yaml');
 
-import permissionHashmapJs from '../../blockapps-sol/dist/auth/permission/permissionedHashmap';
+import * as permissionHashmapJs from '../../blockapps-sol/dist/auth/permission/permissionedHashmap';
 import assetJs from './asset';
 import * as contractUtils from './contractUtils';
 import queryHelper from '../../helpers/query';
@@ -112,9 +112,7 @@ async function handleAssetEvent(token, contract, args) {
 }
 
 async function getAssets(token, contract, args) {
-  rest.verbose('getAssets');
-
-  const { assets: assetsHashMap } = await rest.getState(contract);
+  const { assets: assetsHashMap } = await rest.getState(contract, options);
   const hashmap = permissionHashmapJs.bindAddress(token, assetsHashMap);
 
   const { values } = await hashmap.getState();
@@ -129,8 +127,11 @@ async function getAssets(token, contract, args) {
     ...args
   }
 
-  const results = await rest.query(`${assetJs.contractName}?${queryHelper.getPostgrestQueryString(params)}`);
+  const contractArgs = {
+    name: assetJs.contractName
+  }
 
+  const results = await rest.search(contractArgs, { config, query: { address: `in.${util.toCsv(params.address)}` } })
   const converted = results.map(r => assetJs.fromBytes32(r));
 
   return converted;

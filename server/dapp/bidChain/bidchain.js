@@ -60,11 +60,11 @@ async function createChain(token, assetOwner, regulatorAddress) {
 
   const contractArgs = { name: contractName }
 
-  const chain = await rest.createChain(chainArgs, contractArgs, {config: options.config, history: [contractName]})
+  const chain = await rest.createChain(chainArgs, contractArgs, { config: options.config, history: [contractName] })
 
   // TODO: createChain is returing string. so binding is little tricky
   // is that something we need to createContract here. @samrit please confirm
-  return bind(token, {chainId: chain});
+  return bind(token, { chainId: chain });
 }
 
 function bind(token, contract) {
@@ -138,7 +138,7 @@ async function getChains(token) {
   try {
     chains = await rest.getChains([], options);
   } catch (e) {
-    if (e.status === 500) {
+    if (e.response.status === 500) {
       chains = [];
     }
     console.error('Error getting chainInfo:', e);

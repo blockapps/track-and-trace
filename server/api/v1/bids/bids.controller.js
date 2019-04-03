@@ -4,73 +4,65 @@ import { rest } from 'blockapps-rest';
 import { getYamlFile } from '../../../helpers/config';
 const config = getYamlFile('config.yaml');
 
-const bidJs = require(`${process.cwd()}/${config.dappPath}/bid/bid`);
+import bidJs from '../../../dapp/bid/bid';
 // const BidEvent = rest.getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`).BidEvent;
 
 const bidsController = {
 
-  createBid: (req, res, next) => {
+  createBid: async (req, res, next) => {
     const { accessToken, body } = req;
     const { address, owner, bidValue, regulatorEmail } = body;
+    const token = { token: accessToken };
 
-
-    co(function* () {
-      const getRegulatorKey = yield rest.getKey(accessToken, { username: regulatorEmail });
-      const bid = yield bidJs.createBid(accessToken, address, owner, bidValue, getRegulatorKey.address);
-      rest.response.status200(res, bid);
-    })
-      .catch(next);
+    const getRegulatorKey = await rest.getKey(token, { config, logger: console, query: { username: `${regulatorEmail}` } });
+    const bid = await bidJs.createBid(token, address, owner, bidValue, getRegulatorKey);
+    rest.response.status200(res, bid);
   },
 
-  list: (req, res, next) => {
+  list: async (req, res, next) => {
     const { accessToken } = req;
+    const token = { token: accessToken };
 
-    co(function* () {
-      const bids = yield bidJs.getBids(accessToken);
-      rest.response.status200(res, bids);
-    })
-      .catch(next);
+    const bids = await bidJs.getBids(token);
+    rest.response.status200(res, bids);
   },
 
-  get: (req, res, next) => {
+  get: async (req, res, next) => {
     const { accessToken, params } = req;
     const { address } = params;
+    const token = { token: accessToken };
 
     const searchParams = {
       address: [address]
     }
 
-    co(function* () {
-      // response will contain only addressed data. Remove [0] while quering for multiple addresses
-      const bids = (yield bidJs.getBids(accessToken, searchParams))[0];
-      rest.response.status200(res, bids);
-    })
-      .catch(next);
+    // TODO: check that it is working properly
+    // response will contain only addressed data. Remove [0] while quering for multiple addresses
+    const bids = (await bidJs.getBids(token, searchParams))[0];
+    rest.response.status200(res, bids);
   },
 
-  handleEvent: (req, res, next) => {
+  handleEvent: async (req, res, next) => {
     const { accessToken, params, body } = req;
     // Bid address
     const { address: bidAddress } = params;
     const { chainId, bidEvent } = body;
+    const token = { token: accessToken };
 
-    co(function* () {
-      const bidContract = bidJs.bind(accessToken, chainId, { name: 'Bid', address: bidAddress, src: 'removed' });
-      let bidState;
+    const bidContract = bidJs.bind(token, chainId, { name: 'Bid', address: bidAddress, src: 'removed' });
+    let bidState;
 
-      switch (bidEvent) {
-        case BidEvent.ACCEPT:
-          bidState = yield bidContract.handleBidEvent(BidEvent.ACCEPT);
-          break;
-        case BidEvent.REJECT:
-          bidState = yield bidContract.handleBidEvent(BidEvent.REJECT);
-          break;
-        default:
-          bidState;
-      }
-      rest.response.status200(res, bidState);
-    })
-      .catch(next);
+    switch (bidEvent) {
+      case 1:
+        bidState = await bidContract.handleBidEvent(1);
+        break;
+      case 2:
+        bidState = await bidContract.handleBidEvent(2);
+        break;
+      default:
+        bidState;
+    }
+    rest.response.status200(res, bidState);
 
   }
 }

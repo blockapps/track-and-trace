@@ -18,9 +18,13 @@ const assetsController = {
 
     const deploy = app.get('deploy');
 
-    const dapp = await dappJs.bind(token, deploy.contract);
-    const assets = await dapp.getAssets(args);
-    rest.response.status200(res, assets);
+    try {
+      const dapp = await dappJs.bind(token, deploy.contract);
+      const assets = await dapp.getAssets(args);
+      rest.response.status200(res, assets);
+    } catch (e) {
+      next(e)
+    }
   },
 
   getAsset: async (req, res, next) => {
@@ -35,21 +39,25 @@ const assetsController = {
 
     const deploy = app.get('deploy');
 
-    const dapp = await dappJs.bind(token, deploy.contract);
-    const asset = await dapp.getAsset(sku);
-    const assetHistory = await dapp.getAssetHistory(sku)
-    const bidHistory = await bidJs.getBidsHistory(token, asset.address);
+    try {
+      const dapp = await dappJs.bind(token, deploy.contract);
+      const asset = await dapp.getAsset(sku);
+      const assetHistory = await dapp.getAssetHistory(sku)
+      const bidHistory = await bidJs.getBidsHistory(token, asset.address);
 
-    const histories = [
-      ...assetHistory.map(h => { return { ...h, type: 'ASSET' } }),
-      ...bidHistory.map(h => { return { ...h, type: 'BID' } })
-    ];
+      const histories = [
+        ...assetHistory.map(h => { return { ...h, type: 'ASSET' } }),
+        ...bidHistory.map(h => { return { ...h, type: 'BID' } })
+      ];
 
-    asset.history = histories.sort(
-      (h1, h2) => moment(h1.block_timestamp).unix() - moment(h2.block_timestamp).unix()
-    )
+      asset.history = histories.sort(
+        (h1, h2) => moment(h1.block_timestamp).unix() - moment(h2.block_timestamp).unix()
+      )
 
-    rest.response.status200(res, asset);
+      rest.response.status200(res, asset);
+    } catch (e) {
+      next(e)
+    }
   },
 
   // TODO: throw errors correctly from dapp
@@ -67,10 +75,14 @@ const assetsController = {
       return next();
     }
 
-    const deploy = app.get('deploy');
-    const dapp = await dappJs.bind(token, deploy.contract);
-    const asset = await dapp.createAsset(args);
-    rest.response.status200(res, asset);
+    try {
+      const deploy = app.get('deploy');
+      const dapp = await dappJs.bind(token, deploy.contract);
+      const asset = await dapp.createAsset(args);
+      rest.response.status200(res, asset);
+    } catch (e) {
+      next(e)
+    }
   },
 
   handleAssetEvent: async (req, res, next) => {
@@ -82,10 +94,13 @@ const assetsController = {
     const args = { sku, assetEvent: parseInt(assetEvent, 10) };
 
     const deploy = app.get('deploy');
-
-    const dapp = await dappJs.bind(token, deploy.contract);
-    const newState = await dapp.handleAssetEvent(args);
-    rest.response.status200(res, newState);
+    try {
+      const dapp = await dappJs.bind(token, deploy.contract);
+      const newState = await dapp.handleAssetEvent(args);
+      rest.response.status200(res, newState);
+    } catch (e) {
+      next(e)
+    }
   },
 
   transferOwnership: async (req, res, next) => {
@@ -98,10 +113,13 @@ const assetsController = {
 
     const deploy = app.get('deploy');
 
-
-    const dapp = await dappJs.bind(token, deploy.contract);
-    const newState = await dapp.transferOwnership(args);
-    rest.response.status200(res, newState);
+    try {
+      const dapp = await dappJs.bind(token, deploy.contract);
+      const newState = await dapp.transferOwnership(args);
+      rest.response.status200(res, newState);
+    } catch (e) {
+      next(e)
+    }
   }
 }
 

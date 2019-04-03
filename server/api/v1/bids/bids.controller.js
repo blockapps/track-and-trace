@@ -5,8 +5,6 @@ import { getYamlFile } from '../../../helpers/config';
 const config = getYamlFile('config.yaml');
 
 import bidJs from '../../../dapp/bid/bid';
-// TODO: use in constructor and init global variable
-// const BidEvent = rest.getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`).BidEvent;
 
 class BidsController {
 
@@ -67,9 +65,11 @@ class BidsController {
       let bidState;
 
       switch (bidEvent) {
+        // 1 refers to ACCEPT
         case 1:
           bidState = await bidContract.handleBidEvent(1);
           break;
+        // 2 refers to REJECT
         case 2:
           bidState = await bidContract.handleBidEvent(2);
           break;

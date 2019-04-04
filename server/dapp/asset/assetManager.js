@@ -137,7 +137,6 @@ async function getAssets(token, contract, args) {
   return converted;
 }
 
-// TODO: No testcases written yet
 async function getAsset(token, contract, sku) {
   const found = await exists(token, contract, sku);
 
@@ -168,7 +167,6 @@ async function getAsset(token, contract, sku) {
   return converted;
 }
 
-// TODO: No testcases written yet
 async function getAssetHistory(token, contract, sku) {
   const found = await exists(token, contract, sku);
 

@@ -11,7 +11,6 @@ import errorHandler from './api/middleware/errorHandler';
 
 import { fsUtil } from 'blockapps-rest';
 
-// TODO: refactor same code.
 import { getYamlFile } from './helpers/config';
 const config = getYamlFile('config.yaml');
 

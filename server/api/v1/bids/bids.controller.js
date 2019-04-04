@@ -1,6 +1,5 @@
 import { rest } from 'blockapps-rest';
 
-// TODO: refactor same code.
 import { getYamlFile } from '../../../helpers/config';
 const config = getYamlFile('config.yaml');
 
@@ -44,7 +43,6 @@ class BidsController {
     }
 
     try {
-      // TODO: check that it is working properly
       // response will contain only addressed data. Remove [0] while quering for multiple addresses
       const bids = (await bidJs.getBids(token, searchParams))[0];
       rest.response.status200(res, bids);

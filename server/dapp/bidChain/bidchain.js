@@ -17,12 +17,6 @@ const options = { config, logger: console };
 async function createChain(token, assetOwner, regulatorAddress) {
   const getKeyResponse = await rest.getKey(token, options);
 
-  // TODO: is this needed to create a chain
-  // const governanceSrc = await rest.getContractString(
-  //   contractName,
-  //   contractFileName
-  // );
-
   const chainArgs = {
     label: `bid_${getKeyResponse}_${assetOwner}`,
     src: await importer.combine(contractFileName),
@@ -62,7 +56,7 @@ async function createChain(token, assetOwner, regulatorAddress) {
 
   const chain = await rest.createChain(chainArgs, contractArgs, { config: options.config, history: [contractName] })
 
-  // TODO: createChain is returing string. so binding is little tricky
+  // TODO: createChain is returing string.
   // is that something we need to createContract here. @samrit please confirm
   return bind(token, { chainId: chain });
 }

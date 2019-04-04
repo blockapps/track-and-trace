@@ -17,6 +17,7 @@ const masterToken = { token: process.env.MASTER_TOKEN };
 const manufacturerToken = { token: process.env.MANUFACTURER_TOKEN };
 const distributorToken = { token: process.env.DISTRIBUTOR_TOKEN };
 
+const options = { config }
 /**
  * @see PermissionManager tests
  */
@@ -35,10 +36,10 @@ describe('TTPermissionManager tests', function () {
     assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
     assert.isDefined(distributorToken, 'distributor token is not defined');
 
-    adminUser = await rest.createUser(adminToken, { config });
-    masterUser = await rest.createUser(masterToken, { config });
-    manufacturerUser = await rest.createUser(manufacturerToken, { config });
-    distributorUser = await rest.createUser(distributorToken, { config });
+    adminUser = await rest.createUser(adminToken, options);
+    masterUser = await rest.createUser(masterToken, options);
+    manufacturerUser = await rest.createUser(manufacturerToken, options);
+    distributorUser = await rest.createUser(distributorToken, options);
   });
 
   it('Grant Role - Admin', async function () {

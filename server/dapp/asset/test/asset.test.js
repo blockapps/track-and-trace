@@ -18,6 +18,8 @@ assert.isUndefined(loadEnv.error)
 const adminToken = { token: process.env.ADMIN_TOKEN };
 const masterToken = { token: process.env.MASTER_TOKEN };
 
+const options = { config }
+
 describe('Asset Tests', function () {
   this.timeout(config.timeout);
 
@@ -31,8 +33,8 @@ describe('Asset Tests', function () {
     // get assetState Enums
     AssetState = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`)
 
-    adminUser = await rest.createUser(adminToken, { config });
-    masterUser = await rest.createUser(masterToken, { config });
+    adminUser = await rest.createUser(adminToken, options);
+    masterUser = await rest.createUser(masterToken, options);
     ttPermissionManagerContract = await ttPermissionManagerJs.uploadContract(adminUser, masterUser);
   });
 
@@ -61,7 +63,7 @@ describe('Asset Tests', function () {
       args: util.usc(setAssetStateArgs)
     }
 
-    const [restStatus, assetError] = await rest.call(adminToken, callArgs, { config });
+    const [restStatus, assetError] = await rest.call(adminToken, callArgs, options);
     assert.equal(restStatus, RestStatus.FORBIDDEN, 'rest status');
     assert.equal(assetError, AssetError.NULL, 'tt error');
   });

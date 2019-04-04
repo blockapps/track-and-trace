@@ -1,7 +1,6 @@
 import { rest, oauthUtil } from 'blockapps-rest';
 import jwtDecode from 'jwt-decode';
 
-// TODO: refactor same code.
 import { getYamlFile } from '../../helpers/config';
 const config = getYamlFile('config.yaml');
 

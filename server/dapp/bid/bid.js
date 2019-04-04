@@ -49,18 +49,6 @@ async function uploadContract(token, chainId, args) {
   }
 
   const contract = await rest.createContract(token, contractArgs, { config, chainIds: [chainId] });
-  // TODO: remove this when everything is proper
-  // const contract = await rest.uploadContract(
-  //   token,
-  //   contractName,
-  //   contractFilename,
-  //   util.usc(args),
-  //   {
-  //     chainId,
-  //     enableHistory: true
-  //   }
-  // );
-
   return bind(token, chainId, contract);
 }
 
@@ -118,7 +106,6 @@ async function getBids(token, searchParams) {
   return results;
 }
 
-// TODO: No testcases for this function. add one
 async function getBidsHistory(token, assetAddress) {
   const chains = await bidChainJs.getChains(token);
 

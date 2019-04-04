@@ -1,7 +1,6 @@
 import jwtDecode from 'jwt-decode';
 import { rest } from 'blockapps-rest';
 
-// TODO: refactor same code.
 import { getYamlFile } from '../../../helpers/config';
 const config = getYamlFile('config.yaml');
 

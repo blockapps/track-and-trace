@@ -10,8 +10,7 @@ const getEmailIdFromToken = function (accessToken) {
   return (jwtDecode(accessToken)['email']);
 };
 
-async function createStratoUser(accessToken, userIdOptional = null) {
-  // TODO: any other cases that needs to be handled?
+async function createStratoUser(accessToken) {
   try {
     let user = await rest.createUser(accessToken, options);
     return { status: 200, message: 'success', user };

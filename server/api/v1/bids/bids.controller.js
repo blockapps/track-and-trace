@@ -4,6 +4,7 @@ import { getYamlFile } from '../../../helpers/config';
 const config = getYamlFile('config.yaml');
 
 import bidJs from '../../../dapp/bid/bid';
+import { getEnums } from '../../../helpers/parse';
 
 class BidsController {
 
@@ -58,18 +59,20 @@ class BidsController {
     const { chainId, bidEvent } = body;
     const token = { token: accessToken };
 
+    const BidEvent = await getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`);
+    
     try {
       const bidContract = bidJs.bind(token, chainId, { name: 'Bid', address: bidAddress, src: 'removed' });
       let bidState;
 
       switch (bidEvent) {
         // 1 refers to ACCEPT
-        case 1:
-          bidState = await bidContract.handleBidEvent(1);
+        case BidEvent.ACCEPT:
+          bidState = await bidContract.handleBidEvent(BidEvent.ACCEPT);
           break;
         // 2 refers to REJECT
-        case 2:
-          bidState = await bidContract.handleBidEvent(2);
+        case BidEvent.REJECT:
+          bidState = await bidContract.handleBidEvent(BidEvent.REJECT);
           break;
         default:
           bidState;

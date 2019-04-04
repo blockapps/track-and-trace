@@ -12,7 +12,7 @@ const createUser = async function (userToken, adminToken, role) {
     const userEmail = oauthHelper.getEmailIdFromToken(userToken.token);
     const createAccountResponse = await oauthHelper.createStratoUser(userToken, userEmail);
     const createTtUserArgs = {
-      account: createAccountResponse.address,
+      account: createAccountResponse.user.address,
       username: userEmail,
       role: role
     };

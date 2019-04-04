@@ -6,6 +6,12 @@ const config = getYamlFile('config.yaml');
 import bidJs from '../../../dapp/bid/bid';
 import { getEnums } from '../../../helpers/parse';
 
+let BidEvent
+
+(async () => {
+  BidEvent = await getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`);
+})()
+
 class BidsController {
 
   static async createBid(req, res, next) {
@@ -59,8 +65,6 @@ class BidsController {
     const { chainId, bidEvent } = body;
     const token = { token: accessToken };
 
-    const BidEvent = await getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`);
-    
     try {
       const bidContract = bidJs.bind(token, chainId, { name: 'Bid', address: bidAddress, src: 'removed' });
       let bidState;

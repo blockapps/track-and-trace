@@ -25,7 +25,7 @@ const post = async function (endpoint, body, accessToken = null) {
   return response.body.data;
 }
 
-module.exports = {
+export {
   get,
   post
 };

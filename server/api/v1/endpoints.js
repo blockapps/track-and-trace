@@ -12,7 +12,7 @@ const Bids = {
   bids: '/bids'
 };
 
-module.exports = {
+export default {
   Assets,
   Users,
   Bids,

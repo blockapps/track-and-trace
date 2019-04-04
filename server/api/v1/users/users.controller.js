@@ -2,7 +2,7 @@ import { rest } from 'blockapps-rest';
 
 import dappJs from '../../../dapp/dapp/dapp';
 
-class userController {
+class UserController {
 
   static async me(req, res, next) {
     const { app, accessToken, decodedToken } = req;
@@ -37,4 +37,4 @@ class userController {
   }
 }
 
-export default userController;
+export default UserController;

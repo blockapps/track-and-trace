@@ -1,15 +1,17 @@
-import { fsUtil, parser } from 'blockapps-rest';
 import { assert } from 'chai';
 
 import oauthHelper from '../../helpers/oauth';
 import { factory } from '../../dapp/asset/asset.factory';
-const { get, post } = require(`${process.cwd()}/test/helpers/rest`);
-const endpoints = require(`${process.cwd()}/api/v1/endpoints`);
+import { get, post } from '../helpers/rest';
+import endpoints from '../../api/v1/endpoints';
+import testHelper from '../helpers/test';
 
+// read config.yaml
 import { getYamlFile } from '../../helpers/config';
 const config = getYamlFile('config.yaml');
 
 import dotenv from 'dotenv';
+import { getEnums } from '../../helpers/parse';
 
 const loadEnv = dotenv.config()
 assert.isUndefined(loadEnv.error)
@@ -24,24 +26,6 @@ describe('Bids End-To-End Tests', function () {
   let asset, bidsList, bidDetail;
   let TtRole, AssetState, AssetEvent, BidState, BidEvent
 
-  // TODO: move in utils
-  const createUser = async function (userToken, role) {
-    try {
-      const user = await get(endpoints.Users.me, userToken.token);
-      assert.equal(user.role, role, 'user already created with different role');
-    } catch (err) {
-      console.log(err);
-      const userEmail = oauthHelper.getEmailIdFromToken(userToken.token);
-      const createAccountResponse = await oauthHelper.createStratoUser(userToken, userEmail);
-      const createTtUserArgs = {
-        account: createAccountResponse.address,
-        username: userEmail,
-        role: role
-      };
-      await post(endpoints.Users.users, createTtUserArgs, adminToken.token);
-    }
-  }
-
   before(async function () {
     // TODO: check this properly
     assert.isDefined(adminToken, 'admin token is not defined');
@@ -49,28 +33,19 @@ describe('Bids End-To-End Tests', function () {
     assert.isDefined(distributerToken, 'distributer token is not defined');
 
     // get ttRole Enums
-    const ttRoleSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`)
-    TtRole = await parser.parseEnum(ttRoleSource);
-
+    TtRole = await getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`);
     // get assetState Enums
-    const assetStateSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`)
-    AssetState = await parser.parseEnum(assetStateSource);
-
+    AssetState = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`);
     // get AssetEvent Enums
-    const assetEventSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`)
-    AssetEvent = await parser.parseEnum(assetEventSource);
-
+    AssetEvent = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`);
     // get BidState Enums
-    const bidStateSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/bid/contracts/BidState.sol`)
-    BidState = await parser.parseEnum(bidStateSource);
-
+    BidState = await getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidState.sol`);
     // get BidEvent Enums
-    const bidEventSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`)
-    BidEvent = await parser.parseEnum(bidEventSource);
+    BidEvent = await getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`);
 
-    await createUser(manufacturerToken, TtRole.MANUFACTURER);
-    await createUser(distributerToken, TtRole.DISTRIBUTOR);
-    await createUser(regulatorToken, TtRole.REGULATOR);
+    await testHelper.createUser(manufacturerToken, adminToken, TtRole.MANUFACTURER);
+    await testHelper.createUser(distributerToken, adminToken, TtRole.DISTRIBUTOR);
+    await testHelper.createUser(regulatorToken, adminToken, TtRole.REGULATOR);
 
     const createAssetArgs = factory.getAssetArgs();
     asset = await post(endpoints.Assets.assets, { asset: createAssetArgs }, manufacturerToken.token);

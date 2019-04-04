@@ -1,6 +1,5 @@
 import { fsUtil, parser } from 'blockapps-rest';
 
-// TODO: refactor same code.
 import { getYamlFile } from './config';
 const config = getYamlFile('config.yaml');
 

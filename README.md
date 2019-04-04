@@ -79,10 +79,18 @@ HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_
 
 Wait for all containers to report healthy status in the output of `docker ps`
 
-#### Start api server
+### Install dependencies
 ```
 cd server
 git submodule update --init --recursive
+cd server/blockapps-sol
+yarn install
+yarn build
+```
+
+#### Start api server
+```
+cd ../server
 yarn install
 yarn deploy
 yarn start

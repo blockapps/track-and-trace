@@ -12,7 +12,7 @@ const port = 30303;
 const localIp = ip.address();
 const enode = `enode://${publicKey}@${localIp}:${port}`
 
-const options = { config, logger: console };
+const options = { config };
 
 async function createChain(token, assetOwner, regulatorAddress) {
   const getKeyResponse = await rest.getKey(token, options);
@@ -54,8 +54,14 @@ async function createChain(token, assetOwner, regulatorAddress) {
 
   const contractArgs = { name: contractName }
 
-  const chain = await rest.createChain(chainArgs, contractArgs, { config: options.config, history: [contractName] })
+  const metadata = {
+    ...options,
+    query: { 
+      history: [contractName]
+    }
+  }
 
+  const chain = await rest.createChain(chainArgs, contractArgs, metadata)
   // TODO: createChain is returing string.
   // is that something we need to createContract here. @samrit please confirm
   return bind(token, { chainId: chain });
@@ -85,10 +91,15 @@ async function addMember(token, contract, member, chainId) {
     args: util.usc(args)
   }
 
+  const metadata = {
+    ...options,
+    chainIds: [chainId]
+  }
+
   const result = await rest.call(
     token,
     callArgs,
-    { config, chainIds: [chainId] }
+    metadata
   );
 
   return result
@@ -105,10 +116,15 @@ async function removeMember(token, contract, member, chainId) {
     args: util.usc(args)
   }
 
+  const metadata = {
+    ...options,
+    chainIds: [chainId]
+  }
+  
   const result = await rest.call(
     token,
     callArgs,
-    { config, logger: console, chainIds: [chainId] }
+    metadata
   );
 
   return result

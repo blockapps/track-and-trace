@@ -10,6 +10,8 @@ const contractFilename = `${process.cwd()}/${config.dappPath}/bid/contracts/Bid.
 import bidChainJs from '../bidChain/bidchain';
 import queryHelper from '../../helpers/query';
 
+const options = { config };
+
 // TODO: prevent bid from getting created if the asset is not in BIDS_REQUESTED state
 async function createBid(token, assetAddress, ownerAddress, bidValue, regulatorAddress) {
   const { chainId } = await bidChainJs.createChain(token, ownerAddress, regulatorAddress)
@@ -37,7 +39,15 @@ async function createBid(token, assetAddress, ownerAddress, bidValue, regulatorA
     name: contractName
   }
 
-  const results = await rest.searchUntil(contract, predicate, { config, query: { address: `eq.${bid.address}`, chainId: `eq.${chainId}` } });
+  const metadata = {
+    ...options,
+    query: {
+      address: `eq.${bid.address}`,
+      chainId: `eq.${chainId}`
+    }
+  }
+
+  const results = await rest.searchUntil(contract, predicate, metadata);
   return results[0];
 }
 
@@ -48,7 +58,12 @@ async function uploadContract(token, chainId, args) {
     args: util.usc(args)
   }
 
-  const contract = await rest.createContract(token, contractArgs, { config, chainIds: [chainId] });
+  const metadata = {
+    ...options,
+    chainIds: [chainId]
+  }
+
+  const contract = await rest.createContract(token, contractArgs, metadata);
   return bind(token, chainId, contract);
 }
 
@@ -72,8 +87,11 @@ async function handleBidEvent(token, chainId, contract, bidEvent) {
     args: util.usc(args)
   }
 
-  const [restStatus, newState] = await rest.call(token, callArgs, { config, chainIds: [chainId] });
-
+  const metadata = {
+    ...options,
+    chainIds: [chainId]
+  }
+  const [restStatus, newState] = await rest.call(token, callArgs, metadata);
 
   if (restStatus != RestStatus.OK) {
     throw new rest.RestError(
@@ -102,7 +120,13 @@ async function getBids(token, searchParams) {
     name: contractName
   }
 
-  const results = await rest.searchUntil(contract, predicate, { config, query: { chainId: `in.${util.toCsv(queryParams.chainId)}` } });
+  const metadata = {
+    ...options,
+    query: {
+      chainId: `in.${util.toCsv(queryParams.chainId)}`
+    }
+  }
+  const results = await rest.searchUntil(contract, predicate, metadata);
   return results;
 }
 
@@ -122,7 +146,15 @@ async function getBidsHistory(token, assetAddress) {
     name: contractName
   }
 
-  const results = await rest.search(contract, { config, query: { asset: `eq.${assetAddress}`, chainId: `in.${util.toCsv(queryParams.chainId)}` } });
+  const metadata = {
+    ...options,
+    query: {
+      asset: `eq.${assetAddress}`,
+      chainId: `in.${util.toCsv(queryParams.chainId)}`
+    }
+  }
+
+  const results = await rest.search(contract, metadata);
   return results;
 }
 

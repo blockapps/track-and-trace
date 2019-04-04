@@ -59,7 +59,15 @@ async function waitForRequiredUpdate(sku, searchCounter) {
     name: contractName
   }
 
-  const results = await rest.searchUntil(contract, predicate, { config, query: { searchCounter: `gte.${searchCounter}`, sku: `eq.${sku}` } });
+  const metadata = {
+    ...options,
+    query: {
+      searchCounter: `gte.${searchCounter}`,
+      sku: `eq.${sku}`
+    }
+  }
+
+  const results = await rest.searchUntil(contract, predicate, metadata);
   const asset = fromBytes32(results[0])
 
   return asset;

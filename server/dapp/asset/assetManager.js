@@ -87,7 +87,12 @@ async function createAsset(token, contract, args) {
     args: util.usc(converted)
   }
 
-  const [restStatus, assetError, assetAddress] = await rest.call(token, callArgs, { config, history: [assetJs.contractName] });
+  const metadata = {
+    ...options,
+    history: [assetJs.contractName]
+  }
+  
+  const [restStatus, assetError, assetAddress] = await rest.call(token, callArgs, metadata);
 
   if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, assetError, { method: callArgs.method, converted });
 
@@ -131,7 +136,14 @@ async function getAssets(token, contract, args) {
     name: assetJs.contractName
   }
 
-  const results = await rest.search(contractArgs, { config, query: { address: `in.${util.toCsv(params.address)}` } })
+  const metadata = {
+    ...options,
+    query: {
+      address: `in.${util.toCsv(params.address)}`
+    }
+  }
+
+  const results = await rest.search(contractArgs, metadata)
   const converted = results.map(r => assetJs.fromBytes32(r));
 
   return converted;
@@ -156,7 +168,14 @@ async function getAsset(token, contract, sku) {
     name: assetJs.contractName
   }
 
-  const result = await rest.search(contractArgs, { config, query: { address: `eq.${address}` } })
+  const metadata = {
+    ...options,
+    query: {
+      address: `eq.${address}`
+    }
+  }
+
+  const result = await rest.search(contractArgs, metadata)
 
   if (result.length != 1) {
     throw new rest.RestError(RestStatus.NOT_FOUND, `Unable to retrieve state for address ${address}`);
@@ -186,7 +205,14 @@ async function getAssetHistory(token, contract, sku) {
     name: `history@${assetJs.contractName}`
   }
 
-  const history = await rest.search(contractArgs, { config, query: { address: `eq.${address}` } })
+  const metadata = {
+    ...options,
+    query: {
+      address: `eq.${address}`
+    }
+  }
+
+  const history = await rest.search(contractArgs, metadata)
   return history.map(h => assetJs.fromBytes32(h));
 }
 

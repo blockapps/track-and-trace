@@ -12,6 +12,8 @@ import userManagerJs from '../../blockapps-sol/dist/auth/user/userManager';
 import assetManagerJs from '../asset/assetManager';
 import ttPermissionManagerJs from '../ttPermission/ttPermissionManager';
 
+const options = { config }
+
 async function calllistBatch(token, txs) {
   const batchSize = 60;
   const results = [];
@@ -34,14 +36,14 @@ async function uploadContract(token, ttPermissionManager) {
     args: util.usc(args)
   }
 
-  const contract = await createContract(token, contractArgs, { config });
+  const contract = await createContract(token, contractArgs, options);
   contract.src = 'removed';
   await util.sleep(5 * 1000);
   return await bind(token, contract);
 }
 
 async function getManagers(contract) {
-  const state = await getState(contract, { config });
+  const state = await getState(contract, options);
   const managers = {};
   managersNames.forEach((name) => {
     const address = state[name];

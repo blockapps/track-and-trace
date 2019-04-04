@@ -3,6 +3,8 @@ import { rest } from 'blockapps-rest';
 import { getYamlFile } from '../../helpers/config';
 const config = getYamlFile('config.yaml');
 
+const options = { config }
+
 async function waitForAddress(contractName, address) {
   function predicate(response) {
     if (response.length)
@@ -13,7 +15,14 @@ async function waitForAddress(contractName, address) {
     name: contractName
   }
 
-  const results = await rest.searchUntil(contract, predicate, { config, query: { address: `eq.${address}` } });
+  const metadata = {
+    ...options,
+    query: {
+      address: `eq.${address}`
+    }
+  }
+
+  const results = await rest.searchUntil(contract, predicate, metadata);
   return results[0];
 }
 

@@ -72,7 +72,11 @@ describe('Bid Chain Tests', function () {
       args: {}
     }
 
-    const govContract = await rest.createContract(distributorUser, contractArgs, { config, chainIds: [chainId] });
+    const metadata = {
+      ...options,
+      chainIds: [chainId]
+    }
+    const govContract = await rest.createContract(distributorUser, contractArgs, metadata);
 
     // Remove member
     await bidChain.removeMember(distributorUser, govContract, manufacturerUser.address, chainId);
@@ -98,7 +102,11 @@ describe('Bid Chain Tests', function () {
       args: {}
     }
 
-    const govContract = await rest.createContract(distributorUser, contractArgs, { config, chainIds: [chainId] });
+    const metadata = {
+      ...options,
+      chainIds: [chainId]
+    }
+    const govContract = await rest.createContract(distributorUser, contractArgs, metadata);
 
     // add member to the chain
     await bidChain.addMember(distributorToken, govContract, adminUser.address, chainId);

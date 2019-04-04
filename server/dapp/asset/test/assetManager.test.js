@@ -1,4 +1,4 @@
-import { rest, fsUtil, parser, util } from 'blockapps-rest';
+import { rest, util } from 'blockapps-rest';
 import { assert } from 'chai';
 import RestStatus from 'http-status-codes';
 
@@ -16,6 +16,7 @@ import assetManagerJs from '../../asset/assetManager';
 import assetJs from '../asset';
 import { factory } from '../asset.factory';
 import { assertRestStatus } from '../../../helpers/assertRestStatus';
+import { getEnums } from '../../../helpers/parse';
 
 const adminToken = { token: process.env.ADMIN_TOKEN };
 const masterToken = { token: process.env.MASTER_TOKEN };
@@ -39,16 +40,13 @@ describe('Asset Manager Tests', function () {
 
   before(async function () {
     // get assertError Enums
-    const assetErrorSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`)
-    AssetError = await parser.parseEnum(assetErrorSource);
+    AssetError = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`);
 
-    // get assertError Enums
-    const assetStateSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`)
-    AssetState = await parser.parseEnum(assetStateSource);
+    // get assertState Enums
+    AssetState = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`);
 
-    // get assertError Enums
-    const assetEventSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`)
-    AssetEvent = await parser.parseEnum(assetEventSource);
+    // get assertEvent Enums
+    AssetEvent = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`);
 
     assert.isDefined(adminToken, 'admin token is not defined');
     assert.isDefined(masterToken, 'master token is not defined');

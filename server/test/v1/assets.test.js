@@ -25,7 +25,7 @@ describe('Assets End-To-End Tests', function () {
     assert.isDefined(adminToken, 'admin token is not defined');
     assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
 
-    // get assertError Enums
+    // get TtRole Enums
     TtRole = await getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`);
 
     await testHelper.createUser(manufacturerToken, adminToken, TtRole.MANUFACTURER);

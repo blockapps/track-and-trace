@@ -1,4 +1,4 @@
-import { fsUtil, parser } from 'blockapps-rest';
+import { getEnums } from './parse';
 
 import { getYamlFile } from './config';
 const config = getYamlFile('config.yaml');
@@ -8,26 +8,26 @@ const deployParamName = `deploy`;
 
 const getConstants = async () => {
 
-  const assetErrorSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`)
-  const AssetError = await parser.parseEnum(assetErrorSource);
+  // get assertError Enums
+  const AssetError = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`);
 
-  const assetEventSource = fsUtil.get(`${config.dappPath}/asset/contracts/AssetEvent.sol`)
-  const AssetEvent = await parser.parseEnum(assetEventSource);
+  // get assertState Enums
+  const AssetState = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`);
 
-  const assetStateSource = fsUtil.get(`${config.dappPath}/asset/contracts/AssetState.sol`)
-  const AssetState = await parser.parseEnum(assetStateSource);
+  // get assertEvent Enums
+  const AssetEvent = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`);
 
-  const bidEventSource = fsUtil.get(`${config.dappPath}/bid/contracts/BidEvent.sol`)
-  const BidEvent = await parser.parseEnum(bidEventSource);
+  // get BidState Enums
+  const BidState = await getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidState.sol`);
 
-  const bidStateSource = fsUtil.get(`${config.dappPath}/bid/contracts/BidState.sol`)
-  const BidState = await parser.parseEnum(bidStateSource);
+  // get BidEvent Enums
+  const BidEvent = await getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`);
 
-  const ttPermissionSource = fsUtil.get(`${config.dappPath}/ttPermission/contracts/TtPermission.sol`);
-  const TtPermission = await parser.parseEnum(ttPermissionSource);
+  // get TtPermission Enums
+  const TtPermission = await getEnums(`${config.dappPath}/ttPermission/contracts/TtPermission.sol`);
 
-  const ttRoleSource = fsUtil.get(`${config.dappPath}/ttPermission/contracts/TtRole.sol`);
-  const TtRole = await parser.parseEnum(ttRoleSource);
+  // get TtRole Enums
+  const TtRole = await getEnums(`${config.dappPath}/ttPermission/contracts/TtRole.sol`);
 
   // Categorize constants 
   const Asset = {

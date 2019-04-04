@@ -1,5 +1,4 @@
 import { assert } from 'chai';
-import { fsUtil, parser } from 'blockapps-rest';
 import oauthHelper from '../../helpers/oauth';
 import ttPermissionManagerJs from '../ttPermission/ttPermissionManager';
 import dappJs from './dapp';
@@ -8,6 +7,7 @@ import { getYamlFile } from '../../helpers/config';
 const config = getYamlFile('config.yaml');
 
 import dotenv from 'dotenv';
+import { getEnums } from '../../helpers/parse';
 
 const loadEnv = dotenv.config()
 assert.isUndefined(loadEnv.error)
@@ -28,9 +28,8 @@ describe('Track and Trace - deploy contracts', function () {
   let TtRole;
 
   before(async () => {
-    // get TtRole Enums
-    const ttRoleSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`)
-    TtRole = await parser.parseEnum(ttRoleSource);
+    // get ttRole Enums
+    TtRole = await getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`);
 
     assert.isDefined(config.deployFilename, 'Deployment filename (output) argument missing. Set in config');
     assert.isDefined(process.env.ADMIN_TOKEN, 'ADMIN_TOKEN should be defined');

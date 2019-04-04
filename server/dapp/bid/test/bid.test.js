@@ -1,4 +1,3 @@
-import { fsUtil, parser } from 'blockapps-rest';
 import { assert } from 'chai';
 import RestStatus from 'http-status-codes';
 
@@ -16,6 +15,7 @@ import assetManagerJs from '../../asset/assetManager';
 import { factory } from '../../asset/asset.factory';
 import bidJs from '../../bid/bid';
 import { assertRestStatus } from '../../../helpers/assertRestStatus';
+import { getEnums } from '../../../helpers/parse';
 
 describe('Bid Tests', function () {
   this.timeout(config.timeout)
@@ -61,25 +61,21 @@ describe('Bid Tests', function () {
     assert.isDefined(retailerToken, 'retailer token is not defined');
     assert.isDefined(regulatorToken, 'retailer token is not defined');
 
-    // get assertError Enums
-    const assetErrorSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`)
-    AssetError = await parser.parseEnum(assetErrorSource);
+
+    // get assetError Enums
+    AssetError = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`);
 
     // get assetState Enums
-    const assetStateSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`)
-    AssetState = await parser.parseEnum(assetStateSource);
+    AssetState = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`);
 
-    // get AssetEvent Enums
-    const assetEventSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`)
-    AssetEvent = await parser.parseEnum(assetEventSource);
+    // get assetEvent Enums
+    AssetEvent = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`);
 
     // get BidState Enums
-    const bidStateSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/bid/contracts/BidState.sol`)
-    BidState = await parser.parseEnum(bidStateSource);
+    BidState = await getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidState.sol`);
 
     // get BidEvent Enums
-    const bidEventSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`)
-    BidEvent = await parser.parseEnum(bidEventSource);
+    BidEvent = await getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`);
 
     adminUser = await createUser(adminToken);
     masterUser = await createUser(masterToken);

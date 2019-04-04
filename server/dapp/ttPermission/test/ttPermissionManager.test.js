@@ -1,4 +1,4 @@
-import { rest, fsUtil, parser } from 'blockapps-rest';
+import { rest } from 'blockapps-rest';
 import { assert } from 'chai';
 import ttPermissionManager from '../ttPermissionManager';
 import oauthHelper from '../../../helpers/oauth';
@@ -7,6 +7,7 @@ import { getYamlFile } from '../../../helpers/config';
 const config = getYamlFile('config.yaml');
 
 import dotenv from 'dotenv';
+import { getEnums } from '../../../helpers/parse';
 
 const loadEnv = dotenv.config()
 assert.isUndefined(loadEnv.error)
@@ -27,8 +28,7 @@ describe('TTPermissionManager tests', function () {
 
   before(async function () {
     // get TtRole Enums
-    const ttRoleSource = fsUtil.get(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`)
-    TtRole = await parser.parseEnum(ttRoleSource);
+    TtRole = await getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`);
 
     assert.isDefined(adminToken, 'admin token is not defined');
     assert.isDefined(masterToken, 'master token is not defined');

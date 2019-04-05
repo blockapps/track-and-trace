@@ -8,7 +8,7 @@ const contractName = 'TtDapp';
 const contractFilename = `${config.dappPath}/dapp/contracts/ttDapp.sol`;
 const managersNames = ['userManager', 'assetManager', 'ttPermissionManager'];
 
-import userManagerJs from '../../blockapps-sol/dist/auth/user/userManager';
+import * as userManagerJs from '../../blockapps-sol/dist/auth/user/userManager';
 import assetManagerJs from '../asset/assetManager';
 import ttPermissionManagerJs from '../ttPermission/ttPermissionManager';
 

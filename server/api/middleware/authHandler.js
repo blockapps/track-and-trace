@@ -1,3 +1,4 @@
+import RestStatus from 'http-status-codes';
 import { rest, oauthUtil } from 'blockapps-rest';
 import jwtDecode from 'jwt-decode';
 
@@ -11,12 +12,12 @@ class AuthHandler {
       const tokenName = req.app.oauth.getCookieNameAccessToken();
       const accessTokenFromCookie = req.cookies[tokenName];
       if (!accessTokenFromCookie) {
-        return rest.response.status('401', res, { loginUrl: req.app.oauth.getSigninURL() });
+        return rest.response.status(RestStatus.UNAUTHORIZED, res, { loginUrl: req.app.oauth.getSigninURL() });
       }
       try {
         await req.app.oauth.validateAndGetNewToken(req, res);
       } catch (err) {
-        return rest.response.status('401', res, { loginUrl: req.app.oauth.getSigninURL() });
+        return rest.response.status(RestStatus.UNAUTHORIZED, res, { loginUrl: req.app.oauth.getSigninURL() });
       }
       req.accessToken = accessTokenFromCookie;
       req.decodedToken = jwtDecode(accessTokenFromCookie);

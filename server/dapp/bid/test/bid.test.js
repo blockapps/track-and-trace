@@ -35,7 +35,7 @@ describe('Bid Tests', function () {
   async function createUser(userToken) {
     const userEmail = oauthHelper.getEmailIdFromToken(userToken.token);
     const createAccountResponse = await oauthHelper.createStratoUser(userToken, userEmail);
-    assert.equal(createAccountResponse.status, 200, createAccountResponse.message);
+    assert.equal(createAccountResponse.status, RestStatus.OK, createAccountResponse.message);
     return { address: createAccountResponse.user.address, username: userEmail };
   }
 

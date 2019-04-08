@@ -1,3 +1,4 @@
+import RestStatus from 'http-status-codes';
 import { assert } from 'chai';
 import oauthHelper from '../../helpers/oauth';
 import ttPermissionManagerJs from '../ttPermission/ttPermissionManager';
@@ -46,32 +47,32 @@ describe('Track and Trace - deploy contracts', function () {
     const adminEmail = oauthHelper.getEmailIdFromToken(adminToken.token);
     console.log('Creating admin', adminEmail);
     const adminResponse = await oauthHelper.createStratoUser(adminToken, adminEmail);
-    assert.strictEqual(adminResponse.status, 200, adminResponse.message);
+    assert.strictEqual(adminResponse.status, RestStatus.OK, adminResponse.message);
 
     const masterEmail = oauthHelper.getEmailIdFromToken(masterToken.token);
     console.log('Creating master', masterEmail);
     const masterResponse = await oauthHelper.createStratoUser(masterToken, masterEmail);
-    assert.strictEqual(masterResponse.status, 200, masterResponse.message);
+    assert.strictEqual(masterResponse.status, RestStatus.OK, masterResponse.message);
 
     const distributorEmail = oauthHelper.getEmailIdFromToken(distributorToken.token);
     console.log('Creating distributor', distributorEmail);
     const distributorResponse = await oauthHelper.createStratoUser(distributorToken, distributorEmail);
-    assert.strictEqual(distributorResponse.status, 200, distributorResponse.message);
+    assert.strictEqual(distributorResponse.status, RestStatus.OK, distributorResponse.message);
 
     const manufacturerEmail = oauthHelper.getEmailIdFromToken(manufacturerToken.token);
     console.log('Creating manufacturer', manufacturerEmail);
     const manufacturerResponse = await oauthHelper.createStratoUser(manufacturerToken, manufacturerEmail);
-    assert.strictEqual(manufacturerResponse.status, 200, manufacturerResponse.message);
+    assert.strictEqual(manufacturerResponse.status, RestStatus.OK, manufacturerResponse.message);
 
     const retailerEmail = oauthHelper.getEmailIdFromToken(retailerToken.token);
     console.log('Creating retailer', retailerEmail);
     const retailerResponse = await oauthHelper.createStratoUser(retailerToken, retailerEmail);
-    assert.strictEqual(retailerResponse.status, 200, retailerResponse.message);
+    assert.strictEqual(retailerResponse.status, RestStatus.OK, retailerResponse.message);
 
     const regulatorEmail = oauthHelper.getEmailIdFromToken(regulatorToken.token);
     console.log('Creating regulator', regulatorEmail);
     const regulatorResponse = await oauthHelper.createStratoUser(regulatorToken, regulatorEmail);
-    assert.strictEqual(regulatorResponse.status, 200, regulatorResponse.message);
+    assert.strictEqual(regulatorResponse.status, RestStatus.OK, regulatorResponse.message);
 
     console.log('Permission Manager');
     const ttPermissionManager = await ttPermissionManagerJs.uploadContract(adminResponse.user, masterResponse.user);

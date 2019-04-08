@@ -10,7 +10,6 @@ class AssetsController {
   static async getAssets(req, res, next) {
     const { app, accessToken, query } = req;
     const args = { ...query };
-    // TODO: create token utils
     const token = { token: accessToken };
 
     const deploy = app.get('deploy');

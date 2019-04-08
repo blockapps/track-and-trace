@@ -12,10 +12,10 @@ import { getEnums } from '../../../helpers/parse';
 const loadEnv = dotenv.config()
 assert.isUndefined(loadEnv.error)
 
-const adminToken = { token: process.env.ADMIN_TOKEN };
-const masterToken = { token: process.env.MASTER_TOKEN };
-const manufacturerToken = { token: process.env.MANUFACTURER_TOKEN };
-const distributorToken = { token: process.env.DISTRIBUTOR_TOKEN };
+const adminCredentials = { token: process.env.ADMIN_TOKEN };
+const masterCredentials = { token: process.env.MASTER_TOKEN };
+const manufacturerCredentials = { token: process.env.MANUFACTURER_TOKEN };
+const distributorCredentials = { token: process.env.DISTRIBUTOR_TOKEN };
 
 const options = { config }
 /**
@@ -31,20 +31,20 @@ describe('TTPermissionManager tests', function () {
     // get TtRole Enums
     TtRole = await getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`);
 
-    assert.isDefined(adminToken, 'admin token is not defined');
-    assert.isDefined(masterToken, 'master token is not defined');
-    assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
-    assert.isDefined(distributorToken, 'distributor token is not defined');
+    assert.isDefined(adminCredentials, 'admin token is not defined');
+    assert.isDefined(masterCredentials, 'master token is not defined');
+    assert.isDefined(manufacturerCredentials, 'manufacturer token is not defined');
+    assert.isDefined(distributorCredentials, 'distributor token is not defined');
 
-    adminUser = await rest.createUser(adminToken, options);
-    masterUser = await rest.createUser(masterToken, options);
-    manufacturerUser = await rest.createUser(manufacturerToken, options);
-    distributorUser = await rest.createUser(distributorToken, options);
+    adminUser = await rest.createUser(adminCredentials, options);
+    masterUser = await rest.createUser(masterCredentials, options);
+    manufacturerUser = await rest.createUser(manufacturerCredentials, options);
+    distributorUser = await rest.createUser(distributorCredentials, options);
   });
 
   it('Grant Role - Admin', async function () {
     const contract = await ttPermissionManager.uploadContract(adminUser, masterUser);
-    const username = oauthHelper.getEmailIdFromToken(adminToken.token);
+    const username = oauthHelper.getEmailIdFromToken(adminCredentials.token);
     const address = adminUser.address;
     Object.assign(adminUser, { username: username })
     // permitted
@@ -63,7 +63,7 @@ describe('TTPermissionManager tests', function () {
 
   it('Grant Role - Asset Manager', async function () {
     const contract = await ttPermissionManager.uploadContract(adminUser, masterUser)
-    const username = oauthHelper.getEmailIdFromToken(masterToken.token);
+    const username = oauthHelper.getEmailIdFromToken(masterCredentials.token);
     Object.assign(masterUser, { username: username })
     // not yet permitted
     {
@@ -94,8 +94,8 @@ describe('TTPermissionManager tests', function () {
   })
 
   it('Grant Role - Manufacturer', async function () {
-    const contract = await ttPermissionManager.uploadContract(adminToken, masterToken)
-    const username = oauthHelper.getEmailIdFromToken(manufacturerToken.token);
+    const contract = await ttPermissionManager.uploadContract(adminCredentials, masterCredentials)
+    const username = oauthHelper.getEmailIdFromToken(manufacturerCredentials.token);
     const address = manufacturerUser.address;
     Object.assign(manufacturerUser, { username: username })
     // not yet permitted
@@ -126,8 +126,8 @@ describe('TTPermissionManager tests', function () {
   })
 
   it('Grant Role - Distributor', async function () {
-    const contract = await ttPermissionManager.uploadContract(adminToken, masterToken)
-    const username = oauthHelper.getEmailIdFromToken(distributorToken.token);
+    const contract = await ttPermissionManager.uploadContract(adminCredentials, masterCredentials)
+    const username = oauthHelper.getEmailIdFromToken(distributorCredentials.token);
     const address = distributorUser.address;
     Object.assign(distributorUser, { username: username })
     // not yet permitted

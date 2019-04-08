@@ -15,8 +15,8 @@ import dotenv from 'dotenv';
 const loadEnv = dotenv.config()
 assert.isUndefined(loadEnv.error)
 
-const adminToken = { token: process.env.ADMIN_TOKEN };
-const masterToken = { token: process.env.MASTER_TOKEN };
+const adminCredentials = { token: process.env.ADMIN_TOKEN };
+const masterCredentials = { token: process.env.MASTER_TOKEN };
 
 const options = { config }
 
@@ -27,20 +27,23 @@ describe('Asset Tests', function () {
   let adminUser, masterUser;
 
   before(async function () {
+    assert.isDefined(adminCredentials.token, 'admin token is not defined');
+    assert.isDefined(masterCredentials.token, 'master token is not defined');
+
     // get assertError Enums
     AssetError = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`)
 
     // get assetState Enums
     AssetState = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetState.sol`)
 
-    adminUser = await rest.createUser(adminToken, options);
-    masterUser = await rest.createUser(masterToken, options);
+    adminUser = await rest.createUser(adminCredentials, options);
+    masterUser = await rest.createUser(masterCredentials, options);
     ttPermissionManagerContract = await ttPermissionManagerJs.uploadContract(adminUser, masterUser);
   });
 
   it('Create Asset', async function () {
     const args = factory.getAssetArgs();
-    const contract = await assetJs.uploadContract(adminToken, ttPermissionManagerContract, args);
+    const contract = await assetJs.uploadContract(adminCredentials, ttPermissionManagerContract, args);
 
     const state = await contract.getState();
 
@@ -51,7 +54,7 @@ describe('Asset Tests', function () {
 
   it('Set Asset State', async function () {
     const assetArgs = factory.getAssetArgs();
-    const contract = await assetJs.uploadContract(adminToken, ttPermissionManagerContract, assetArgs);
+    const contract = await assetJs.uploadContract(adminCredentials, ttPermissionManagerContract, assetArgs);
 
     const setAssetStateArgs = {
       assetState: AssetState.BIDS_REQUESTED
@@ -63,7 +66,7 @@ describe('Asset Tests', function () {
       args: util.usc(setAssetStateArgs)
     }
 
-    const [restStatus, assetError] = await rest.call(adminToken, callArgs, options);
+    const [restStatus, assetError] = await rest.call(adminCredentials, callArgs, options);
     assert.equal(restStatus, RestStatus.FORBIDDEN, 'rest status');
     assert.equal(assetError, AssetError.NULL, 'tt error');
   });

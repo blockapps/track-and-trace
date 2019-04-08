@@ -20,12 +20,12 @@ import { getEnums } from '../../../helpers/parse';
 describe('Bid Tests', function () {
   this.timeout(config.timeout)
 
-  const adminToken = { token: process.env.ADMIN_TOKEN };
-  const masterToken = { token: process.env.MASTER_TOKEN };
-  const manufacturerToken = { token: process.env.DISTRIBUTOR_TOKEN };
-  const distributorToken = { token: process.env.MANUFACTURER_TOKEN };
-  const retailerToken = { token: process.env.RETAILER_TOKEN };
-  const regulatorToken = { token: process.env.REGULATOR_TOKEN };
+  const adminCredentials = { token: process.env.ADMIN_TOKEN };
+  const masterCredentials = { token: process.env.MASTER_TOKEN };
+  const manufacturerCredentials = { token: process.env.DISTRIBUTOR_TOKEN };
+  const distributorCredentials = { token: process.env.MANUFACTURER_TOKEN };
+  const retailerCredentials = { token: process.env.RETAILER_TOKEN };
+  const regulatorCredentials = { token: process.env.REGULATOR_TOKEN };
 
   let assetManagerContract, manufacturerAssetManagerContract, distributorAssetManagerContract;
   let adminUser, masterUser, manufacturerUser, distributorUser, regulatorUser, retailerUser;
@@ -54,12 +54,12 @@ describe('Bid Tests', function () {
   }
 
   before(async function () {
-    assert.isDefined(adminToken, 'admin token is not defined');
-    assert.isDefined(masterToken, 'master token is not defined');
-    assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
-    assert.isDefined(distributorToken, 'distributor token is not defined');
-    assert.isDefined(retailerToken, 'retailer token is not defined');
-    assert.isDefined(regulatorToken, 'retailer token is not defined');
+    assert.isDefined(adminCredentials.token, 'admin token is not defined');
+    assert.isDefined(masterCredentials.token, 'master token is not defined');
+    assert.isDefined(manufacturerCredentials.token, 'manufacturer token is not defined');
+    assert.isDefined(distributorCredentials.token, 'distributor token is not defined');
+    assert.isDefined(retailerCredentials.token, 'retailer token is not defined');
+    assert.isDefined(regulatorCredentials.token, 'retailer token is not defined');
 
 
     // get assetError Enums
@@ -77,21 +77,21 @@ describe('Bid Tests', function () {
     // get BidEvent Enums
     BidEvent = await getEnums(`${process.cwd()}/${config.dappPath}/bid/contracts/BidEvent.sol`);
 
-    adminUser = await createUser(adminToken);
-    masterUser = await createUser(masterToken);
-    manufacturerUser = await createUser(manufacturerToken);
-    distributorUser = await createUser(distributorToken);
-    regulatorUser = await createUser(regulatorToken);
-    retailerUser = await createUser(retailerToken);
+    adminUser = await createUser(adminCredentials);
+    masterUser = await createUser(masterCredentials);
+    manufacturerUser = await createUser(manufacturerCredentials);
+    distributorUser = await createUser(distributorCredentials);
+    regulatorUser = await createUser(regulatorCredentials);
+    retailerUser = await createUser(retailerCredentials);
 
-    const ttPermissionManager = await ttPermissionManagerJs.uploadContract(adminToken, masterToken);
-    assetManagerContract = await assetManagerJs.uploadContract(adminToken, ttPermissionManager);
+    const ttPermissionManager = await ttPermissionManagerJs.uploadContract(adminCredentials, masterCredentials);
+    assetManagerContract = await assetManagerJs.uploadContract(adminCredentials, ttPermissionManager);
 
     await ttPermissionManager.grantManufacturerRole(manufacturerUser);
     await ttPermissionManager.grantDistributorRole(distributorUser);
 
-    manufacturerAssetManagerContract = bindAssetManagerContractToUser(manufacturerToken, assetManagerContract);
-    distributorAssetManagerContract = bindAssetManagerContractToUser(distributorToken, assetManagerContract);
+    manufacturerAssetManagerContract = bindAssetManagerContractToUser(manufacturerCredentials, assetManagerContract);
+    distributorAssetManagerContract = bindAssetManagerContractToUser(distributorCredentials, assetManagerContract);
   });
 
   it('Distributor should not be able to open asset for bidding', async function () {
@@ -130,7 +130,7 @@ describe('Bid Tests', function () {
     assert.equal(newState, AssetState.BIDS_REQUESTED);
 
     const bidValue = 100;
-    const bid = await bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
+    const bid = await bidJs.createBid(distributorCredentials, asset.address, asset.owner, bidValue, regulatorUser.address);
 
     assert.isDefined(bid.chainId, "Chain id should be defined")
     assert.equal(bid.assetOwner, asset.owner, 'Asset owner should match')
@@ -140,12 +140,12 @@ describe('Bid Tests', function () {
     assert.equal(bid.value, bidValue, 'Bid value should be correct')
 
     // manufacturer should be able to view this bid
-    const mBids = await bidJs.getBids(manufacturerToken)
+    const mBids = await bidJs.getBids(manufacturerCredentials)
     const mBid = mBids.find((b) => b.address === bid.address)
     assert.isDefined(mBid, "Manufacturer should be able to view the bid")
 
     // retailer should not be able to view this bid
-    const rBids = await bidJs.getBids(retailerToken)
+    const rBids = await bidJs.getBids(retailerCredentials)
     const rBid = rBids.find((b) => b.address === bid.address)
     assert.notExists(rBid, "Retailer should not be able to view the bid")
   })
@@ -161,9 +161,9 @@ describe('Bid Tests', function () {
     assert.equal(newState, AssetState.BIDS_REQUESTED);
 
     const bidValue = 100;
-    const bid = await bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
+    const bid = await bidJs.createBid(distributorCredentials, asset.address, asset.owner, bidValue, regulatorUser.address);
 
-    const bidContract = bidJs.bind(distributorToken, bid.chainId, {
+    const bidContract = bidJs.bind(distributorCredentials, bid.chainId, {
       name: 'Bid',
       address: bid.address,
       src: 'removed'
@@ -185,9 +185,9 @@ describe('Bid Tests', function () {
     assert.equal(newState, AssetState.BIDS_REQUESTED);
 
     const bidValue = 100;
-    const bid = await bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
+    const bid = await bidJs.createBid(distributorCredentials, asset.address, asset.owner, bidValue, regulatorUser.address);
 
-    const bidContract = bidJs.bind(manufacturerToken, bid.chainId, {
+    const bidContract = bidJs.bind(manufacturerCredentials, bid.chainId, {
       name: 'Bid',
       address: bid.address,
       src: 'removed'
@@ -208,9 +208,9 @@ describe('Bid Tests', function () {
     assert.equal(newState, AssetState.BIDS_REQUESTED);
 
     const bidValue = 100;
-    const bid = await bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
+    const bid = await bidJs.createBid(distributorCredentials, asset.address, asset.owner, bidValue, regulatorUser.address);
 
-    const bidContract = bidJs.bind(manufacturerToken, bid.chainId, {
+    const bidContract = bidJs.bind(manufacturerCredentials, bid.chainId, {
       name: 'Bid',
       address: bid.address,
       src: 'removed'
@@ -240,9 +240,9 @@ describe('Bid Tests', function () {
     assert.equal(newState, AssetState.BIDS_REQUESTED);
 
     const bidValue = 100;
-    const bid = await bidJs.createBid(distributorToken, asset.address, asset.owner, bidValue, regulatorUser.address);
+    const bid = await bidJs.createBid(distributorCredentials, asset.address, asset.owner, bidValue, regulatorUser.address);
 
-    const bidContract = bidJs.bind(manufacturerToken, bid.chainId, {
+    const bidContract = bidJs.bind(manufacturerCredentials, bid.chainId, {
       name: 'Bid',
       address: bid.address,
       src: 'removed'

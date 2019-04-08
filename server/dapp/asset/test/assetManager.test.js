@@ -18,10 +18,10 @@ import { factory } from '../asset.factory';
 import { assertRestStatus } from '../../../helpers/assertRestStatus';
 import { getEnums } from '../../../helpers/parse';
 
-const adminToken = { token: process.env.ADMIN_TOKEN };
-const masterToken = { token: process.env.MASTER_TOKEN };
-const manufacturerToken = { token: process.env.DISTRIBUTOR_TOKEN };
-const distributorToken = { token: process.env.MANUFACTURER_TOKEN };
+const adminCredentials = { token: process.env.ADMIN_TOKEN };
+const masterCredentials = { token: process.env.MASTER_TOKEN };
+const manufacturerCredentials = { token: process.env.DISTRIBUTOR_TOKEN };
+const distributorCredentials = { token: process.env.MANUFACTURER_TOKEN };
 
 const options = { config }
 let existingSku;
@@ -40,6 +40,11 @@ describe('Asset Manager Tests', function () {
   }
 
   before(async function () {
+    assert.isDefined(adminCredentials.token, 'admin token is not defined');
+    assert.isDefined(masterCredentials.token, 'master token is not defined');
+    assert.isDefined(manufacturerCredentials.token, 'manufacturer token is not defined');
+    assert.isDefined(distributorCredentials.token, 'distributor token is not defined');
+
     // get assertError Enums
     AssetError = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetError.sol`);
 
@@ -49,15 +54,11 @@ describe('Asset Manager Tests', function () {
     // get assertEvent Enums
     AssetEvent = await getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`);
 
-    assert.isDefined(adminToken, 'admin token is not defined');
-    assert.isDefined(masterToken, 'master token is not defined');
-    assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
-    assert.isDefined(distributorToken, 'distributor token is not defined');
 
-    adminUser = await rest.createUser(adminToken, options);
-    masterUser = await rest.createUser(masterToken, options);
-    manufacturerUser = await rest.createUser(manufacturerToken, options);
-    distributorUser = await rest.createUser(distributorToken, options);
+    adminUser = await rest.createUser(adminCredentials, options);
+    masterUser = await rest.createUser(masterCredentials, options);
+    manufacturerUser = await rest.createUser(manufacturerCredentials, options);
+    distributorUser = await rest.createUser(distributorCredentials, options);
 
     const ttPermissionManager = await ttPermissionManagerJs.uploadContract(adminUser, masterUser);
     assetManagerContract = await assetManagerJs.uploadContract(adminUser, ttPermissionManager);
@@ -122,7 +123,7 @@ describe('Asset Manager Tests', function () {
   it('Handle Asset Event', async function () {
     const assetArgs = factory.getAssetArgs();
     const asset = await manufacturerAssetManagerContract.createAsset(assetArgs);
-    const assetContract = assetJs.bindAddress(manufacturerToken, asset.address);
+    const assetContract = assetJs.bindAddress(manufacturerCredentials, asset.address);
 
     const assertHandleAssertEvent = async function (assetEvent, expectedState) {
       const handleAssetEventArgs = {

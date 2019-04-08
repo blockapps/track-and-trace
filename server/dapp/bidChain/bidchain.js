@@ -62,8 +62,7 @@ async function createChain(token, assetOwner, regulatorAddress) {
   }
 
   const chain = await rest.createChain(chainArgs, contractArgs, metadata)
-  // TODO: createChain is returing string.
-  // is that something we need to createContract here. @samrit please confirm
+  // createChain returns chainId. we need to use as object { chainId: chain }. So that we can bind other methods as well.
   return bind(token, { chainId: chain });
 }
 
@@ -136,7 +135,7 @@ async function getChainById(chainId) {
 }
 
 // only return chains where current user is a member
-async function getChains(token) {
+async function getChains(token, chainIds = []) {
   const keyResponse = await rest.getKey(token, options);
   let chains;
 
@@ -146,7 +145,7 @@ async function getChains(token) {
     TODO: Remove Try and catch once STRATO-1304 is done
   */
   try {
-    chains = await rest.getChains([], options);
+    chains = await rest.getChains(chainIds, options);
   } catch (e) {
     if (e.response.status === 500) {
       chains = [];

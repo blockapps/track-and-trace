@@ -7,7 +7,7 @@
   "author": "BlockApps Inc.",
   "license": "MIT",
   "dependencies": {
-    "blockapps-rest": "git://github.com/blockapps/blockapps-rest#SER-36_oauth-utils",
+    "blockapps-rest": "alpha",
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
     "cookie-parser": "^1.4.3",

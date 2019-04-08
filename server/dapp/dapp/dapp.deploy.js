@@ -45,39 +45,39 @@ describe('Track and Trace - deploy contracts', function () {
   it('should upload the contracts', async function () {
     const adminEmail = oauthHelper.getEmailIdFromToken(adminToken.token);
     console.log('Creating admin', adminEmail);
-    const adminCreated = await oauthHelper.createStratoUser(adminToken, adminEmail);
-    assert.strictEqual(adminCreated.status, 200, adminCreated.message);
+    const adminResponse = await oauthHelper.createStratoUser(adminToken, adminEmail);
+    assert.strictEqual(adminResponse.status, 200, adminResponse.message);
 
     const masterEmail = oauthHelper.getEmailIdFromToken(masterToken.token);
     console.log('Creating master', masterEmail);
-    const masterCreated = await oauthHelper.createStratoUser(masterToken, masterEmail);
-    assert.strictEqual(masterCreated.status, 200, masterCreated.message);
+    const masterResponse = await oauthHelper.createStratoUser(masterToken, masterEmail);
+    assert.strictEqual(masterResponse.status, 200, masterResponse.message);
 
     const distributorEmail = oauthHelper.getEmailIdFromToken(distributorToken.token);
     console.log('Creating distributor', distributorEmail);
-    const distributorCreated = await oauthHelper.createStratoUser(distributorToken, distributorEmail);
-    assert.strictEqual(distributorCreated.status, 200, distributorCreated.message);
+    const distributorResponse = await oauthHelper.createStratoUser(distributorToken, distributorEmail);
+    assert.strictEqual(distributorResponse.status, 200, distributorResponse.message);
 
     const manufacturerEmail = oauthHelper.getEmailIdFromToken(manufacturerToken.token);
     console.log('Creating manufacturer', manufacturerEmail);
-    const manufacturerCreated = await oauthHelper.createStratoUser(manufacturerToken, manufacturerEmail);
-    assert.strictEqual(manufacturerCreated.status, 200, manufacturerCreated.message);
+    const manufacturerResponse = await oauthHelper.createStratoUser(manufacturerToken, manufacturerEmail);
+    assert.strictEqual(manufacturerResponse.status, 200, manufacturerResponse.message);
 
     const retailerEmail = oauthHelper.getEmailIdFromToken(retailerToken.token);
     console.log('Creating retailer', retailerEmail);
-    const retailerCreated = await oauthHelper.createStratoUser(retailerToken, retailerEmail);
-    assert.strictEqual(retailerCreated.status, 200, retailerCreated.message);
+    const retailerResponse = await oauthHelper.createStratoUser(retailerToken, retailerEmail);
+    assert.strictEqual(retailerResponse.status, 200, retailerResponse.message);
 
     const regulatorEmail = oauthHelper.getEmailIdFromToken(regulatorToken.token);
     console.log('Creating regulator', regulatorEmail);
-    const regulatorCreated = await oauthHelper.createStratoUser(regulatorToken, regulatorEmail);
-    assert.strictEqual(regulatorCreated.status, 200, regulatorCreated.message);
+    const regulatorResponse = await oauthHelper.createStratoUser(regulatorToken, regulatorEmail);
+    assert.strictEqual(regulatorResponse.status, 200, regulatorResponse.message);
 
     console.log('Permission Manager');
-    const ttPermissionManager = await ttPermissionManagerJs.uploadContract(adminCreated.user, masterCreated.user);
+    const ttPermissionManager = await ttPermissionManagerJs.uploadContract(adminResponse.user, masterResponse.user);
     console.log('Uploading dapp');
-    const dapp = await dappJs.uploadContract(adminCreated.user, ttPermissionManager);
-    const dappBind = await dappJs.bind(adminCreated.user, {
+    const dapp = await dappJs.uploadContract(adminResponse.user, ttPermissionManager);
+    const dappBind = await dappJs.bind(adminResponse.user, {
       name: dapp.name,
       address: dapp.address
     });
@@ -88,21 +88,21 @@ describe('Track and Trace - deploy contracts', function () {
 
     console.log('Create Admin TTUser');
     Object.assign(args, {
-      account: adminCreated.user.address,
+      account: adminResponse.user.address,
       username: adminEmail
     });
     const ttAdminUser = await dappBind.createUser(args);
 
     console.log('Create Master TTUser');
     Object.assign(args, {
-      account: masterCreated.user.address,
+      account: masterResponse.user.address,
       username: masterEmail
     });
     await dappBind.createUser(args);
 
     console.log('Create Distributor TTUser');
     Object.assign(args, {
-      account: distributorCreated.user.address,
+      account: distributorResponse.user.address,
       username: distributorEmail,
       role: TtRole.DISTRIBUTOR
     });
@@ -110,7 +110,7 @@ describe('Track and Trace - deploy contracts', function () {
 
     console.log('Create Manufacturer TTUser');
     Object.assign(args, {
-      account: manufacturerCreated.user.address,
+      account: manufacturerResponse.user.address,
       username: manufacturerEmail,
       role: TtRole.MANUFACTURER
     });
@@ -118,7 +118,7 @@ describe('Track and Trace - deploy contracts', function () {
 
     console.log('Create Retailer TTUser');
     Object.assign(args, {
-      account: retailerCreated.user.address,
+      account: retailerResponse.user.address,
       username: retailerEmail,
       role: TtRole.RETAILER
     });
@@ -126,7 +126,7 @@ describe('Track and Trace - deploy contracts', function () {
 
     console.log('Create Regulator TTUser');
     Object.assign(args, {
-      account: regulatorCreated.user.address,
+      account: regulatorResponse.user.address,
       username: regulatorEmail,
       role: TtRole.REGULATOR
     });

@@ -1,8 +1,6 @@
 import { rest } from 'blockapps-rest';
 import jwtDecode from 'jwt-decode';
-
-import { getYamlFile } from './config';
-const config = getYamlFile('config.yaml');
+import config from '../load.config';
 
 const options = { config }
 

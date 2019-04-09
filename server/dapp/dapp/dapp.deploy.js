@@ -3,9 +3,7 @@ import { assert } from 'chai';
 import oauthHelper from '../../helpers/oauth';
 import ttPermissionManagerJs from '../ttPermission/ttPermissionManager';
 import dappJs from './dapp';
-
 import config from '../../load.config';
-
 import dotenv from 'dotenv';
 import { getEnums } from '../../helpers/parse';
 

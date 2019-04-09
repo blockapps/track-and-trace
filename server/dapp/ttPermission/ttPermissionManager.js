@@ -1,9 +1,7 @@
 import { rest, util, importer, fsUtil, parser } from 'blockapps-rest';
 const { createContract } = rest;
 import RestStatus from 'http-status-codes';
-
 import config from '../../load.config';
-
 import * as permissionManagerJs from '../../blockapps-sol/dist/auth/permission/permissionManager';
 
 const contractName = 'TtPermissionManager';

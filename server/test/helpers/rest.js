@@ -1,9 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 chai.use(chaiHttp);
-
 import config from '../../load.config';
-
 import server from '../../index';
 
 const get = async function (endpoint, accessToken = null) {

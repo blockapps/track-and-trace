@@ -1,5 +1,4 @@
 import { rest } from 'blockapps-rest';
-
 import config from '../../load.config';
 
 const options = { config }

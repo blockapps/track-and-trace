@@ -1,6 +1,5 @@
 import { rest, util, importer } from 'blockapps-rest';
 import RestStatus from 'http-status-codes';
-
 import config from '../../load.config';
 
 const contractName = 'Bid';

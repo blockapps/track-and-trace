@@ -5,8 +5,6 @@ import { factory } from '../../dapp/asset/asset.factory';
 import { get, post } from '../helpers/rest';
 import endpoints from '../../api/v1/endpoints';
 import testHelper from '../helpers/test';
-
-// read config.yaml
 import config from '../../load.config';
 
 import dotenv from 'dotenv';

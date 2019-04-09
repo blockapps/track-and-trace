@@ -1,8 +1,6 @@
 import { rest, util, importer } from 'blockapps-rest';
 import RestStatus from 'http-status-codes';
-
 import config from '../../load.config';
-
 import * as permissionHashmapJs from '../../blockapps-sol/dist/auth/permission/permissionedHashmap';
 import assetJs from './asset';
 import * as contractUtils from './contractUtils';

@@ -1,10 +1,7 @@
 import { rest, util, importer } from 'blockapps-rest';
 import { assert } from 'chai';
 import bidChain from '../bidchain'
-
-import { getYamlFile } from '../../../helpers/config';
-const config = getYamlFile('config.yaml');
-
+import config from '../../../load.config';
 import dotenv from 'dotenv';
 
 const loadEnv = dotenv.config()

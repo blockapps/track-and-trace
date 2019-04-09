@@ -11,8 +11,7 @@ import errorHandler from './api/middleware/errorHandler';
 
 import { fsUtil } from 'blockapps-rest';
 
-import { getYamlFile } from './helpers/config';
-const config = getYamlFile('config.yaml');
+import config from './load.config';
 
 const app = express();
 

@@ -1,8 +1,6 @@
 import { assert } from 'chai';
 import RestStatus from 'http-status-codes';
-
 import config from '../../../load.config';
-
 import dotenv from 'dotenv';
 
 const loadEnv = dotenv.config()

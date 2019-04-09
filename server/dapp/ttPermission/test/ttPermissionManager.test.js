@@ -2,9 +2,7 @@ import { rest } from 'blockapps-rest';
 import { assert } from 'chai';
 import ttPermissionManager from '../ttPermissionManager';
 import oauthHelper from '../../../helpers/oauth';
-
 import config from '../../../load.config';
-
 import dotenv from 'dotenv';
 import { getEnums } from '../../../helpers/parse';
 

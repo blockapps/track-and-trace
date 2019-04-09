@@ -1,6 +1,5 @@
 import { rest, util, importer } from 'blockapps-rest';
-const ip = require('ip');
-
+import ip from 'ip';
 import config from '../../load.config';
 
 const contractName = 'BidChain';

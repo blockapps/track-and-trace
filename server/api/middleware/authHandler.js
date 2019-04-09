@@ -1,7 +1,6 @@
 import RestStatus from 'http-status-codes';
 import { rest, oauthUtil } from 'blockapps-rest';
 import jwtDecode from 'jwt-decode';
-
 import config from '../../load.config';
 
 class AuthHandler {

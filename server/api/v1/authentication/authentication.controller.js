@@ -1,6 +1,5 @@
 import jwtDecode from 'jwt-decode';
 import { rest } from 'blockapps-rest';
-
 import config from '../../../load.config';
 
 class AuthenticationController {

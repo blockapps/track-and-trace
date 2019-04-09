@@ -1,15 +1,14 @@
 import { rest, util, importer } from 'blockapps-rest';
 const { createContract, getState, call } = rest;
-
 import config from '../../load.config';
+import * as userManagerJs from '../../blockapps-sol/dist/auth/user/userManager';
+import assetManagerJs from '../asset/assetManager';
+import ttPermissionManagerJs from '../ttPermission/ttPermissionManager';
+import { yamlWrite } from "../../helpers/config";
 
 const contractName = 'TtDapp';
 const contractFilename = `${config.dappPath}/dapp/contracts/ttDapp.sol`;
 const managersNames = ['userManager', 'assetManager', 'ttPermissionManager'];
-
-import * as userManagerJs from '../../blockapps-sol/dist/auth/user/userManager';
-import assetManagerJs from '../asset/assetManager';
-import ttPermissionManagerJs from '../ttPermission/ttPermissionManager';
 
 const options = { config }
 

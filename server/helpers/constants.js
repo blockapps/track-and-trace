@@ -1,7 +1,5 @@
 import { getEnums } from './parse';
-
-import { getYamlFile } from './config';
-const config = getYamlFile('config.yaml');
+import config from '../load.config';
 
 const baseUrl = `/api/v1`;
 const deployParamName = `deploy`;

@@ -1,6 +1,5 @@
 import { rest, util, importer } from 'blockapps-rest';
 import encodingHelpers from '../../helpers/encoding';
-
 import config from '../../load.config';
 
 const contractName = 'Asset';

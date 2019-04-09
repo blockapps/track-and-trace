@@ -1,153 +1,181 @@
-const { rest6: rest, common } = require('blockapps-rest');
-const { util, config } = common;
-
-const permissionHashmapJs = require(`${process.cwd()}/${config.libPath}/auth/permission/permissionedHashmap`);
-
-const RestStatus = rest.getFields(`${process.cwd()}/${config.libPath}/rest/contracts/RestStatus.sol`);
-
-const assetJs = require(`${process.cwd()}/${config.dappPath}/asset/asset`);
-const contractUtils = require(`${process.cwd()}/${config.dappPath}/asset/contractUtils`);
+import { rest, util, importer } from 'blockapps-rest';
+import RestStatus from 'http-status-codes';
+import config from '../../load.config';
+import * as permissionHashmapJs from '../../blockapps-sol/dist/auth/permission/permissionedHashmap';
+import assetJs from './asset';
+import * as contractUtils from './contractUtils';
+import queryHelper from '../../helpers/query';
 
 const contractName = 'AssetManager';
 const contractFilename = `${process.cwd()}/${config.dappPath}/asset/contracts/AssetManager.sol`;
 
-const encodingHelper = require(`${process.cwd()}/helpers/encoding`);
-const queryHelper = require('../../helpers/query');
+const options = { config }
 
-
-function* uploadContract(token, ttPermissionManagerContract) {
-  const contractArgs = {
+async function uploadContract(token, ttPermissionManagerContract) {
+  const args = {
     ttPermissionManager: ttPermissionManagerContract.address
   };
-  const contract = yield rest.uploadContract(
-    token, 
-    contractName, 
-    contractFilename, 
-    util.usc(contractArgs)
-  );
+
+  const contractArgs = {
+    name: contractName,
+    source: await importer.combine(contractFilename),
+    args: util.usc(args)
+  }
+
+  const contract = await rest.createContract(token, contractArgs, options);
   contract.src = 'removed';
 
-  yield ttPermissionManagerContract.grantAssetManager(contract);
+  await ttPermissionManagerContract.grantAssetManager(contract);
 
   return bind(token, contract);
 }
 
 function bind(token, contract) {
-  contract.exists = function* (sku) {
-    return yield exists(token, contract, sku);
+  contract.exists = async function (sku) {
+    return await exists(token, contract, sku);
   }
 
-  contract.createAsset = function* (args) {
-    return yield createAsset(token, contract, args);
+  contract.createAsset = async function (args) {
+    return await createAsset(token, contract, args);
   }
 
-  contract.handleAssetEvent = function* (args) {
-    return yield handleAssetEvent(token, contract, args);
+  contract.handleAssetEvent = async function (args) {
+    return await handleAssetEvent(token, contract, args);
   }
 
-  contract.getAssets = function* (args) {
-    return yield getAssets(token, contract, args);
+  contract.getAssets = async function (args) {
+    return await getAssets(token, contract, args);
   }
 
-  contract.getAsset = function* (sku) {
-    return yield getAsset(token, contract, sku);
+  contract.getAsset = async function (sku) {
+    return await getAsset(token, contract, sku);
   }
 
-  contract.getAssetHistory = function* (sku) {
-    return yield getAssetHistory(token, contract, sku);
+  contract.getAssetHistory = async function (sku) {
+    return await getAssetHistory(token, contract, sku);
   }
 
-  contract.transferOwnership = function* (args) {
-    return yield transferOwnership(token, contract, args);
+  contract.transferOwnership = async function (args) {
+    return await transferOwnership(token, contract, args);
   }
 
   return contract;
 }
 
-function* exists(token, contract, sku) {
-  rest.verbose('exists', sku);
-
-  const method = 'exists';
+async function exists(token, contract, sku) {
   const args = { sku: sku };
+  const callArgs = {
+    contract,
+    method: 'exists',
+    args: util.usc(args)
+  }
 
-  const result = yield rest.callMethod(token, contract, method, util.usc(args));
+  const result = await rest.call(token, callArgs, options);
 
   return result[0] === true;
 }
 
-function* createAsset(token, contract, args) {
-  rest.verbose('createAsset', args);
-
-  const method = 'createAsset';
-
+async function createAsset(token, contract, args) {
   const converted = assetJs.toBytes32(args);
 
-  const [restStatus, assetError, assetAddress] = yield rest.callMethod(token, contract, method, util.usc(converted), { history: [assetJs.contractName] });
+  const callArgs = {
+    contract,
+    method: 'createAsset',
+    args: util.usc(converted)
+  }
 
-  if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, assetError, { method, converted });
-  const asset = yield contractUtils.waitForAddress(assetJs.contractName, assetAddress);
+  const copyOfOptions = {
+    ...options,
+    history: [assetJs.contractName]
+  }
+  
+  const [restStatus, assetError, assetAddress] = await rest.call(token, callArgs, copyOfOptions);
 
+  if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, assetError, { method: callArgs.method, converted });
+
+  const asset = await contractUtils.waitForAddress(assetJs.contractName, assetAddress);
   return assetJs.fromBytes32(asset);
 }
 
-function* handleAssetEvent(token, contract, args) {
-  rest.verbose('handleAssetEvent', args);
+async function handleAssetEvent(token, contract, args) {
+  const callArgs = {
+    contract,
+    method: 'handleAssetEvent',
+    args: util.usc(args)
+  }
 
-  const method = 'handleAssetEvent';
-  const [restStatus, assetError, searchCounter, newState] = yield rest.callMethod(token, contract, method, util.usc(args));
+  const [restStatus, assetError, searchCounter, newState] = await rest.call(token, callArgs, options);
 
-  if (restStatus != RestStatus.OK) throw new rest.RestError(restStatus, assetError, { method, args });
+  if (restStatus != RestStatus.OK) throw new rest.RestError(restStatus, assetError, { method: callArgs.method, args });
 
-  yield assetJs.waitForRequiredUpdate(args.sku, searchCounter);
+  await assetJs.waitForRequiredUpdate(args.sku, searchCounter);
 
   return newState;
 }
 
-function* getAssets(token, contract, args) {
-  rest.verbose('getAssets');
-
-  const { assets: assetsHashMap } = yield rest.getState(contract);
+async function getAssets(token, contract, args) {
+  const { assets: assetsHashMap } = await rest.getState(contract, options);
   const hashmap = permissionHashmapJs.bindAddress(token, assetsHashMap);
 
-  const { values } = yield hashmap.getState();
+  const { values } = await hashmap.getState();
   const addresses = values.slice(1);
 
   const params = {
     address: args.address ? addresses.filter(
-      (a) =>  Array.isArray(args.address) 
-        ? args.address.indexOf(a) !== -1 
+      (a) => Array.isArray(args.address)
+        ? args.address.indexOf(a) !== -1
         : a === args.address
-      ) : addresses,
+    ) : addresses,
     ...args
   }
 
-  const results = yield rest.query(`${assetJs.contractName}?${queryHelper.getPostgrestQueryString(params)}`);
+  const contractArgs = {
+    name: assetJs.contractName
+  }
 
+  const copyOfOptions = {
+    ...options,
+    query: {
+      address: `in.${util.toCsv(params.address)}`
+    }
+  }
+
+  const results = await rest.search(contractArgs, copyOfOptions)
   const converted = results.map(r => assetJs.fromBytes32(r));
 
   return converted;
 }
 
-function* getAsset(token, contract, sku) {
-  rest.verbose('getAsset');
+async function getAsset(token, contract, sku) {
+  const found = await exists(token, contract, sku);
 
-  const found = yield exists(token, contract, sku);
-
-  if(!found) {
-    throw new rest.RestError(restStatus.NOT_FOUND, `SKU ${sku} not found`);
+  if (!found) {
+    throw new rest.RestError(RestStatus.NOT_FOUND, `SKU ${sku} not found`);
   }
 
-  const address = yield rest.callMethod(
-    token,
+  const callArgs = {
     contract,
-    'getAsset',
-    util.usc({sku})
-  )
+    method: 'getAsset',
+    args: util.usc({ sku })
+  }
 
-  const result = yield rest.query(`${assetJs.contractName}?address=eq.${address}`);
+  const address = await rest.call(token, callArgs, options);
 
-  if(result.length != 1) {
-    throw new rest.RestError(restStatus.NOT_FOUND, `Unable to retrieve state for address ${address}`);
+  const contractArgs = {
+    name: assetJs.contractName
+  }
+
+  const copyOfOptions = {
+    ...options,
+    query: {
+      address: `eq.${address}`
+    }
+  }
+
+  const result = await rest.search(contractArgs, copyOfOptions)
+
+  if (result.length != 1) {
+    throw new rest.RestError(RestStatus.NOT_FOUND, `Unable to retrieve state for address ${address}`);
   }
 
   const converted = assetJs.fromBytes32(result[0]);
@@ -155,50 +183,53 @@ function* getAsset(token, contract, sku) {
   return converted;
 }
 
-function* getAssetHistory(token, contract, sku) {
-  rest.verbose('getAssetHistory');
+async function getAssetHistory(token, contract, sku) {
+  const found = await exists(token, contract, sku);
 
-  const found = yield exists(token, contract, sku);
-
-  if(!found) {
+  if (!found) {
     throw new rest.RestError(restStatus.NOT_FOUND, `SKU ${sku} not found`);
   }
 
-  const address = yield rest.callMethod(
-    token,
+  const callArgs = {
     contract,
-    'getAsset',
-    util.usc({sku})
-  )
+    method: 'getAsset',
+    args: util.usc({ sku })
+  }
 
-  const history = yield rest.query(`history@${assetJs.contractName}?address=eq.${address}`);
+  const address = await rest.call(token, callArgs, options)
+
+  const contractArgs = {
+    name: `history@${assetJs.contractName}`
+  }
+
+  const copyOfOptions = {
+    ...options,
+    query: {
+      address: `eq.${address}`
+    }
+  }
+
+  const history = await rest.search(contractArgs, copyOfOptions)
   return history.map(h => assetJs.fromBytes32(h));
 }
 
-function* transferOwnership(token, contract, args) {
-  rest.verbose('transferOwnership', args);
+async function transferOwnership(token, contract, args) {
+  const callArgs = {
+    contract,
+    method: 'transferOwnership',
+    args: util.usc(args)
+  }
 
-  const method = 'transferOwnership';
-  const [restStatus, assetError, searchCounter, newState] =
-    yield rest.callMethod(token, contract, method, util.usc(args));
+  const [restStatus, assetError, searchCounter, newState] = await rest.call(token, callArgs, options);
 
-  if (restStatus != RestStatus.OK) throw new rest.RestError(restStatus, assetError, { method, args });
+  if (restStatus != RestStatus.OK) throw new rest.RestError(restStatus, assetError, { method: callArgs.method, args });
 
-  yield assetJs.waitForRequiredUpdate(args.sku, searchCounter);
+  await assetJs.waitForRequiredUpdate(args.sku, searchCounter);
 
   return newState;
 }
 
-function genAddressString(addresses) {
-  if (!addresses || addresses.length == 0) return '';
-
-  const csv = util.toCsv(addresses);
-  const res = `address=in.${csv}`;
-
-  return res;
-}
-
-module.exports = {
+export default {
   uploadContract,
   bind,
 }

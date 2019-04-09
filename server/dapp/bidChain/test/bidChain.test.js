@@ -1,131 +1,117 @@
-require('dotenv').config();
-require('co-mocha');
-const { common, rest6: rest } = require('blockapps-rest');
-const { assert, config, fsutil, util } = common;
-const { getEmailIdFromToken, createStratoUser } = require(`${process.cwd()}/helpers/oauth`);
+import { rest, util, importer } from 'blockapps-rest';
+import { assert } from 'chai';
+import bidChain from '../bidchain'
+import config from '../../../load.config';
+import dotenv from 'dotenv';
 
-const bidChain = require(`${process.cwd()}/${config.dappPath}/bidChain/bidchain`);
+const loadEnv = dotenv.config()
+assert.isUndefined(loadEnv.error)
 
 const contractName = 'BidGovernance';
 const contractFileName = `${process.cwd()}/${config.dappPath}/bidChain/contracts/BidChain.sol`;
 
-describe('Bid Chain Tests', function() {
-  this.timeout(60*1000);
+const options = { config }
 
-  const distributorToken = process.env.DISTRIBUTOR_TOKEN;
-  const manufacturerToken = process.env.MANUFACTURER_TOKEN;
-  const adminToken = process.env.ADMIN_TOKEN;
-  const regulatorToken = process.env.REGULATOR_TOKEN;
+describe('Bid Chain Tests', function () {
+  this.timeout(config.timeout);
 
-  function* createUser(userToken) {
-    const userEmail = getEmailIdFromToken(userToken);
-    const createAccountResponse = yield createStratoUser(userToken, userEmail);
-    assert.equal(createAccountResponse.status, 200, createAccountResponse.message);
-    return { address: createAccountResponse.address, username: userEmail };
-  }
+  let adminUser, regulatorUser, manufacturerUser, distributorUser;
+  const distributorCredentials = { token: process.env.DISTRIBUTOR_TOKEN };
+  const manufacturerCredentials = { token: process.env.MANUFACTURER_TOKEN };
+  const adminCredentials = { token: process.env.ADMIN_TOKEN };
+  const regulatorCredentials = { token: process.env.REGULATOR_TOKEN };
 
-  before(function* () {
-    assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
-    assert.isDefined(distributorToken, 'distributor token is not defined');
-    assert.isDefined(adminToken, 'admin token is not defined');
-    assert.isDefined(regulatorToken, 'regulator token is not defined');
+  before(async function () {
+    assert.isDefined(manufacturerCredentials.token, 'manufacturer token is not defined');
+    assert.isDefined(distributorCredentials.token, 'distributor token is not defined');
+    assert.isDefined(adminCredentials.token, 'admin token is not defined');
+    assert.isDefined(regulatorCredentials.token, 'regulator token is not defined');
 
-    manufacturerUser = yield createUser(manufacturerToken);
-    distributorUser = yield createUser(distributorToken);
-    adminUser = yield createUser(adminToken);
-    regulatorUser = yield createUser(regulatorToken)
+    manufacturerUser = await rest.createUser(manufacturerCredentials, options);
+    distributorUser = await rest.createUser(distributorCredentials, options);
+    adminUser = await rest.createUser(adminCredentials, options);
+    regulatorUser = await rest.createUser(regulatorCredentials, options);
   })
 
-  it('should create a bidding chain', function* () {
-    const chainId = yield bidChain.createChain(distributorToken, manufacturerUser.address, regulatorUser.address)
+  it('should create a bidding chain', async function () {
+    const { chainId } = await bidChain.createChain(distributorUser, manufacturerUser.address, regulatorUser.address)
 
     // takes a few to populate
-    yield util.sleep(2*1000);
+    await util.sleep(2 * 1000);
 
-    const chain = yield bidChain.getChainById(chainId);
+    const chain = await bidChain.getChainById(chainId);
 
-    assert.equal(chain.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match')
-    assert.equal(chain.members.length, 3, 'Chain should have 3 members');
+    assert.equal(chain.info.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match')
+    assert.equal(chain.info.members.length, 3, 'Chain should have 3 members');
 
-    const chains = yield bidChain.getChains(distributorToken);
+    const chains = await bidChain.getChains(distributorCredentials);
 
     const fChain = chains.find((c) => {
       return c.id === chainId
     })
 
     assert.isDefined(fChain, 'Should be able to query for chain using token');
-
   })
 
   // TODO: test does not pass. member is not being removed.
-  it('should remove a member from bidding chain', function* () {
-    const chainId = yield bidChain.createChain(distributorToken, manufacturerUser.address, regulatorUser.address)
+  it('should remove a member from bidding chain', async function () {
+    const { chainId } = await bidChain.createChain(distributorCredentials, manufacturerUser.address, regulatorUser.address)
     // takes a few to populate
-    yield util.sleep(2*1000);
+    await util.sleep(2 * 1000);
 
-    const chain = yield bidChain.getChainById(chainId);
-    assert.equal(chain.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match');
-    assert.equal(chain.members.length, 3, 'Chain should have 3 members');
+    const chain = await bidChain.getChainById(chainId);
+    assert.equal(chain.info.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match');
+    assert.equal(chain.info.members.length, 3, 'Chain should have 3 members');
 
-    const govContract = yield rest.uploadContract(
-      distributorToken,
-      contractName,
-      contractFileName,
-      {},
-      {
-        chainId: chainId
-      }
-    );
+    const contractArgs = {
+      name: contractName,
+      source: await importer.combine(contractFileName),
+      args: {}
+    }
 
-    const result = yield bidChain.removeMember(
-      distributorToken,
-      {
-        name: contractName,
-        address: govContract.address
-      },
-      manufacturerUser.address,
-      chainId
-    );
+    const copyOfOptions = {
+      ...options,
+      chainIds: [chainId]
+    }
+    const govContract = await rest.createContract(distributorUser, contractArgs, copyOfOptions);
 
-    const updatedChain = yield bidChain.getChainById(chainId);
-    assert.equal(updatedChain.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match');
-    assert.equal(updatedChain.members.length, 2, 'Chain should have 2 members');
+    // Remove member
+    await bidChain.removeMember(distributorUser, govContract, manufacturerUser.address, chainId);
+
+    const updatedChain = await bidChain.getChainById(chainId);
+    assert.equal(updatedChain.info.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match');
+    assert.equal(updatedChain.info.members.length, 2, 'Chain should have 2 members');
   })
 
-  it('should add a member from bidding chain', function* () {
-    const chainId = yield bidChain.createChain(distributorToken, manufacturerUser.address, regulatorUser.address)
+  it('should add a member from bidding chain', async function () {
+    const { chainId } = await bidChain.createChain(distributorCredentials, manufacturerUser.address, regulatorUser.address)
 
     // takes a few to populate
-    yield util.sleep(2*1000);
+    await util.sleep(2 * 1000);
 
-    const chain = yield bidChain.getChainById(chainId);
-    assert.equal(chain.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match');
-    assert.equal(chain.members.length, 3, 'Chain should have 3 members');
+    const chain = await bidChain.getChainById(chainId);
+    assert.equal(chain.info.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match');
+    assert.equal(chain.info.members.length, 3, 'Chain should have 3 members');
 
-    const govContract = yield rest.uploadContract(
-      distributorToken,
-      contractName,
-      contractFileName,
-      {},
-      {
-        chainId: chainId
-      }
-    );
+    const contractArgs = {
+      name: contractName,
+      source: await importer.combine(contractFileName),
+      args: {}
+    }
 
-    const result = yield bidChain.addMember(
-      distributorToken,
-      {
-        name: contractName,
-        address: govContract.address
-      },
-      adminUser.address,
-      chainId
-    );
+    const copyOfOptions = {
+      ...options,
+      chainIds: [chainId]
+    }
+    const govContract = await rest.createContract(distributorUser, contractArgs, copyOfOptions);
 
-    const updatedChain = yield bidChain.getChainById(chainId);
+    // add member to the chain
+    await bidChain.addMember(distributorCredentials, govContract, adminUser.address, chainId);
 
-    assert.equal(updatedChain.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match')
-    assert.equal(updatedChain.members.length, 4, 'Chain should have 4 members');
+    const updatedChain = await bidChain.getChainById(chainId);
+
+    assert.equal(updatedChain.info.label, `bid_${distributorUser.address}_${manufacturerUser.address}`, 'Chain label should match')
+    assert.equal(updatedChain.info.members.length, 4, 'Chain should have 4 members');
   })
 
 })

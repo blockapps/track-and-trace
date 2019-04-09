@@ -27,7 +27,7 @@ import { setUserMessage } from '../actions/user-message.actions';
 const assetsUrl = `${apiUrl}/assets`;
 const createAssetUrl = `${apiUrl}/assets`;
 const getAssetUrl = `${apiUrl}/assets/:sku`;
-const handleAssetEventUrl = `${apiUrl}/assets/handleEvent`;
+const handleAssetEventUrl = `${apiUrl}/assets/:sku/event`;
 const changeAssetOwnerUrl = `${apiUrl}/assets/transferOwnership`;
 
 function fetchAssets() {
@@ -52,7 +52,8 @@ function fetchAsset(sku) {
 }
 
 function handleEventApiCall(payload) {
-  return fetch(handleAssetEventUrl,
+  const url = handleAssetEventUrl.replace(':sku', payload.sku)
+  return fetch(url,
     {
       method: HTTP_METHODS.POST,
       headers: {

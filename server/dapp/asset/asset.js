@@ -1,36 +1,39 @@
-const { rest6: rest, common } = require('blockapps-rest');
-const { util, config } = common;
+import { rest, util, importer } from 'blockapps-rest';
+import encodingHelpers from '../../helpers/encoding';
+import config from '../../load.config';
 
 const contractName = 'Asset';
 const contractFilename = `${process.cwd()}/${config.dappPath}/asset/contracts/Asset.sol`;
-const encodingHelpers = require('../../helpers/encoding');
 
-function* uploadContract(token, ttPermissionManagerContract, args) {
-  const getKeyResponse = yield rest.getKey(token);
-  
+const options = { config }
+
+async function uploadContract(token, ttPermissionManagerContract, args) {
+  const getKeyResponse = await rest.getKey(token, options);
+
   const contractArgs = Object.assign(
-    {}, 
-    toBytes32(args), 
+    {},
+    toBytes32(args),
     {
       ttPermissionManager: ttPermissionManagerContract.address,
-      owner: getKeyResponse.address 
+      owner: getKeyResponse
     }
   );
 
-  const contract = yield rest.uploadContract(
-    token, 
-    contractName, 
-    contractFilename, 
-    util.usc(contractArgs)
-  );
+  const contractArgs1 = {
+    name: contractName,
+    source: await importer.combine(contractFilename),
+    args: util.usc(contractArgs)
+  }
+
+  const contract = await rest.createContract(token, contractArgs1, options);
   contract.src = 'removed';
 
   return bind(token, contract);
 }
 
 function bind(token, contract) {
-  contract.getState = function* () {
-    return yield rest.getState(contract);
+  contract.getState = async function () {
+    return await rest.getState(contract, options);
   };
 
   return contract;
@@ -44,10 +47,25 @@ function bindAddress(token, address) {
   return bind(token, contract);
 }
 
-function* waitForRequiredUpdate(sku, searchCounter) {
-  const queryString = `${contractName}?and=(sku.eq.${sku},searchCounter.gte.${searchCounter})`;
-  const results = yield rest.waitQuery(queryString, 1);
+async function waitForRequiredUpdate(sku, searchCounter) {
+  function predicate(response) {
+    if (response.length)
+      return response;
+  }
 
+  const contract = {
+    name: contractName
+  }
+
+  const copyOfOptions = {
+    ...options,
+    query: {
+      searchCounter: `gte.${searchCounter}`,
+      sku: `eq.${sku}`
+    }
+  }
+
+  const results = await rest.searchUntil(contract, predicate, copyOfOptions);
   const asset = fromBytes32(results[0])
 
   return asset;
@@ -71,7 +89,7 @@ function toBytes32(asset) {
   return converted
 }
 
-module.exports = {
+export default {
   uploadContract,
   bindAddress,
   contractName,

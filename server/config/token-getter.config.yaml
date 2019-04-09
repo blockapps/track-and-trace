@@ -4,11 +4,11 @@ timeout: 120000
 dappPath: ./dapp
 libPath: blockapps-sol/dist
 apiUrl: /api/v1
-deployFilename: ./config/docker.deploy.yaml
+deployFilename: ./config/localhost.deploy.yaml
 
 nodes:
 - id: 0
-  url: 'http://nginx:80'
+  url: 'http://localhost:8080'
   publicKey: '6d8a80d14311c39f35f516fa664deaaaa13e85b2f7493f37f6144d86991ec012937307647bd3b9a82abe2974e1407241d54947bbb39763a4cac9f77166ad92a0'
   port: 30303
   oauth:
@@ -19,4 +19,4 @@ nodes:
     clientSecret: "10352ea6-f286-47cf-936c-2cb7ce6c1c39"
     openIdDiscoveryUrl: "https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration"
     redirectUri: "http://localhost/api/v1/authentication/callback"
-    logoutRedirectUri: "http://localhost" 
+    logoutRedirectUri: "http://localhost" # url to redirect after OAuth logout (e.g. app's login screen)

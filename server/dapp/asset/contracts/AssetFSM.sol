@@ -1,4 +1,4 @@
-import "/blockapps-sol/fsm/contracts/FSM.sol";
+import "/blockapps-sol/dist/fsm/contracts/FSM.sol";
 import "./AssetState.sol";
 import "./AssetEvent.sol";
 

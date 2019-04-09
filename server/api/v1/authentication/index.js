@@ -1,12 +1,13 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const controller = require('./authentication.controller');
-const authHandler = require('../../middleware/authHandler');
-const asyncHandler = require('../../middleware/asyncHandler');
+import AuthenticationController from './authentication.controller';
+import authHandler from '../../middleware/authHandler';
+import asyncHandler from '../../middleware/asyncHandler';
+
 /**
  * route for oauth flow
  */
-router.get('/callback', asyncHandler(controller.callback));
-router.get('/logout', authHandler.authorizeRequest(), controller.logout);
+router.get('/callback', asyncHandler(AuthenticationController.callback));
+router.get('/logout', authHandler.authorizeRequest(), AuthenticationController.logout);
 
-module.exports = router;
+export default router;

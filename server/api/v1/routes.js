@@ -1,13 +1,15 @@
-const authHandler = require('../middleware/authHandler');
-const router = require('express').Router();
-const moment = require('moment');
-const package = require('../../package.json');
+import express from 'express';
+const router = express.Router();
 
-const authentication = require(`./authentication`);
-const user = require(`./users`)
-const assets = require(`./assets`);
-const bids = require(`./bids`);
-const constants = require(`./constants`);
+import moment from 'moment';
+import authHandler from '../middleware/authHandler';
+import packages from '../../package.json';
+
+import authentication from './authentication';
+import user from './users';
+import assets from './assets';
+import bids from './bids';
+import constants from './constants';
 
 router.use(
   `/authentication`,
@@ -40,12 +42,12 @@ router.use(
 // set health handler
 router.get(`/health`, (req, res) => {
   res.json({
-    name: package.name,
-    description: package.description,
-    version: package.version,
+    name: packages.name,
+    description: packages.description,
+    version: packages.version,
     timestamp: moment().unix()
   })
 });
 
-module.exports = router;
+export default router;
 

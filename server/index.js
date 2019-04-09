@@ -1,22 +1,23 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const { baseUrl, deployParamName } = require('./helpers/constants');
-const routes = require('./api/v1/routes');
-const authHandler = require('./api/middleware/authHandler');
-const expressWinston = require('express-winston');
-const winston = require('winston');
-const cors = require('cors');
-const errorHandler = require('./api/middleware/errorHandler');
+import express from 'express';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import constants from './helpers/constants';
+import routes from './api/v1/routes';
+import authHandler from './api/middleware/authHandler';
+import expressWinston from 'express-winston';
+import winston from 'winston';
+import cors from 'cors';
+import errorHandler from './api/middleware/errorHandler';
 
-const { common } = require('blockapps-rest');
-const { config, fsutil } = common;
+import { fsUtil } from 'blockapps-rest';
+
+import config from './load.config';
 
 const app = express();
 
-const deploy = fsutil.yamlSafeLoadSync(config.deployFilename);
+const deploy = fsUtil.getYaml(config.deployFilename);
 if (!deploy) throw new Error('Deploy config.deployFilename not found ', config.deployFilename);
-app.set(deployParamName, deploy);
+app.set(constants.deployParamName, deploy);
 
 // remove x-powerd-by header
 app.disable('x-powered-by');
@@ -43,7 +44,7 @@ app.use(
 authHandler.init(app);
 
 // setup routes
-app.use(`${baseUrl}`, routes);
+app.use(`${constants.baseUrl}`, routes);
 
 app.use(errorHandler)
 
@@ -51,4 +52,4 @@ const port = process.env.PORT || 3030;
 
 const server = app.listen(port, () => console.log(`Listening on ${port}`));
 
-module.exports = server;
+export default server;

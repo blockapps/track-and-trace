@@ -1,46 +1,43 @@
-const co = require('co');
+import { rest } from 'blockapps-rest';
 
-const { common, rest6: rest } = require('blockapps-rest');
-const { config, util } = common;
+import dappJs from '../../../dapp/dapp/dapp';
+import bidJs from '../../../dapp/bid/bid';
 
-const dappJs = require(`${process.cwd()}/${config.dappPath}/dapp/dapp`);
-const encodingHelpers = require(`../../../helpers/encoding`);
-const AssetEvent = rest.getEnums(`${process.cwd()}/${config.dappPath}/asset/contracts/AssetEvent.sol`).AssetEvent;
-const bidJs = require(`${process.cwd()}/${config.dappPath}/bid/bid`);
+import moment from 'moment';
 
-const moment = require('moment');
+class AssetsController {
 
-const assetsController = {
-  getAssets: (req, res, next) => {
+  static async getAssets(req, res, next) {
     const { app, accessToken, query } = req;
     const args = { ...query };
 
     const deploy = app.get('deploy');
 
-    co(function* () {
-      const dapp = yield dappJs.bind(accessToken, deploy.contract);
-      const assets = yield dapp.getAssets(args);
-      util.response.status200(res, assets);
-    })
-      .catch(next);
-  },
+    try {
+      const dapp = await dappJs.bind(accessToken, deploy.contract);
+      const assets = await dapp.getAssets(args);
+      rest.response.status200(res, assets);
+    } catch (e) {
+      next(e)
+    }
+  }
 
-  getAsset: (req, res, next) => {
+  static async getAsset(req, res, next) {
     const { app, accessToken } = req;
     const sku = req.params.sku;
 
     if (!sku) {
-      util.response.status400(res, 'Missing sku')
+      rest.response.status400(res, 'Missing sku')
       return next();
     }
 
     const deploy = app.get('deploy');
 
-    co(function* () {
-      const dapp = yield dappJs.bind(accessToken, deploy.contract);
-      const asset = yield dapp.getAsset(sku);
-      const assetHistory = yield dapp.getAssetHistory(sku)
-      const bidHistory = yield bidJs.getBidsHistory(accessToken, asset.address);
+    try {
+      const dapp = await dappJs.bind(accessToken, deploy.contract);
+      const asset = await dapp.getAsset(sku);
+      const assetHistory = await dapp.getAssetHistory(sku)
+      const bidHistory = await bidJs.getBidsHistory(accessToken, asset.address);
 
       const histories = [
         ...assetHistory.map(h => { return { ...h, type: 'ASSET' } }),
@@ -51,13 +48,14 @@ const assetsController = {
         (h1, h2) => moment(h1.block_timestamp).unix() - moment(h2.block_timestamp).unix()
       )
 
-      util.response.status200(res, asset);
-    })
-      .catch(next);
-  },
+      rest.response.status200(res, asset);
+    } catch (e) {
+      next(e)
+    }
+  }
 
   // TODO: throw errors correctly from dapp
-  createAsset: (req, res, next) => {
+  static async createAsset(req, res, next) {
     const { app, accessToken, body } = req;
     const args = { ...body.asset };
 
@@ -66,38 +64,39 @@ const assetsController = {
       || !Array.isArray(args.values)
       || args.keys.length !== args.values.length
     ) {
-      util.response.status400(res, 'Missing spec or bad spec format');
+      rest.response.status400(res, 'Missing spec or bad spec format');
       return next();
     }
 
-    const deploy = app.get('deploy');
+    try {
+      const deploy = app.get('deploy');
+      const dapp = await dappJs.bind(accessToken, deploy.contract);
+      const asset = await dapp.createAsset(args);
+      rest.response.status200(res, asset);
+    } catch (e) {
+      next(e)
+    }
+  }
 
-    co(function* () {
-      const dapp = yield dappJs.bind(accessToken, deploy.contract);
-      const asset = yield dapp.createAsset(args);
-      util.response.status200(res, asset);
-    })
-      .catch(next);
-  },
-
-  handleAssetEvent: (req, res, next) => {
-    const { app, accessToken, body } = req;
-    const { sku, assetEvent } = body;
+  static async handleAssetEvent(req, res, next) {
+    const { app, accessToken, body, params } = req;
+    const { assetEvent } = body;
+    const { sku } = params;
 
     // Get sku and assetEvent
     const args = { sku, assetEvent: parseInt(assetEvent, 10) };
 
     const deploy = app.get('deploy');
+    try {
+      const dapp = await dappJs.bind(accessToken, deploy.contract);
+      const newState = await dapp.handleAssetEvent(args);
+      rest.response.status200(res, newState);
+    } catch (e) {
+      next(e)
+    }
+  }
 
-    co(function* () {
-      const dapp = yield dappJs.bind(accessToken, deploy.contract);
-      const newState = yield dapp.handleAssetEvent(args);
-      util.response.status200(res, newState);
-    })
-      .catch(next);
-  },
-
-  transferOwnership: (req, res, next) => {
+  static async transferOwnership(req, res, next) {
     const { app, accessToken, body } = req;
     const { sku, owner } = body;
 
@@ -106,13 +105,14 @@ const assetsController = {
 
     const deploy = app.get('deploy');
 
-    co(function* () {
-      const dapp = yield dappJs.bind(accessToken, deploy.contract);
-      const newState = yield dapp.transferOwnership(args);
-      util.response.status200(res, newState);
-    })
-      .catch(next);
+    try {
+      const dapp = await dappJs.bind(accessToken, deploy.contract);
+      const newState = await dapp.transferOwnership(args);
+      rest.response.status200(res, newState);
+    } catch (e) {
+      next(e)
+    }
   }
 }
 
-module.exports = assetsController;
+export default AssetsController;

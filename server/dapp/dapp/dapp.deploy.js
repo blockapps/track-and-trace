@@ -1,21 +1,21 @@
-require('dotenv').config();
-require('co-mocha');
-const ba = require('blockapps-rest');
-const {
-  rest6: rest
-} = ba;
-const {
-  config,
-  assert
-} = ba.common;
-const jwtDecode = require('jwt-decode');
-const oauthHelper = require(`${process.cwd()}/helpers/oauth`);
-const ttPermissionManagerJs = require(`${process.cwd()}/${config.dappPath}/ttPermission/ttPermissionManager`);
-const dappJs = require('./dapp');
+import RestStatus from 'http-status-codes';
+import { assert } from 'chai';
+import oauthHelper from '../../helpers/oauth';
+import ttPermissionManagerJs from '../ttPermission/ttPermissionManager';
+import dappJs from './dapp';
+import config from '../../load.config';
+import dotenv from 'dotenv';
+import { getEnums } from '../../helpers/parse';
 
-const {
-  TtRole
-} = rest.getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`);
+const loadEnv = dotenv.config()
+assert.isUndefined(loadEnv.error)
+
+const adminCredentials = { token: process.env.ADMIN_TOKEN };
+const masterCredentials = { token: process.env.MASTER_TOKEN };
+const manufacturerCredentials = { token: process.env.MANUFACTURER_TOKEN };
+const distributorCredentials = { token: process.env.DISTRIBUTOR_TOKEN };
+const retailerCredentials = { token: process.env.RETAILER_TOKEN };
+const regulatorCredentials = { token: process.env.REGULATOR_TOKEN };
 
 // ---------------------------------------------------
 //   deploy the projects contracts
@@ -23,8 +23,12 @@ const {
 
 describe('Track and Trace - deploy contracts', function () {
   this.timeout(config.timeout * 10);
+  let TtRole;
 
-  before(() => {
+  before(async () => {
+    // get ttRole Enums
+    TtRole = await getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`);
+
     assert.isDefined(config.deployFilename, 'Deployment filename (output) argument missing. Set in config');
     assert.isDefined(process.env.ADMIN_TOKEN, 'ADMIN_TOKEN should be defined');
     assert.isDefined(process.env.MASTER_TOKEN, 'MASTER_TOKEN should be defined');
@@ -36,42 +40,42 @@ describe('Track and Trace - deploy contracts', function () {
 
   // Create users
   // Upload admin contract
-  it('should upload the contracts', function* () {
-    const adminEmail = oauthHelper.getEmailIdFromToken(process.env.ADMIN_TOKEN);
+  it('should upload the contracts', async function () {
+    const adminEmail = oauthHelper.getEmailIdFromToken(adminCredentials.token);
     console.log('Creating admin', adminEmail);
-    const adminCreated = yield oauthHelper.createStratoUser(process.env.ADMIN_TOKEN, adminEmail);
-    assert.strictEqual(adminCreated.status, 200, adminCreated.message);
+    const adminResponse = await oauthHelper.createStratoUser(adminCredentials, adminEmail);
+    assert.strictEqual(adminResponse.status, RestStatus.OK, adminResponse.message);
 
-    const masterEmail = oauthHelper.getEmailIdFromToken(process.env.MASTER_TOKEN);
+    const masterEmail = oauthHelper.getEmailIdFromToken(masterCredentials.token);
     console.log('Creating master', masterEmail);
-    const masterCreated = yield oauthHelper.createStratoUser(process.env.MASTER_TOKEN, masterEmail);
-    assert.strictEqual(masterCreated.status, 200, masterCreated.message);
+    const masterResponse = await oauthHelper.createStratoUser(masterCredentials, masterEmail);
+    assert.strictEqual(masterResponse.status, RestStatus.OK, masterResponse.message);
 
-    const distributorEmail = oauthHelper.getEmailIdFromToken(process.env.DISTRIBUTOR_TOKEN);
+    const distributorEmail = oauthHelper.getEmailIdFromToken(distributorCredentials.token);
     console.log('Creating distributor', distributorEmail);
-    const distributorCreated = yield oauthHelper.createStratoUser(process.env.DISTRIBUTOR_TOKEN, distributorEmail);
-    assert.strictEqual(distributorCreated.status, 200, distributorCreated.message);
+    const distributorResponse = await oauthHelper.createStratoUser(distributorCredentials, distributorEmail);
+    assert.strictEqual(distributorResponse.status, RestStatus.OK, distributorResponse.message);
 
-    const manufacturerEmail = oauthHelper.getEmailIdFromToken(process.env.MANUFACTURER_TOKEN);
+    const manufacturerEmail = oauthHelper.getEmailIdFromToken(manufacturerCredentials.token);
     console.log('Creating manufacturer', manufacturerEmail);
-    const manufacturerCreated = yield oauthHelper.createStratoUser(process.env.MANUFACTURER_TOKEN, manufacturerEmail);
-    assert.strictEqual(manufacturerCreated.status, 200, manufacturerCreated.message);
+    const manufacturerResponse = await oauthHelper.createStratoUser(manufacturerCredentials, manufacturerEmail);
+    assert.strictEqual(manufacturerResponse.status, RestStatus.OK, manufacturerResponse.message);
 
-    const retailerEmail = oauthHelper.getEmailIdFromToken(process.env.RETAILER_TOKEN);
+    const retailerEmail = oauthHelper.getEmailIdFromToken(retailerCredentials.token);
     console.log('Creating retailer', retailerEmail);
-    const retailerCreated = yield oauthHelper.createStratoUser(process.env.RETAILER_TOKEN, retailerEmail);
-    assert.strictEqual(retailerCreated.status, 200, retailerCreated.message);
+    const retailerResponse = await oauthHelper.createStratoUser(retailerCredentials, retailerEmail);
+    assert.strictEqual(retailerResponse.status, RestStatus.OK, retailerResponse.message);
 
-    const regulatorEmail = oauthHelper.getEmailIdFromToken(process.env.REGULATOR_TOKEN);
+    const regulatorEmail = oauthHelper.getEmailIdFromToken(regulatorCredentials.token);
     console.log('Creating regulator', regulatorEmail);
-    const regulatorCreated = yield oauthHelper.createStratoUser(process.env.REGULATOR_TOKEN, regulatorEmail);
-    assert.strictEqual(regulatorCreated.status, 200, regulatorCreated.message);
+    const regulatorResponse = await oauthHelper.createStratoUser(regulatorCredentials, regulatorEmail);
+    assert.strictEqual(regulatorResponse.status, RestStatus.OK, regulatorResponse.message);
 
     console.log('Permission Manager');
-    const ttPermissionManager = yield ttPermissionManagerJs.uploadContract(process.env.ADMIN_TOKEN, process.env.MASTER_TOKEN);
+    const ttPermissionManager = await ttPermissionManagerJs.uploadContract(adminResponse.user, masterResponse.user);
     console.log('Uploading dapp');
-    const dapp = yield dappJs.uploadContract(process.env.ADMIN_TOKEN, ttPermissionManager);
-    const dappBind = yield dappJs.bind(process.env.ADMIN_TOKEN, {
+    const dapp = await dappJs.uploadContract(adminResponse.user, ttPermissionManager);
+    const dappBind = await dappJs.bind(adminResponse.user, {
       name: dapp.name,
       address: dapp.address
     });
@@ -82,52 +86,52 @@ describe('Track and Trace - deploy contracts', function () {
 
     console.log('Create Admin TTUser');
     Object.assign(args, {
-      account: adminCreated.address,
+      account: adminResponse.user.address,
       username: adminEmail
     });
-    const ttAdminUser = yield dappBind.createUser(args);
-    
+    const ttAdminUser = await dappBind.createUser(args);
+
     console.log('Create Master TTUser');
     Object.assign(args, {
-      account: masterCreated.address,
+      account: masterResponse.user.address,
       username: masterEmail
     });
-    yield dappBind.createUser(args);
+    await dappBind.createUser(args);
 
     console.log('Create Distributor TTUser');
     Object.assign(args, {
-      account: distributorCreated.address,
+      account: distributorResponse.user.address,
       username: distributorEmail,
       role: TtRole.DISTRIBUTOR
     });
-    yield dappBind.createUser(args);
+    await dappBind.createUser(args);
 
     console.log('Create Manufacturer TTUser');
     Object.assign(args, {
-      account: manufacturerCreated.address,
+      account: manufacturerResponse.user.address,
       username: manufacturerEmail,
       role: TtRole.MANUFACTURER
     });
-    yield dappBind.createUser(args);
+    await dappBind.createUser(args);
 
     console.log('Create Retailer TTUser');
     Object.assign(args, {
-      account: retailerCreated.address,
+      account: retailerResponse.user.address,
       username: retailerEmail,
       role: TtRole.RETAILER
     });
-    yield dappBind.createUser(args);
-   
+    await dappBind.createUser(args);
+
     console.log('Create Regulator TTUser');
     Object.assign(args, {
-      account: regulatorCreated.address,
+      account: regulatorResponse.user.address,
       username: regulatorEmail,
       role: TtRole.REGULATOR
     });
-    yield dappBind.createUser(args); 
+    await dappBind.createUser(args);
 
     console.log('Deployment');
-    const deployment = yield dapp.deploy(config.deployFilename);
+    const deployment = await dapp.deploy(config.deployFilename);
     assert.isDefined(deployment);
   })
 

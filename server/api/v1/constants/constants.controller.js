@@ -1,14 +1,12 @@
-const co = require('co');
+import { rest } from 'blockapps-rest';
+import constants from '../../../helpers/constants';
 
-const { common } = require('blockapps-rest');
-const { util, cwd } = common;
+class ConstantsController {
 
-const constants = require(`${cwd}/constants`);
+  static async getConstants(req, res) {
+    rest.response.status200(res, await constants.getConstants());
+  }
 
-const assetsController = {
-  getConstants: (req, res) => {
-    util.response.status200(res, constants);
-  },
 }
 
-module.exports = assetsController;
+export default ConstantsController;

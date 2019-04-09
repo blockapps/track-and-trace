@@ -1,43 +1,24 @@
-const jwtDecode = require('jwt-decode');
-const ba = require('blockapps-rest');
-const { rest6: rest } = ba;
+import { rest } from 'blockapps-rest';
+import jwtDecode from 'jwt-decode';
+import config from '../load.config';
 
-const getEmailIdFromToken = function(accessToken) {
+const options = { config }
+
+const getEmailIdFromToken = function (accessToken) {
   return (jwtDecode(accessToken)['email']);
 };
 
-const createStratoUser = function* (accessToken, userIdOptional = null) {
-  let address = null;
+async function createStratoUser(accessToken) {
   try {
-    const getKeyResponse = yield rest.getKey(accessToken);
-    if (getKeyResponse && getKeyResponse.address) {
-      address = getKeyResponse.address;
-    } else {
-      return { status: 404, message: 'user address not found' };
-    }
-  } catch (getKeyErr) {
-    if (getKeyErr.status == 400) {
-      try {
-        const createKeyResponse = yield rest.createKey(accessToken);
-        address = createKeyResponse.address;
-        const userId = userIdOptional || getEmailIdFromToken(accessToken);
-        yield rest.fill({ name: userId, address });
-        if ((yield rest.getBalance(address)) < 1) {
-          do {
-            yield new Promise(resolve => setTimeout(resolve, 1000));
-          } while ((yield rest.getBalance(address)) < 1);
-        }
-      } catch (createKeyErr) {
-        return { status: createKeyErr.status, message: 'error creating user key or faucet account' };
-      }
-    } else {
-      return { status: getKeyErr.status, message: `error getting user key; server returned error: ${getKeyErr}` };
-    }
+    let user = await rest.createUser(accessToken, options);
+    return { status: 200, message: 'success', user };
+  } catch (e) {
+    console.log(e)
+    return { status: r.response ? e.response.status : 'Unknown', message: `error while creating user` };
   }
-  return { status: 200, message: 'success', address: address };
 };
 
-module.exports = {
+export default {
   getEmailIdFromToken,
   createStratoUser
 }

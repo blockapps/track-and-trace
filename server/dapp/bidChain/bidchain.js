@@ -1,6 +1,6 @@
-const { rest6: rest, common } = require('blockapps-rest');
-const { util, config } = common;
-const ip = require('ip');
+import { rest, util, importer } from 'blockapps-rest';
+import ip from 'ip';
+import config from '../../load.config';
 
 const contractName = 'BidChain';
 const contractFileName = `${process.cwd()}/${config.dappPath}/bidChain/contracts/BidChain.sol`;
@@ -10,24 +10,22 @@ const port = 30303;
 const localIp = ip.address();
 const enode = `enode://${publicKey}@${localIp}:${port}`
 
+const options = { config };
 
-function* createChain(token, assetOwner, regulatorAddress) {
-  const getKeyResponse = yield rest.getKey(token);
+async function createChain(token, assetOwner, regulatorAddress) {
+  const getKeyResponse = await rest.getKey(token, options);
 
-  const governanceSrc = yield rest.getContractString(
-    contractName,
-    contractFileName
-  );
-
-  const chain = yield rest.createChain(
-    `bid_${getKeyResponse.address}_${assetOwner}`,
-    [
+  const chainArgs = {
+    label: `bid_${getKeyResponse}_${assetOwner}`,
+    src: await importer.combine(contractFileName),
+    args: {},
+    members: [
       {
         address: assetOwner,
         enode
       },
       {
-        address: getKeyResponse.address,
+        address: getKeyResponse,
         enode
       },
       {
@@ -35,13 +33,13 @@ function* createChain(token, assetOwner, regulatorAddress) {
         enode
       }
     ],
-    [
+    balances: [
       {
         address: assetOwner,
         balance
       },
       {
-        address: getKeyResponse.address,
+        address: getKeyResponse,
         balance
       },
       {
@@ -49,79 +47,94 @@ function* createChain(token, assetOwner, regulatorAddress) {
         balance
       }
     ],
-    governanceSrc,
-    {},
-    {
-      enableHistory: true,
-      contract: contractName
+    contractName
+  }
+
+  const contractArgs = { name: contractName }
+
+  const copyOfOptions = {
+    ...options,
+    query: { 
+      history: [contractName]
     }
-  );
+  }
 
-  return bind(token, chain);
+  const chain = await rest.createChain(chainArgs, contractArgs, copyOfOptions)
+  // createChain returns chainId. we need to use as object { chainId: chain }. So that we can bind other methods as well.
+  return bind(token, { chainId: chain });
 }
 
 function bind(token, contract) {
-  contract.addMember = function* (member) {
-    return yield addMember(token, contract, member)
+  contract.addMember = async function (member) {
+    return await addMember(token, contract, member)
   }
 
-  contract.removeMember = function* (member) {
-    return yield removeMember(token, contract, member)
+  contract.removeMember = async function (member) {
+    return await removeMember(token, contract, member)
   }
 
   return contract;
 }
 
-function* addMember(token, contract, member, chainId) {
-  rest.verbose('exists', member);
-
-  const method = 'addMember';
+async function addMember(token, contract, member, chainId) {
   const args = {
     member,
     enode
   }
 
-  const result = yield rest.callMethod(
-    token,
+  const callArgs = {
     contract,
-    method,
-    util.usc(args),
-    {
-      chainId
-    }
+    method: 'addMember',
+    args: util.usc(args)
+  }
+
+  const copyOfOptions = {
+    ...options,
+    chainIds: [chainId]
+  }
+
+  const result = await rest.call(
+    token,
+    callArgs,
+    copyOfOptions
   );
 
   return result
 }
 
-function* removeMember(token, contract, member, chainId) {
-  rest.verbose('removeMember', member);
-  const method = 'removeMember';
+async function removeMember(token, contract, member, chainId) {
   const args = {
     member
   }
 
-  const result = yield rest.callMethod(
-    token,
+  const callArgs = {
     contract,
-    method,
-    util.usc(args),
-    {
-      chainId
-    }
+    method: 'removeMember',
+    args: util.usc(args)
+  }
+
+  const copyOfOptions = {
+    ...options,
+    chainIds: [chainId]
+  }
+  
+  const result = await rest.call(
+    token,
+    callArgs,
+    copyOfOptions
   );
 
   return result
 }
 
-function* getChainById(chainId) {
-  const chainInfo = yield rest.getChainInfo(chainId);
+async function getChainById(chainId) {
+  const chainInfo = await rest.getChain(chainId, options);
   return chainInfo;
 }
 
 // only return chains where current user is a member
-function* getChains(token) {
-  const keyResponse = yield rest.getKey(token);
+async function getChains(token, chainIds = []) {
+  const keyResponse = await rest.getKey(token, options);
   let chains;
 
   /*
@@ -130,9 +143,9 @@ function* getChains(token) {
     TODO: Remove Try and catch once STRATO-1304 is done
   */
   try {
-    chains = yield rest.getChainInfos();
+    chains = await rest.getChains(chainIds, options);
   } catch (e) {
-    if (e.status === 500) {
+    if (e.response.status === 500) {
       chains = [];
     }
     console.error('Error getting chainInfo:', e);
@@ -140,7 +153,7 @@ function* getChains(token) {
 
   const filtered = chains.reduce((acc, c) => {
     const member = c.info.members.find((m) => {
-      return m.address === keyResponse.address
+      return m.address === keyResponse
     })
     if (member !== undefined) {
       acc.push(c)
@@ -151,7 +164,7 @@ function* getChains(token) {
   return filtered;
 }
 
-module.exports = {
+export default {
   createChain,
   bind,
   getChainById,

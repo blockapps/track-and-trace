@@ -1,37 +1,38 @@
-const co = require('co');
+import { rest } from 'blockapps-rest';
 
-const { common } = require('blockapps-rest');
-const { config, util } = common;
+import dappJs from '../../../dapp/dapp/dapp';
 
-const dappJs = require(`${process.cwd()}/${config.dappPath}/dapp/dapp`);
+class UserController {
 
-const userController = {
-  me: (req, res, next) => {
+  static async me(req, res, next) {
     const { app, accessToken, decodedToken } = req;
+
     const deploy = app.get('deploy');
     const username = decodedToken['email'];
 
-    co(function* () {
-      const dapp = yield dappJs.bind(accessToken, deploy.contract);
-      const user = yield dapp.getUser(username);
-      util.response.status200(res, user);
-    })
-    .catch(next);
-  },
+    try {
+      const dapp = await dappJs.bind(accessToken, deploy.contract);
+      const user = await dapp.getUser(username);
+      rest.response.status200(res, user);
+    } catch (e) {
+      next(e)
+    }
+  }
 
-  createUser(req, res, next) {
+  static async createUser(req, res, next) {
     const { app, accessToken, body } = req;
     const args = { ...body };
 
     const deploy = app.get('deploy');
 
-    co(function* () {
-      const dapp = yield dappJs.bind(accessToken, deploy.contract);
-      const asset = yield dapp.createUser(args);
-      util.response.status200(res, asset);
-    })
-    .catch(next);
-  },
+    try {
+      const dapp = await dappJs.bind(accessToken, deploy.contract);
+      const asset = await dapp.createUser(args);
+      rest.response.status200(res, asset);
+    } catch (e) {
+      next(e)
+    }
+  }
 }
 
-module.exports = userController;
+export default UserController;

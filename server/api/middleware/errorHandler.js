@@ -1,6 +1,4 @@
-const ba = require('blockapps-rest');
-const { common } = ba;
-const { util } = common;
+import { rest } from 'blockapps-rest';
 
 const handler = (
   err,
@@ -41,7 +39,7 @@ const handler = (
   console.log(err);
   console.log('********************')
 
-  util.response.status(err.statusCode, res, err.message);
+  rest.response.status(err.statusCode, res, err.message);
 }
 
-module.exports = handler;
+export default handler;

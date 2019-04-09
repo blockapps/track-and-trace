@@ -7,37 +7,34 @@ Demo app that uses STRATO to track products through a supply chain using OAuth a
 1. Install Docker from https://www.docker.com
 2. Install `docker-compose` from https://docs.docker.com/compose/install/
 
-### Running Demo Application
-
-#### First clone strato-getting-started:
+### Clone strato-getting-started:
 ```
 git clone https://github.com/blockapps/strato-getting-started.git
 cd strato-getting-started
 ```
 
-#### Run following command to start the strato:
+### Run following command to start STRATO:
 ```
-HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration OAUTH_JWT_USERNAME_PROPERTY=email ./strato.sh --single
+HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_STRATO42_FALLBACK=true OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration OAUTH_JWT_USERNAME_PROPERTY=email ./strato.sh --single
 
 ```
-Wait for all containers to report healthy status in the output of `docker ps`
 
-#### Clone track and trace demo application:
+### Clone track and trace demo application:
 ```
 cd ..
 git clone https://github.com/blockapps/track-and-trace.git
-```
-
-#### Token setup:
-
-```
-cd track-and-trace/server
 git submodule update --init --recursive
 ```
 
-Now create `.env` file and add all the tokens here. [Copy tokens only. You don't need to use token-getter](README.md#tokens)
+### Token setup:
 
-#### SSL mounting (Only for older versions of OS X - pre Sierra):
+```
+cd track-and-trace/server
+```
+
+Now create `.env` file and add all the tokens here. [Copy tokens only](README.md#tokens)
+
+### SSL mounting (Only for older versions of OS X - pre Sierra):
 
 Add the following path to docker's file sharing settings:
 ```
@@ -47,42 +44,25 @@ Add the following path to docker's file sharing settings:
 ![SSL Mounting for mac](docs/mount.png)
 
 
-#### For Mac:
-```
-HOST_IP=$(ipconfig getifaddr en1) docker-compose up -d
-```
+### Running project for demo using docker
 
-NOTE: Your interface maybe something different than `en1`. Check the output of `ifconfig`.
+```HOST_IP=$(ipconfig getifaddr en0) docker-compose up -d```
 
-#### For Linux:
-```
-HOST_IP=$(ip -o route get to 8.8.8.8 | sed -n 's/.*src \([0-9.]\+\).*/\1/p') docker-compose up -d
-```
-
-#### For Windows:
-```
-HOST_IP=$(for /f "tokens=2 delims=[]" %a in ('ping -n 1 -4 "%computername%"') do @echo %a) docker-compose up -d
-```
-
-Open a browser and go to http://localhost
-
-**NOTE:** 
-It could take about 4-5 mins on first run
+**Note:** Your interface might be different
 
 ### Running project for development using OAuth
 
-#### Start STRATO
-
-```
-HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration OAUTH_JWT_USERNAME_PROPERTY=email ./strato.sh --single
-```
-
 Wait for all containers to report healthy status in the output of `docker ps`
 
-#### Start api server
+#### Install dependencies
 ```
 cd server
 git submodule update --init --recursive
+yarn build
+```
+
+#### Start api server
+```
 yarn install
 yarn deploy
 yarn start
@@ -98,8 +78,10 @@ APP_URL=http://localhost yarn start
 #### Start nginx
 ```
 cd nginx-docker
-HOST_IP=<YOUR_IP> docker-compose up -d
+HOST_IP=$(ipconfig getifaddr en0) docker-compose up -d
 ```
+
+**Note:** Your interface might be different
 
 Your ip can be obtained by `ifconfig`.
 

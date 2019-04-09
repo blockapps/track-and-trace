@@ -32,7 +32,7 @@ git submodule update --init --recursive
 cd track-and-trace/server
 ```
 
-Now create `.env` file and add all the tokens here. [Copy tokens only. You don't need to use token-getter](README.md#tokens)
+Now create `.env` file and add all the tokens here. [Copy tokens only](README.md#tokens)
 
 ### SSL mounting (Only for older versions of OS X - pre Sierra):
 

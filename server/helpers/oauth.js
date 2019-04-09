@@ -13,7 +13,8 @@ async function createStratoUser(accessToken) {
     let user = await rest.createUser(accessToken, options);
     return { status: 200, message: 'success', user };
   } catch (e) {
-    return { status: e.response.status, message: `error while creating user` };
+    console.log(e)
+    return { status: r.response ? e.response.status : 'Unknown', message: `error while creating user` };
   }
 };
 

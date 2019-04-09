@@ -5,7 +5,7 @@ import AssetsController from './assets.controller';
 router.get('/', AssetsController.getAssets);
 router.get('/:sku', AssetsController.getAsset);
 router.post('/', AssetsController.createAsset);
-router.post('/handleEvent', AssetsController.handleAssetEvent);
+router.post('/:sku/event', AssetsController.handleAssetEvent);
 router.post('/transferOwnership', AssetsController.transferOwnership);
 
 export default router;

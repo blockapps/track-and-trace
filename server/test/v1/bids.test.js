@@ -27,10 +27,9 @@ describe('Bids End-To-End Tests', function () {
   let TtRole, AssetState, AssetEvent, BidState, BidEvent
 
   before(async function () {
-    // TODO: check this properly
-    assert.isDefined(adminToken, 'admin token is not defined');
-    assert.isDefined(manufacturerToken, 'manufacturer token is not defined');
-    assert.isDefined(distributerToken, 'distributer token is not defined');
+    assert.isDefined(adminToken.token, 'admin token is not defined');
+    assert.isDefined(manufacturerToken.token, 'manufacturer token is not defined');
+    assert.isDefined(distributerToken.token, 'distributer token is not defined');
 
     // get ttRole Enums
     TtRole = await getEnums(`${process.cwd()}/${config.dappPath}/ttPermission/contracts/TtRole.sol`);
@@ -51,8 +50,8 @@ describe('Bids End-To-End Tests', function () {
     asset = await post(endpoints.Assets.assets, { asset: createAssetArgs }, manufacturerToken.token);
     assert.equal(asset.sku, createAssetArgs.sku);
 
-    const handleEventUrl = `${endpoints.Assets.assets}/handleEvent`;
-    const assetState = await post(handleEventUrl, { sku: asset.sku, assetEvent: AssetEvent.REQUEST_BIDS }, manufacturerToken.token);
+    const handleEventUrl = `${endpoints.Assets.assets}/${asset.sku}/event`;
+    const assetState = await post(handleEventUrl, { assetEvent: AssetEvent.REQUEST_BIDS }, manufacturerToken.token);
     assert.equal(AssetState.BIDS_REQUESTED, assetState, "State should be updated");
   });
 

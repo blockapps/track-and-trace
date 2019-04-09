@@ -79,8 +79,9 @@ class AssetsController {
   }
 
   static async handleAssetEvent(req, res, next) {
-    const { app, accessToken, body } = req;
-    const { sku, assetEvent } = body;
+    const { app, accessToken, body, params } = req;
+    const { assetEvent } = body;
+    const { sku } = params;
 
     // Get sku and assetEvent
     const args = { sku, assetEvent: parseInt(assetEvent, 10) };

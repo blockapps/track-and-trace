@@ -25,9 +25,10 @@ class AuthHandler {
 
   static init(app) {
     try {
-      app.oauth = oauthUtil.init(config.oauth)
+      app.oauth = oauthUtil.init(config.nodes[0].oauth)
     }
     catch (err) {
+      console.log(err)
       console.error('Error initializing oauth handlers');
       process.exit(1);
     }

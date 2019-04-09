@@ -232,15 +232,6 @@ async function transferOwnership(token, contract, args) {
   return newState;
 }
 
-function genAddressString(addresses) {
-  if (!addresses || addresses.length == 0) return '';
-
-  const csv = util.toCsv(addresses);
-  const res = `address=in.${csv}`;
-
-  return res;
-}
-
 export default {
   uploadContract,
   bind,

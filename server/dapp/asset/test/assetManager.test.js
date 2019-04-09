@@ -156,19 +156,4 @@ describe('Asset Manager Tests', function () {
     }, RestStatus.BAD_REQUEST, AssetError.NULL)
 
   });
-
-  // TODO: fix this
-  it.skip('Handle Asset Event -- asset not fonund', async function () {
-    const assetArgs = factory.getAssetArgs();
-    const handleAssetEventArgs = {
-      sku: assetArgs.sku,
-      assetEvent: AssetEvent.REQUEST_BIDS,
-    };
-
-    await assert.shouldThrowRest(async function () {
-      await manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
-    }, RestStatus.NOT_FOUND, AssetError.SKU_NOT_FOUND);
-  });
-
-  // TODO: test transfer ownership call
 });

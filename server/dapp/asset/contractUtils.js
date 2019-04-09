@@ -15,14 +15,14 @@ async function waitForAddress(contractName, address) {
     name: contractName
   }
 
-  const metadata = {
+  const copyOfOptions = {
     ...options,
     query: {
       address: `eq.${address}`
     }
   }
 
-  const results = await rest.searchUntil(contract, predicate, metadata);
+  const results = await rest.searchUntil(contract, predicate, copyOfOptions);
   return results[0];
 }
 

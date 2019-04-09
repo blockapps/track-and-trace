@@ -72,11 +72,11 @@ describe('Bid Chain Tests', function () {
       args: {}
     }
 
-    const metadata = {
+    const copyOfOptions = {
       ...options,
       chainIds: [chainId]
     }
-    const govContract = await rest.createContract(distributorUser, contractArgs, metadata);
+    const govContract = await rest.createContract(distributorUser, contractArgs, copyOfOptions);
 
     // Remove member
     await bidChain.removeMember(distributorUser, govContract, manufacturerUser.address, chainId);
@@ -102,11 +102,11 @@ describe('Bid Chain Tests', function () {
       args: {}
     }
 
-    const metadata = {
+    const copyOfOptions = {
       ...options,
       chainIds: [chainId]
     }
-    const govContract = await rest.createContract(distributorUser, contractArgs, metadata);
+    const govContract = await rest.createContract(distributorUser, contractArgs, copyOfOptions);
 
     // add member to the chain
     await bidChain.addMember(distributorCredentials, govContract, adminUser.address, chainId);

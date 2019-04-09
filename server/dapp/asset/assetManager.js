@@ -87,12 +87,12 @@ async function createAsset(token, contract, args) {
     args: util.usc(converted)
   }
 
-  const metadata = {
+  const copyOfOptions = {
     ...options,
     history: [assetJs.contractName]
   }
   
-  const [restStatus, assetError, assetAddress] = await rest.call(token, callArgs, metadata);
+  const [restStatus, assetError, assetAddress] = await rest.call(token, callArgs, copyOfOptions);
 
   if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, assetError, { method: callArgs.method, converted });
 
@@ -136,14 +136,14 @@ async function getAssets(token, contract, args) {
     name: assetJs.contractName
   }
 
-  const metadata = {
+  const copyOfOptions = {
     ...options,
     query: {
       address: `in.${util.toCsv(params.address)}`
     }
   }
 
-  const results = await rest.search(contractArgs, metadata)
+  const results = await rest.search(contractArgs, copyOfOptions)
   const converted = results.map(r => assetJs.fromBytes32(r));
 
   return converted;
@@ -168,14 +168,14 @@ async function getAsset(token, contract, sku) {
     name: assetJs.contractName
   }
 
-  const metadata = {
+  const copyOfOptions = {
     ...options,
     query: {
       address: `eq.${address}`
     }
   }
 
-  const result = await rest.search(contractArgs, metadata)
+  const result = await rest.search(contractArgs, copyOfOptions)
 
   if (result.length != 1) {
     throw new rest.RestError(RestStatus.NOT_FOUND, `Unable to retrieve state for address ${address}`);
@@ -205,14 +205,14 @@ async function getAssetHistory(token, contract, sku) {
     name: `history@${assetJs.contractName}`
   }
 
-  const metadata = {
+  const copyOfOptions = {
     ...options,
     query: {
       address: `eq.${address}`
     }
   }
 
-  const history = await rest.search(contractArgs, metadata)
+  const history = await rest.search(contractArgs, copyOfOptions)
   return history.map(h => assetJs.fromBytes32(h));
 }
 

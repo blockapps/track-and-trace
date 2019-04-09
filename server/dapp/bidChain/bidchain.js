@@ -54,14 +54,14 @@ async function createChain(token, assetOwner, regulatorAddress) {
 
   const contractArgs = { name: contractName }
 
-  const metadata = {
+  const copyOfOptions = {
     ...options,
     query: { 
       history: [contractName]
     }
   }
 
-  const chain = await rest.createChain(chainArgs, contractArgs, metadata)
+  const chain = await rest.createChain(chainArgs, contractArgs, copyOfOptions)
   // createChain returns chainId. we need to use as object { chainId: chain }. So that we can bind other methods as well.
   return bind(token, { chainId: chain });
 }
@@ -90,7 +90,7 @@ async function addMember(token, contract, member, chainId) {
     args: util.usc(args)
   }
 
-  const metadata = {
+  const copyOfOptions = {
     ...options,
     chainIds: [chainId]
   }
@@ -98,7 +98,7 @@ async function addMember(token, contract, member, chainId) {
   const result = await rest.call(
     token,
     callArgs,
-    metadata
+    copyOfOptions
   );
 
   return result
@@ -115,7 +115,7 @@ async function removeMember(token, contract, member, chainId) {
     args: util.usc(args)
   }
 
-  const metadata = {
+  const copyOfOptions = {
     ...options,
     chainIds: [chainId]
   }
@@ -123,7 +123,7 @@ async function removeMember(token, contract, member, chainId) {
   const result = await rest.call(
     token,
     callArgs,
-    metadata
+    copyOfOptions
   );
 
   return result

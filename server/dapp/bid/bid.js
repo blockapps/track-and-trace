@@ -39,7 +39,7 @@ async function createBid(token, assetAddress, ownerAddress, bidValue, regulatorA
     name: contractName
   }
 
-  const metadata = {
+  const copyOfOptions = {
     ...options,
     query: {
       address: `eq.${bid.address}`,
@@ -47,7 +47,7 @@ async function createBid(token, assetAddress, ownerAddress, bidValue, regulatorA
     }
   }
 
-  const results = await rest.searchUntil(contract, predicate, metadata);
+  const results = await rest.searchUntil(contract, predicate, copyOfOptions);
   return results[0];
 }
 
@@ -58,12 +58,12 @@ async function uploadContract(token, chainId, args) {
     args: util.usc(args)
   }
 
-  const metadata = {
+  const copyOfOptions = {
     ...options,
     chainIds: [chainId]
   }
 
-  const contract = await rest.createContract(token, contractArgs, metadata);
+  const contract = await rest.createContract(token, contractArgs, copyOfOptions);
   return bind(token, chainId, contract);
 }
 
@@ -87,11 +87,11 @@ async function handleBidEvent(token, chainId, contract, bidEvent) {
     args: util.usc(args)
   }
 
-  const metadata = {
+  const copyOfOptions = {
     ...options,
     chainIds: [chainId]
   }
-  const [restStatus, newState] = await rest.call(token, callArgs, metadata);
+  const [restStatus, newState] = await rest.call(token, callArgs, copyOfOptions);
 
   if (restStatus != RestStatus.OK) {
     throw new rest.RestError(
@@ -120,13 +120,13 @@ async function getBids(token, searchParams) {
     name: contractName
   }
 
-  const metadata = {
+  const copyOfOptions = {
     ...options,
     query: {
       chainId: `in.${util.toCsv(queryParams.chainId)}`
     }
   }
-  const results = await rest.searchUntil(contract, predicate, metadata);
+  const results = await rest.searchUntil(contract, predicate, copyOfOptions);
   return results;
 }
 
@@ -146,7 +146,7 @@ async function getBidsHistory(token, assetAddress) {
     name: contractName
   }
 
-  const metadata = {
+  const copyOfOptions = {
     ...options,
     query: {
       asset: `eq.${assetAddress}`,
@@ -154,7 +154,7 @@ async function getBidsHistory(token, assetAddress) {
     }
   }
 
-  const results = await rest.search(contract, metadata);
+  const results = await rest.search(contract, copyOfOptions);
   return results;
 }
 

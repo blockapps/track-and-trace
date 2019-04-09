@@ -50,7 +50,7 @@ describe('Bids End-To-End Tests', function () {
     asset = await post(endpoints.Assets.assets, { asset: createAssetArgs }, manufacturerToken.token);
     assert.equal(asset.sku, createAssetArgs.sku);
 
-    const handleEventUrl = `${endpoints.Assets.assets}/${asset.sku}/event`;
+    const handleEventUrl = endpoints.Assets.event.replace(':sku', asset.sku);
     const assetState = await post(handleEventUrl, { assetEvent: AssetEvent.REQUEST_BIDS }, manufacturerToken.token);
     assert.equal(AssetState.BIDS_REQUESTED, assetState, "State should be updated");
   });
@@ -70,13 +70,13 @@ describe('Bids End-To-End Tests', function () {
   });
 
   it('Get bids using address', async function () {
-    const url = `${endpoints.Bids.bids}/${bidsList[0].address}`;
+    const url = endpoints.Bids.bid.replace(':address', bidsList[0].address)
     const bidDetail = await get(url, manufacturerToken.token);
     assert.isDefined(bidDetail, 'bid detail using address');
   });
 
   it('ACCEPT - handle event', async function () {
-    const url = `${endpoints.Bids.bids}/${bidDetail.address}/event`;
+    const url = endpoints.Bids.event.replace(':address', bidDetail.address)
     const bidState = await post(url, { chainId: bidDetail.chainId, bidEvent: BidEvent.ACCEPT }, manufacturerToken.token);
     assert.equal(bidState, BidState.ACCEPTED, "bid state should be in Accepted state");
   });

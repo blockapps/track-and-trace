@@ -1,6 +1,7 @@
 const Assets = {
   assets: '/assets',
-  asset: '/assets/:sku'
+  asset: '/assets/:sku',
+  event: '/assets/:sku/event'
 };
 
 const Users = {
@@ -9,7 +10,9 @@ const Users = {
 }
 
 const Bids = {
-  bids: '/bids'
+  bids: '/bids',
+  bid: '/bids/:address',
+  event: '/bids/:address/event'
 };
 
 export default {

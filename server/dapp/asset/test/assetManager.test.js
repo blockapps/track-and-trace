@@ -2,8 +2,7 @@ import { rest, util } from 'blockapps-rest';
 import { assert } from 'chai';
 import RestStatus from 'http-status-codes';
 
-import { getYamlFile } from '../../../helpers/config';
-const config = getYamlFile('config.yaml');
+import config from '../../../load.config';
 
 import dotenv from 'dotenv';
 

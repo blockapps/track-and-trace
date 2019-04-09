@@ -3,8 +3,7 @@ import { assert } from 'chai';
 import ttPermissionManager from '../ttPermissionManager';
 import oauthHelper from '../../../helpers/oauth';
 
-import { getYamlFile } from '../../../helpers/config';
-const config = getYamlFile('config.yaml');
+import config from '../../../load.config';
 
 import dotenv from 'dotenv';
 import { getEnums } from '../../../helpers/parse';

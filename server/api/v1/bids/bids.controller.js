@@ -1,7 +1,6 @@
 import { rest } from 'blockapps-rest';
 
-import { getYamlFile } from '../../../helpers/config';
-const config = getYamlFile('config.yaml');
+import config from '../../../load.config';
 
 import bidJs from '../../../dapp/bid/bid';
 import { getEnums } from '../../../helpers/parse';

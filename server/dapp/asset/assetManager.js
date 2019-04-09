@@ -1,8 +1,7 @@
 import { rest, util, importer } from 'blockapps-rest';
 import RestStatus from 'http-status-codes';
 
-import { getYamlFile } from '../../helpers/config';
-const config = getYamlFile('config.yaml');
+import config from '../../load.config';
 
 import * as permissionHashmapJs from '../../blockapps-sol/dist/auth/permission/permissionedHashmap';
 import assetJs from './asset';

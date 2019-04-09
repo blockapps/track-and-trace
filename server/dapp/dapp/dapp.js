@@ -1,8 +1,7 @@
 import { rest, util, importer } from 'blockapps-rest';
 const { createContract, getState, call } = rest;
 
-import { getYamlFile, yamlSafeDumpSync, yamlWrite } from '../../helpers/config';
-const config = getYamlFile('config.yaml');
+import config from '../../load.config';
 
 const contractName = 'TtDapp';
 const contractFilename = `${config.dappPath}/dapp/contracts/ttDapp.sol`;

@@ -1,8 +1,7 @@
 import { rest, util, importer } from 'blockapps-rest';
 const ip = require('ip');
 
-import { getYamlFile } from '../../helpers/config';
-const config = getYamlFile('config.yaml');
+import config from '../../load.config';
 
 const contractName = 'BidChain';
 const contractFileName = `${process.cwd()}/${config.dappPath}/bidChain/contracts/BidChain.sol`;

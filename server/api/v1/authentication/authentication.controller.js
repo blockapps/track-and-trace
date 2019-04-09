@@ -1,8 +1,7 @@
 import jwtDecode from 'jwt-decode';
 import { rest } from 'blockapps-rest';
 
-import { getYamlFile } from '../../../helpers/config';
-const config = getYamlFile('config.yaml');
+import config from '../../../load.config';
 
 class AuthenticationController {
 

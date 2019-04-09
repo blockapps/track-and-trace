@@ -6,8 +6,7 @@ import endpoints from '../../api/v1/endpoints';
 import testHelper from '../helpers/test';
 
 // read config.yaml
-import { getYamlFile } from '../../helpers/config';
-const config = getYamlFile('config.yaml');
+import config from '../../load.config';
 
 import dotenv from 'dotenv';
 const loadEnv = dotenv.config()

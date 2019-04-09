@@ -7,8 +7,7 @@ import assetJs from '../asset';
 import { factory } from '../asset.factory';
 import { getEnums } from '../../../helpers/parse';
 
-import { getYamlFile } from '../../../helpers/config';
-const config = getYamlFile('config.yaml');
+import config from '../../../load.config';
 
 import dotenv from 'dotenv';
 

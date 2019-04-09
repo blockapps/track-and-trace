@@ -1,8 +1,7 @@
 import { rest, util, importer } from 'blockapps-rest';
 import encodingHelpers from '../../helpers/encoding';
 
-import { getYamlFile } from '../../helpers/config';
-const config = getYamlFile('config.yaml');
+import config from '../../load.config';
 
 const contractName = 'Asset';
 const contractFilename = `${process.cwd()}/${config.dappPath}/asset/contracts/Asset.sol`;

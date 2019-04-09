@@ -1,8 +1,7 @@
 import { rest, util, importer } from 'blockapps-rest';
 import RestStatus from 'http-status-codes';
 
-import { getYamlFile } from '../../helpers/config';
-const config = getYamlFile('config.yaml');
+import config from '../../load.config';
 
 const contractName = 'Bid';
 const contractFilename = `${process.cwd()}/${config.dappPath}/bid/contracts/Bid.sol`;

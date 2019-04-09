@@ -4,8 +4,7 @@ import oauthHelper from '../../helpers/oauth';
 import ttPermissionManagerJs from '../ttPermission/ttPermissionManager';
 import dappJs from './dapp';
 
-import { getYamlFile } from '../../helpers/config';
-const config = getYamlFile('config.yaml');
+import config from '../../load.config';
 
 import dotenv from 'dotenv';
 import { getEnums } from '../../helpers/parse';

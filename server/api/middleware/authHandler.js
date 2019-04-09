@@ -19,7 +19,7 @@ class AuthHandler {
       } catch (err) {
         return rest.response.status(RestStatus.UNAUTHORIZED, res, { loginUrl: req.app.oauth.getSigninURL() });
       }
-      req.accessToken = accessTokenFromCookie;
+      req.accessToken = { token: accessTokenFromCookie };
       req.decodedToken = jwtDecode(accessTokenFromCookie);
       return next();
     }

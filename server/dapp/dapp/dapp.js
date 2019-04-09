@@ -14,17 +14,6 @@ import ttPermissionManagerJs from '../ttPermission/ttPermissionManager';
 
 const options = { config }
 
-async function calllistBatch(token, txs) {
-  const batchSize = 60;
-  const results = [];
-  for (let i = 0; i < txs.length; i += batchSize) {
-    const slice = txs.slice(i, i + batchSize);
-    const batchResults = await rest.callList(token, slice);
-    results.push(...batchResults);
-  }
-  return results;
-}
-
 async function uploadContract(token, ttPermissionManager) {
   const args = {
     ttPermissionManager: ttPermissionManager.address,

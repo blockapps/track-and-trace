@@ -16,5 +16,6 @@ COPY . /usr/src/track-and-trace-server/
 
 WORKDIR /usr/src/track-and-trace-server
 RUN yarn install
+RUN yarn build
 
 CMD [ "sh", "/usr/src/track-and-trace-server/docker-run.sh" ]

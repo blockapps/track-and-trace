@@ -3,7 +3,6 @@ import RestStatus from 'http-status-codes';
 import config from '../../load.config';
 import * as permissionHashmapJs from '../../blockapps-sol/dist/auth/permission/permissionedHashmap';
 import assetJs from './asset';
-import * as contractUtils from './contractUtils';
 import queryHelper from '../../helpers/query';
 
 const contractName = 'AssetManager';
@@ -88,12 +87,16 @@ async function createAsset(token, contract, args) {
     ...options,
     history: [assetJs.contractName]
   }
-  
+
   const [restStatus, assetError, assetAddress] = await rest.call(token, callArgs, copyOfOptions);
 
   if (restStatus != RestStatus.CREATED) throw new rest.RestError(restStatus, assetError, { method: callArgs.method, converted });
 
-  const asset = await contractUtils.waitForAddress(assetJs.contractName, assetAddress);
+  const contractArgs = {
+    name: assetJs.contractName
+  }
+
+  const asset = (await rest.waitForAddress(contractArgs, assetAddress, options))[0];
   return assetJs.fromBytes32(asset);
 }
 

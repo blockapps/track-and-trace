@@ -1,5 +1,4 @@
-import { rest, util } from 'blockapps-rest';
-import { assert } from 'chai';
+import { rest, util, assert } from 'blockapps-rest';
 import RestStatus from 'http-status-codes';
 import config from '../../../load.config';
 import dotenv from 'dotenv';
@@ -12,7 +11,6 @@ import ttPermissionManagerJs from '../../ttPermission/ttPermissionManager';
 import assetManagerJs from '../../asset/assetManager';
 import assetJs from '../asset';
 import { factory } from '../asset.factory';
-import { assertRestStatus } from '../../../helpers/assertRestStatus';
 import { getEnums } from '../../../helpers/parse';
 
 const adminCredentials = { token: process.env.ADMIN_TOKEN };
@@ -83,9 +81,9 @@ describe('Asset Manager Tests', function () {
   it('Create Asset -- unauthorized', async function () {
     const assetArgs = factory.getAssetArgs();
 
-    await assertRestStatus(async function () {
+    await assert.restStatus(async function () {
       await distributorAssetManagerContract.createAsset(assetArgs);
-    }, RestStatus.UNAUTHORIZED, AssetError.NULL)
+    }, RestStatus.UNAUTHORIZED, /"method":"createAsset"/, AssetError.NULL)
   });
 
   it('Create Asset', async function () {
@@ -103,18 +101,18 @@ describe('Asset Manager Tests', function () {
       sku: ''
     });
 
-    await assertRestStatus(async function () {
+    await assert.restStatus(async function () {
       await manufacturerAssetManagerContract.createAsset(assetArgs);
-    }, RestStatus.BAD_REQUEST, AssetError.SKU_EMPTY)
+    }, RestStatus.BAD_REQUEST, /"method":"createAsset"/, AssetError.SKU_EMPTY)
   });
 
   it('Create Asset -- already exists', async function () {
     const assetArgs = factory.getAssetArgs();
     assetArgs.sku = existingSku;
 
-    await assertRestStatus(async function () {
+    await assert.restStatus(async function () {
       await manufacturerAssetManagerContract.createAsset(assetArgs);
-    }, RestStatus.BAD_REQUEST, AssetError.SKU_EXISTS)
+    }, RestStatus.BAD_REQUEST, /"method":"createAsset"/, AssetError.SKU_EXISTS)
   });
 
   it('Handle Asset Event', async function () {
@@ -148,9 +146,9 @@ describe('Asset Manager Tests', function () {
       assetEvent: AssetEvent.CHANGE_OWNER,
     };
 
-    await assertRestStatus(async function () {
+    await assert.restStatus(async function () {
       await manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
-    }, RestStatus.BAD_REQUEST, AssetError.NULL)
+    }, RestStatus.BAD_REQUEST, /"method":"handleAssetEvent"/, AssetError.NULL)
 
   });
 });

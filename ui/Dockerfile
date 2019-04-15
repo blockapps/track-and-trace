@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y yarn
 COPY . /usr/src/track-and-trace-ui/
 
 WORKDIR /usr/src/track-and-trace-ui/
-COPY package.json yarn.lock ./
+RUN yarn install
 
 RUN yarn global add serve
 

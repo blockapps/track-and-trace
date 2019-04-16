@@ -9,6 +9,4 @@ if [ ! -f config/docker.deploy.yaml ]; then
 fi
 
 echo 'Starting track-and-trace-server...'
-yarn start > /dev/null 2>&1 &
-
-tail -f /dev/null
+yarn start

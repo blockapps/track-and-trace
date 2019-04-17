@@ -131,6 +131,8 @@ RETAILER_TOKEN=eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJTTlRQNXpMTzNHV
 ## Run tests
 
 ```
+cd server
+yarn install
 yarn build
 yarn test
 ```

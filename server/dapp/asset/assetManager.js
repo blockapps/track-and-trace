@@ -139,7 +139,8 @@ async function getAssets(token, contract, args) {
   const { assets: assetsHashMap } = await rest.getState(contract, options);
   const hashmap = permissionHashmapJs.bindAddress(token, assetsHashMap);
 
-  const { values } = await hashmap.getState();
+  const name = 'values';
+  const values = await hashmap.getArray(name);
   const addresses = values.slice(1);
 
   const params = {

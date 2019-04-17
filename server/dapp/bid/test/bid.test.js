@@ -1,4 +1,4 @@
-import { assert } from 'chai';
+import { assert } from 'blockapps-rest';
 import RestStatus from 'http-status-codes';
 import config from '../../../load.config';
 import dotenv from 'dotenv';
@@ -11,7 +11,6 @@ import ttPermissionManagerJs from '../../ttPermission/ttPermissionManager';
 import assetManagerJs from '../../asset/assetManager';
 import { factory } from '../../asset/asset.factory';
 import bidJs from '../../bid/bid';
-import { assertRestStatus } from '../../../helpers/assertRestStatus';
 import { getEnums } from '../../../helpers/parse';
 
 describe('Bid Tests', function () {
@@ -99,9 +98,9 @@ describe('Bid Tests', function () {
       assetEvent: AssetEvent.REQUEST_BIDS
     }
 
-    await assertRestStatus(async function () {
+    await assert.restStatus(async function () {
       await distributorAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
-    }, RestStatus.FORBIDDEN, AssetError.NULL)
+    }, RestStatus.FORBIDDEN, /"method":"handleAssetEvent"/, AssetError.NULL)
   })
 
   it('Manufacturer should be able to open asset for bidding', async function () {
@@ -166,7 +165,7 @@ describe('Bid Tests', function () {
       src: 'removed'
     })
 
-    await assertRestStatus(async function () {
+    await assert.restStatus(async function () {
       await bidContract.handleBidEvent(BidEvent.ACCEPT)
     }, RestStatus.FORBIDDEN)
   });
@@ -252,9 +251,9 @@ describe('Bid Tests', function () {
       owner: distributorUser.address
     }
 
-    await assertRestStatus(async function () {
+    await assert.restStatus(async function () {
       await distributorAssetManagerContract.transferOwnership(transferOwnershipArgs);
-    }, RestStatus.FORBIDDEN, AssetError.NULL)
+    }, RestStatus.FORBIDDEN, /"method":"transferOwnership"/, AssetError.NULL)
     // TODO: test new owner. Might have to write a get asset call.
   });
 })

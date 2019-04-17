@@ -30,11 +30,11 @@
     "start": "babel-node index.js",
     "build": "cd blockapps-sol && yarn install && yarn build && cd ..",
     "token-getter": "node node_modules/blockapps-rest/dist/util/oauth.client.js --flow authorization-code --config config/token-getter.config.yaml",
-    "test:asset": "yarn mocha-babel dapp/asset/test --config config/${SERVER:-localhost}.config.yaml -b",
-    "test:bid": "yarn mocha-babel dapp/bid/test --config config/${SERVER:-localhost}.config.yaml -b",
-    "test:bidChain": "yarn mocha-babel dapp/bidChain/test --config config/${SERVER:-localhost}.config.yaml -b",
-    "test:e2e": "yarn deploy && yarn mocha-babel test/v1 --config config/${SERVER:-localhost}.config.yaml -b",
-    "test:permissions": "yarn mocha-babel dapp/ttPermission/test/ttPermissionManager.test.js --config config/${SERVER:-localhost}.config.yaml -b",
+    "test:asset": "yarn mocha-babel dapp/asset/test -b",
+    "test:bid": "yarn mocha-babel dapp/bid/test -b",
+    "test:bidChain": "yarn mocha-babel dapp/bidChain/test -b",
+    "test:e2e": "yarn deploy && yarn mocha-babel test/v1  -b",
+    "test:permissions": "yarn mocha-babel dapp/ttPermission/test/ttPermissionManager.test.js -b",
     "test": "yarn test:asset && yarn test:bidChain && yarn test:bid && yarn test:permissions && yarn test:e2e"
   },
   "devDependencies": {

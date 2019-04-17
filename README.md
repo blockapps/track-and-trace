@@ -1,25 +1,30 @@
 # Track and Trace Demo App
+
 Demo app that uses STRATO to track products through a supply chain using OAuth and Private chains.
 
 ## Setup
 
 ### Pre-requisites
+
 1. Install Docker from https://www.docker.com
 2. Install `docker-compose` from https://docs.docker.com/compose/install/
 
 ### Clone strato-getting-started:
+
 ```
 git clone https://github.com/blockapps/strato-getting-started.git
 cd strato-getting-started
 ```
 
 ### Run following command to start STRATO:
+
 ```
 HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_STRATO42_FALLBACK=true OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration OAUTH_JWT_USERNAME_PROPERTY=email ./strato.sh --single
 
 ```
 
 ### Clone track and trace demo application:
+
 ```
 cd ..
 git clone https://github.com/blockapps/track-and-trace.git
@@ -37,16 +42,16 @@ Now create `.env` file and add all the tokens here. [Copy tokens only](README.md
 ### SSL mounting (Only for older versions of OS X - pre Sierra):
 
 Add the following path to docker's file sharing settings:
+
 ```
 <root-dir>/blockapps/track-and-trace/nginx-docker/ssl
 ```
 
 ![SSL Mounting for mac](docs/mount.png)
 
-
 ### Running project for demo using docker
 
-```HOST_IP=$(ipconfig getifaddr en0) docker-compose up -d```
+`HOST_IP=$(ipconfig getifaddr en0) docker-compose up -d`
 
 **Note:** Your interface might be different
 
@@ -55,6 +60,7 @@ Add the following path to docker's file sharing settings:
 Wait for all containers to report healthy status in the output of `docker ps`
 
 #### Install dependencies
+
 ```
 cd server
 git submodule update --init --recursive
@@ -62,6 +68,7 @@ yarn build
 ```
 
 #### Start api server
+
 ```
 yarn install
 yarn deploy
@@ -69,6 +76,7 @@ yarn start
 ```
 
 #### Start UI
+
 ```
 cd ui
 yarn install
@@ -76,6 +84,7 @@ APP_URL=http://localhost yarn start
 ```
 
 #### Start nginx
+
 ```
 cd nginx-docker
 HOST_IP=$(ipconfig getifaddr en0) docker-compose up -d
@@ -86,11 +95,12 @@ HOST_IP=$(ipconfig getifaddr en0) docker-compose up -d
 Your ip can be obtained by `ifconfig`.
 
 #### Usernames for oauth server
+
 administrator@tt.app
-distributor@tt.app 	
-manufacturer@tt.app 	
-master@tt.app 	
-regulator@tt.app 	
+distributor@tt.app
+manufacturer@tt.app
+master@tt.app
+regulator@tt.app
 retailer@tt.app
 
 Password for all users is `1234`
@@ -102,7 +112,7 @@ This app uses oauth for authentication. To get admin token and master tokens, us
 ```
 cd server
 yarn install
-sudo PORT=80 yarn token-getter 
+sudo PORT=80 yarn token-getter
 ```
 
 Then open a browser and goto http://localhost to obtain tokens for the admin and master users.
@@ -121,18 +131,21 @@ RETAILER_TOKEN=eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJTTlRQNXpMTzNHV
 ## Run tests
 
 ```
-yarn test:asset
+yarn build
+yarn test
 ```
 
 ## Usage Guide
 
 The above tokens correspond to four different users in in four different roles:
+
 1. manufacturer@tt.app in Manufacturer role : This user can create the original asset
 2. distributor@tt.app in Distributor role : This user can bid on an asset after its creation
 3. retailer@tt.app in Retailer role : Similar to the distributor role but could be expanded in the future.
 4. regulator@tt.app in Regulator role: This user can see the audit history for all assets and bidding activity
 
 ### Basic flow
+
 1. A manufacturer logs in and creates an asset
 2. Manufacturer makes asset available for bidding
 3. A Distributor can then bid on this asset. The bid is created on private chain (state channel) and the bid information can only be accessed by the asset owner (manufacturer), distributor and regulator
@@ -140,16 +153,21 @@ The above tokens correspond to four different users in in four different roles:
 5. This same process then repeats between the distributor and retailer.
 
 ### Creating an asset
+
 ![Manufacturer creating an asset](docs/manufacturer-create-asset.gif)
 
 ### Request Bids
+
 ![Manufacturer requesting bids](docs/manufacturer-request-bids.gif)
 
 ### Placing a Bid
+
 ![Distributor placing a bid](docs/distributor-place-bid.gif)
 
 ### Accepting a Bid
+
 ![Manufacturer accepting a bid](docs/manufacturer-accept-bid.gif)
 
 ### Viewing Audit Logs
+
 ![Regulator views audit trail](docs/regulator-view-audit-trail.gif)

@@ -6,7 +6,7 @@ set -x
 echo 'Starting track-and-trace-ui...'
 
 yarn build
-serve build
+serve --single build
 echo 'Done!'
 
 tail -f /dev/null

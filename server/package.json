@@ -29,7 +29,7 @@
     "deploy": "cp config/${SERVER:-localhost}.config.yaml config.yaml && yarn mocha-babel dapp/dapp/dapp.deploy.js --config config/${SERVER:-localhost}.config.yaml -b",
     "start": "babel-node index.js",
     "build": "cd blockapps-sol && yarn install && yarn build && cd ..",
-    "token-getter": "node node_modules/blockapps-rest/dist/util/oauth.client.js --flow authorization-code --config config/token-getter.config.yaml",
+    "token-getter": "node node_modules/blockapps-rest/dist/util/oauth.client.js --flow authorization-code --config config/${SERVER:-token-getter}.config.yaml",
     "test:asset": "yarn mocha-babel dapp/asset/test -b",
     "test:bid": "yarn mocha-babel dapp/bid/test -b",
     "test:bidChain": "yarn mocha-babel dapp/bidChain/test -b",

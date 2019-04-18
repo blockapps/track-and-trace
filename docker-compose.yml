@@ -5,31 +5,31 @@ services:
     build: ./server
     restart: always
     environment:
-    - SERVER=${SERVER:-docker}
+      - SERVER=${SERVER:-docker}
   track-and-trace-ui:
     depends_on:
-    - track-and-trace-server
+      - track-and-trace-server
     image: track-and-trace-ui:latest
     build: ./ui
     restart: always
-    environment: 
-    - APP_URL=${APP_URL:-http://$HOST_IP}
-    - NODE_ENV=${NODE_ENV:-production}
+    environment:
+      - REACT_APP_URL=${APP_URL:-http://localhost}
+      - NODE_ENV=${NODE_ENV:-production}
   track-and-trace-nginx:
     depends_on:
-    - track-and-trace-ui
+      - track-and-trace-ui
     image: track-and-trace-nginx:latest
     build: ./nginx-docker
     restart: always
     ports:
-    - 80:80
-    - 443:443
+      - 80:80
+      - 443:443
     volumes:
-    - ./nginx-docker/ssl:/tmp/ssl:ro
+      - ./nginx-docker/ssl:/tmp/ssl:ro
     environment:
-    - HOST_IP=${HOST_IP}
-    - SSL=${SSL:-false}
-    - SSL_CERT_TYPE=${SSL_CERT_TYPE:-crt}
+      - HOST_IP=${HOST_IP}
+      - SSL=${SSL:-false}
+      - SSL_CERT_TYPE=${SSL_CERT_TYPE:-crt}
 networks:
   default:
     external:

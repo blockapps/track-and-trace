@@ -99,6 +99,22 @@ async function handleBidEvent(token, chainId, contract, bidEvent) {
     )
   }
 
+  // make sure state changes are persisted
+  await rest.searchUntil(
+    contract,
+    (r) => {
+      return r && r.length > 0
+    },
+    {
+      ...options
+      query: {
+        address: `eq.${contract.address}`,
+        chainId: `eq.${chainId}`,
+        bidState: `eq.${newState}`
+      }
+    }
+  )
+
   return newState;
 }
 

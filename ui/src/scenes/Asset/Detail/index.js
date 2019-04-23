@@ -66,7 +66,7 @@ class AssetDetail extends Component {
   render() {
     const { asset, bids, BID_EVENT, user, BID_STATE, ASSET_STATE } = this.props;
 
-    const filterdBids = this.isRegulator ? bids : bids.filter((bid) => bid.asset === asset.address);
+    const filterdBids = bids.filter((bid) => bid.asset === asset.address);
 
     // Asset State
     const state = asset ? parseInt(asset.assetState) : 0;

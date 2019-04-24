@@ -1,72 +1,106 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Paper, Grid, AppBar, Typography, Toolbar, Button, Chip, Card } from '@material-ui/core';
-import { getAssets, getAssetDetail, assetEventRequest } from "../../../actions/asset.actions";
+import {
+  Paper,
+  Grid,
+  AppBar,
+  Typography,
+  Toolbar,
+  Button,
+  Chip,
+  Card
+} from "@material-ui/core";
+import {
+  getAssets,
+  getAssetDetail,
+  assetEventRequest
+} from "../../../actions/asset.actions";
 import AuditLog from "../AuditLog";
 import PlaceBidModal from "../../Bid/PlaceBidModal";
-import SnackbarMessage from '../../../components/SnackbarMessage';
+import SnackbarMessage from "../../../components/SnackbarMessage";
 import { getBids, bidEventRequest } from "../../../actions/bid.actions";
 import BidTable from "../../Bid/BidTable";
-import './detail.css';
+import "./detail.css";
 import SpecTable from "../Spec";
 
 class AssetDetail extends Component {
-
   componentDidMount() {
     const sku = this.props.match.params.sku;
     this.props.getAssetDetail(sku, true);
-    this.props.getBids();
   }
 
-  componentWillReceiveProps(newProps) {
-    if (this.props.isOwnerChanged !== newProps.isOwnerChanged) {
-      this.props.history.push('/')
+  componentDidUpdate(prevProps) {
+    if (this.props.isOwnerChanged !== prevProps.isOwnerChanged) {
+      this.props.history.push("/");
+    }
+    if (
+      (!prevProps.asset && this.props.asset) ||
+      (this.props.asset && this.props.asset.sku !== prevProps.asset.sku)
+    ) {
+      this.props.getBids(this.props.asset.address);
     }
   }
 
   get isRegulator() {
     const { USER_ROLE } = this.props;
-    return parseInt(this.props.user['role'], 10) === USER_ROLE.REGULATOR;
+    return parseInt(this.props.user["role"], 10) === USER_ROLE.REGULATOR;
   }
 
-  requestBid = (asset) => {
-    const { ASSET_EVENT, assetEventRequest, ASSET_STATE, user, USER_ROLE } = this.props;
-    const role = parseInt(this.props.user['role'], 10);
+  requestBid = asset => {
+    const {
+      ASSET_EVENT,
+      assetEventRequest,
+      ASSET_STATE,
+      user,
+      USER_ROLE
+    } = this.props;
+    const role = parseInt(this.props.user["role"], 10);
 
-    const checkState = (parseInt(asset.assetState, 10) === ASSET_STATE.CREATED) || (parseInt(asset.assetState, 10) === ASSET_STATE.OWNER_UPDATED);
-    if (checkState && (user.account === asset.owner) && role !== USER_ROLE.RETAILER) {
+    const checkState =
+      parseInt(asset.assetState, 10) === ASSET_STATE.CREATED ||
+      parseInt(asset.assetState, 10) === ASSET_STATE.OWNER_UPDATED;
+    if (
+      checkState &&
+      user.account === asset.owner &&
+      role !== USER_ROLE.RETAILER
+    ) {
       return (
-        <Button variant="contained" color="primary" onClick={() => {
-          assetEventRequest({ sku: asset.sku, assetEvent: ASSET_EVENT.REQUEST_BIDS })
-        }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            assetEventRequest({
+              sku: asset.sku,
+              assetEvent: ASSET_EVENT.REQUEST_BIDS
+            });
+          }}
+        >
           Request Bids
         </Button>
-      )
+      );
     }
-  }
+  };
 
-  placeBid = (asset) => {
+  placeBid = asset => {
     const { account } = this.props.user;
 
-    if (asset.owner && (asset.owner !== account)) {
-      return (
-        <PlaceBidModal asset={asset} />
-      )
+    if (asset.owner && asset.owner !== account) {
+      return <PlaceBidModal asset={asset} />;
     }
-  }
+  };
 
   handleEvent = (address, chainId, bidEvent, initiator) => {
     const { bidEventRequest, asset, BID_EVENT, BID_STATE } = this.props;
 
     const payload = { address, chainId, bidEvent };
-    bidEventRequest(payload, asset.sku, initiator, BID_EVENT, BID_STATE);
-  }
+    bidEventRequest(payload, asset.sku, BID_EVENT, BID_STATE);
+  };
 
   render() {
     const { asset, bids, BID_EVENT, user, BID_STATE, ASSET_STATE } = this.props;
 
-    const filterdBids = bids.filter((bid) => bid.asset === asset.address);
+    const filterdBids = bids.filter(bid => bid.asset === asset.address);
 
     // Asset State
     const state = asset ? parseInt(asset.assetState) : 0;
@@ -88,7 +122,7 @@ class AssetDetail extends Component {
           </AppBar>
         </Grid>
         <Grid container className="asset-section">
-          <Grid item xs={1}></Grid>
+          <Grid item xs={1} />
           <Grid item xs={4}>
             <Paper elevation={1} className="asset-description">
               <Typography variant="h5" component="h3">
@@ -106,19 +140,24 @@ class AssetDetail extends Component {
               <SpecTable asset={asset} />
             </Paper>
           </Grid>
-          <Grid item xs={1}></Grid>
+          <Grid item xs={1} />
           <Grid item xs={5}>
             <Card>
               <Typography variant="h5" component="h3" className="audit-log">
                 Audit Log
               </Typography>
-              <AuditLog activeStep={state} history={asset && asset.history} ASSET_STATE={ASSET_STATE} BID_STATE={BID_STATE} />
+              <AuditLog
+                activeStep={state}
+                history={asset && asset.history}
+                ASSET_STATE={ASSET_STATE}
+                BID_STATE={BID_STATE}
+              />
             </Card>
           </Grid>
-          <Grid item xs={1}></Grid>
+          <Grid item xs={1} />
         </Grid>
         <Grid container className="asset-section">
-          <Grid item xs={1}></Grid>
+          <Grid item xs={1} />
           <Grid item xs={10}>
             <Paper elevation={1} className="asset-description asset-spec">
               <Typography variant="h5" component="h3">
@@ -135,10 +174,10 @@ class AssetDetail extends Component {
             </Paper>
           </Grid>
         </Grid>
-        <Grid item xs={1}></Grid>
+        <Grid item xs={1} />
         <SnackbarMessage />
       </div>
-    )
+    );
   }
 }
 
@@ -156,12 +195,15 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const connected = connect(mapStateToProps, {
-  getAssets,
-  getBids,
-  getAssetDetail,
-  assetEventRequest,
-  bidEventRequest
-})(AssetDetail);
+const connected = connect(
+  mapStateToProps,
+  {
+    getAssets,
+    getBids,
+    getAssetDetail,
+    assetEventRequest,
+    bidEventRequest
+  }
+)(AssetDetail);
 
 export default withRouter(connected);

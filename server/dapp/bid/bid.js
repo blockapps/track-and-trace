@@ -1,6 +1,7 @@
 import { rest, util, importer } from "blockapps-rest";
 import RestStatus from "http-status-codes";
 import config from "../../load.config";
+import { getPostgrestQueryString } from "../../helpers/query";
 
 const contractName = "Bid";
 const contractFilename = `${process.cwd()}/${
@@ -9,6 +10,7 @@ const contractFilename = `${process.cwd()}/${
 
 import bidChainJs from "../bidChain/bidchain";
 import queryHelper from "../../helpers/query";
+import { equal } from "assert";
 
 const options = { config };
 
@@ -82,6 +84,10 @@ function bind(token, chainId, contract) {
     return await handleBidEvent(token, chainId, contract, bidEvent);
   };
 
+  contract.getBid = async function() {
+    return await getBid(chainId, contract.address);
+  };
+
   return contract;
 }
 
@@ -132,12 +138,29 @@ async function handleBidEvent(token, chainId, contract, bidEvent) {
   return newState;
 }
 
+async function getBid(chainId, address) {
+  const contract = {
+    name: contractName
+  };
+  const copyOfOptions = {
+    ...options,
+    query: {
+      chainId: `eq.${chainId}`,
+      address: `eq.${address}`
+    }
+  };
+
+  const results = await rest.search(contract, copyOfOptions);
+  if (results.length === 0) return undefined;
+  return results[0];
+}
+
 async function getBids(token, searchParams) {
   const chains = await bidChainJs.getChains(token);
 
-  const queryParams = {
+  const query = {
     ...searchParams,
-    chainId: chains.map(c => c.id)
+    chainId: `in.${util.toCsv(chains.map(c => c.id))}`
   };
 
   function predicate(response) {
@@ -150,9 +173,7 @@ async function getBids(token, searchParams) {
 
   const copyOfOptions = {
     ...options,
-    query: {
-      chainId: `in.${util.toCsv(queryParams.chainId)}`
-    }
+    query
   };
   const results = await rest.searchUntil(contract, predicate, copyOfOptions);
   return results;
@@ -165,9 +186,9 @@ async function getBidsHistory(token, assetAddress) {
     return [];
   }
 
-  const queryParams = {
-    asset: assetAddress,
-    chainId: chains.map(c => c.id)
+  const query = {
+    asset: `eq.${assetAddress}`,
+    chainId: `in.${util.toCsv(chains.map(c => c.id))}`
   };
 
   const contract = {
@@ -176,10 +197,7 @@ async function getBidsHistory(token, assetAddress) {
 
   const copyOfOptions = {
     ...options,
-    query: {
-      asset: `eq.${assetAddress}`,
-      chainId: `in.${util.toCsv(queryParams.chainId)}`
-    }
+    query
   };
 
   const results = await rest.search(contract, copyOfOptions);

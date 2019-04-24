@@ -1,9 +1,5 @@
-import {
-  call,
-  takeLatest,
-  put
-} from 'redux-saga/effects';
-import { apiUrl, HTTP_METHODS } from '../constants';
+import { call, takeLatest, put } from "redux-saga/effects";
+import { apiUrl, HTTP_METHODS } from "../constants";
 import {
   GET_ASSETS_REQUEST,
   getAssetsSuccess,
@@ -21,8 +17,8 @@ import {
   changeOwnerSuccess,
   changeOwnerFailure,
   getAssetDetail
-} from '../actions/asset.actions';
-import { setUserMessage } from '../actions/user-message.actions';
+} from "../actions/asset.actions";
+import { setUserMessage } from "../actions/user-message.actions";
 
 const assetsUrl = `${apiUrl}/assets`;
 const createAssetUrl = `${apiUrl}/assets`;
@@ -32,78 +28,75 @@ const changeAssetOwnerUrl = `${apiUrl}/assets/transferOwnership`;
 
 function fetchAssets() {
   return fetch(assetsUrl, { method: HTTP_METHODS.GET })
-    .then((response) => {
-      return response.json()
+    .then(response => {
+      return response.json();
     })
     .catch(err => {
-      throw err
+      throw err;
     });
 }
 
 function fetchAsset(sku) {
-  const url = getAssetUrl.replace(':sku', sku)
+  const url = getAssetUrl.replace(":sku", sku);
   return fetch(url, { method: HTTP_METHODS.GET })
-    .then((response) => {
-      return response.json()
+    .then(response => {
+      return response.json();
     })
     .catch(err => {
-      throw err
+      throw err;
     });
 }
 
 function handleEventApiCall(payload) {
-  const url = handleAssetEventUrl.replace(':sku', payload.sku)
-  return fetch(url,
-    {
-      method: HTTP_METHODS.POST,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
+  const url = handleAssetEventUrl.replace(":sku", payload.sku);
+  return fetch(url, {
+    method: HTTP_METHODS.POST,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  })
+    .then(function(response) {
+      return response.json();
     })
-    .then(function (response) {
-      return response.json()
-    })
-    .catch(function (error) {
+    .catch(function(error) {
       throw error;
     });
 }
 
 function createAssetApiCall(asset) {
-  return fetch(createAssetUrl,
-    {
-      method: HTTP_METHODS.POST,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        asset
-      })
+  return fetch(createAssetUrl, {
+    method: HTTP_METHODS.POST,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      asset
     })
-    .then(function (response) {
-      return response.json()
+  })
+    .then(function(response) {
+      return response.json();
     })
-    .catch(function (error) {
+    .catch(function(error) {
       throw error;
     });
 }
 
 function changeOwnerApiCall(payload) {
-  return fetch(changeAssetOwnerUrl,
-    {
-      method: HTTP_METHODS.POST,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
+  return fetch(changeAssetOwnerUrl, {
+    method: HTTP_METHODS.POST,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  })
+    .then(function(response) {
+      return response.json();
     })
-    .then(function (response) {
-      return response.json()
-    })
-    .catch(function (error) {
+    .catch(function(error) {
       throw error;
     });
 }
@@ -139,14 +132,15 @@ function* createAsset(action) {
     const response = yield call(createAssetApiCall, action.asset);
     if (response.success) {
       yield put(createAssetSuccess(response.data));
-      yield put(setUserMessage(`Asset '${response.data.name}' has been created`, true))
+      yield put(
+        setUserMessage(`Asset '${response.data.name}' has been created`, true)
+      );
     } else {
       yield put(createAssetFailure(response.error));
       // FIXME: if anything that could be better
-      if ((typeof response.error) === 'string')
-        yield put(setUserMessage(response.error))
-      else
-        yield put(setUserMessage('Unable to create asset'))
+      if (typeof response.error === "string")
+        yield put(setUserMessage(response.error));
+      else yield put(setUserMessage("Unable to create asset"));
     }
   } catch (err) {
     yield put(createAssetFailure(err));
@@ -157,12 +151,12 @@ function* assetEvent(action) {
   try {
     const response = yield call(handleEventApiCall, action.payload);
     if (response.success) {
-      yield put(assetEventSuccess(response.data))
-      yield put(getAssetDetail(action.payload.sku))
-      yield put(setUserMessage(`Ready to accept bid`, true))
+      yield put(assetEventSuccess(response.data));
+      yield put(getAssetDetail(action.payload.sku));
+      yield put(setUserMessage(`Ready to accept bid`, true));
     } else {
       yield put(assetEventFailure(response.error));
-      yield put(setUserMessage(`Unable to request bid`))
+      yield put(setUserMessage(`Unable to request bid`));
     }
   } catch (err) {
     yield put(createAssetFailure(err));
@@ -173,11 +167,11 @@ function* changeOwner(action) {
   try {
     const response = yield call(changeOwnerApiCall, action.payload);
     if (response.success) {
-      yield put(changeOwnerSuccess(response.data))
-      yield put(setUserMessage(`Bid accepted and Owner has been changed`, true))
+      yield put(changeOwnerSuccess(response.data));
+      yield put(setUserMessage(`Owner has been changed`, true));
     } else {
       yield put(changeOwnerFailure(response.error));
-      yield put(setUserMessage(`Unable to change ownership`))
+      yield put(setUserMessage(`Unable to change ownership`));
     }
   } catch (err) {
     yield put(changeOwnerFailure(err));
@@ -185,9 +179,9 @@ function* changeOwner(action) {
 }
 
 export default function* watchAssets() {
-  yield takeLatest(GET_ASSETS_REQUEST, getAssets)
-  yield takeLatest(CREATE_ASSET_REQUEST, createAsset)
-  yield takeLatest(GET_ASSET_DETAIL_REQUEST, getAsset)
-  yield takeLatest(ASSET_EVENT_REQUEST, assetEvent)
-  yield takeLatest(CHANGE_OWNER_REQUEST, changeOwner)
+  yield takeLatest(GET_ASSETS_REQUEST, getAssets);
+  yield takeLatest(CREATE_ASSET_REQUEST, createAsset);
+  yield takeLatest(GET_ASSET_DETAIL_REQUEST, getAsset);
+  yield takeLatest(ASSET_EVENT_REQUEST, assetEvent);
+  yield takeLatest(CHANGE_OWNER_REQUEST, changeOwner);
 }

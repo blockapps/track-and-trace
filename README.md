@@ -80,7 +80,7 @@ yarn start
 ```
 cd ui
 yarn install
-APP_URL=http://localhost yarn start
+REACT_APP_URL=http://localhost:3030 yarn start
 ```
 
 #### Start nginx

@@ -59,4 +59,4 @@ node_modules/
 
 # blockapps config
 server/config.yaml
-server/config/localhost.deploy.yaml
+server/config/*.deploy.yaml

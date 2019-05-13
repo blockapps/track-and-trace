@@ -18,5 +18,5 @@ nodes:
       clientId: "tt-localhost"
       clientSecret: "10352ea6-f286-47cf-936c-2cb7ce6c1c39"
       openIdDiscoveryUrl: "https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration"
-      redirectUri: "http://localhost:3030/api/v1/authentication/callback"
+      redirectUri: "http://localhost/api/v1/authentication/callback"
       logoutRedirectUri: "http://localhost"

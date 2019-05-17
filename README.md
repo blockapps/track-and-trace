@@ -51,7 +51,7 @@ Add the following path to docker's file sharing settings:
 
 ### Running project for demo using docker
 
-`HOST_IP=$(ipconfig getifaddr en0) docker-compose up -d`
+`docker-compose up -d`
 
 **Note:** Your interface might be different
 

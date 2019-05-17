@@ -27,7 +27,6 @@ services:
     volumes:
       - ./nginx-docker/ssl:/tmp/ssl:ro
     environment:
-      - HOST_IP=${HOST_IP}
       - SSL=${SSL:-false}
       - SSL_CERT_TYPE=${SSL_CERT_TYPE:-crt}
 networks:

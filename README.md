@@ -8,35 +8,19 @@ Demo app that uses STRATO to track products through a supply chain using OAuth a
 
 1. Install Docker from https://www.docker.com
 2. Install `docker-compose` from https://docs.docker.com/compose/install/
-3. STRATO node running with OAuth parameters:
+3. STRATO node running with parameters:
     ```
+    HTTP_PORT=8080
+    NODE_HOST=localhost:8080
     OAUTH_JWT_VALIDATION_ENABLED=true
     OAUTH_STRATO42_FALLBACK=true
     OAUTH_JWT_USERNAME_PROPERTY=email
     OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration
     ```
 
-### Deploy STRATO locally
+### Run Track and Trace
 
-Skip this step if STRATO is deployed on remote machine.
-
-#### Clone strato-getting-started:
-
-```
-git clone https://github.com/blockapps/strato-getting-started.git
-cd strato-getting-started
-```
-
-#### Run following command to start STRATO:
-
-```
-HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_STRATO42_FALLBACK=true OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration OAUTH_JWT_USERNAME_PROPERTY=email ./strato.sh --single
-
-```
-
-### Run track and trace application locally
-
-#### Clone track and trace demo application:
+#### Clone Track and Trace demo application:
 
 ```
 cd ..
@@ -50,19 +34,9 @@ git submodule update --init --recursive
 cd track-and-trace/server
 ```
 
-Now create `.env` file and add all the tokens here. [Copy tokens only](README.md#tokens)
+Now create `.env` file and add all the tokens from here: [Copy tokens only](README.md#tokens)
 
-#### SSL mounting (Only for older versions of OS X - pre Sierra):
-
-Add the following path to docker's file sharing settings:
-
-```
-<root-dir>/blockapps/track-and-trace/nginx-docker/ssl
-```
-
-![SSL Mounting for mac](docs/mount.png)
-
-#### Running project for demo using docker
+#### Run application with docker
 
 To run application against the STRATO node running locally (uses config `server/config/localhost.config.yaml` by default):
 
@@ -76,9 +50,10 @@ SERVER=mycustomconfig docker-compose up -d
 ```
 This will make the application use `server/config/mycustomconfig.config.yaml` configuration file instead of the default.
 
-#### Running project for development using OAuth
 
-Wait for all containers to report healthy status in the output of `docker ps`
+**Wait for all containers to report healthy status in the output of `docker ps`, then visit http://localhost**
+
+#### Run application without docker (for development/debugging)
 
 ##### Install dependencies
 

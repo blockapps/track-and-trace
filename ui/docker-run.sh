@@ -5,7 +5,6 @@ set -x
 
 echo 'Starting track-and-trace-ui...'
 
-yarn build
 serve --single build
 echo 'Done!'
 

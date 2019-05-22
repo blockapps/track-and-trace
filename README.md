@@ -8,22 +8,35 @@ Demo app that uses STRATO to track products through a supply chain using OAuth a
 
 1. Install Docker from https://www.docker.com
 2. Install `docker-compose` from https://docs.docker.com/compose/install/
+3. STRATO node running with OAuth parameters:
+    ```
+    OAUTH_JWT_VALIDATION_ENABLED=true
+    OAUTH_STRATO42_FALLBACK=true
+    OAUTH_JWT_USERNAME_PROPERTY=email
+    OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration
+    ```
 
-### Clone strato-getting-started:
+### Deploy STRATO locally
+
+Skip this step if STRATO is deployed on remote machine.
+
+#### Clone strato-getting-started:
 
 ```
 git clone https://github.com/blockapps/strato-getting-started.git
 cd strato-getting-started
 ```
 
-### Run following command to start STRATO:
+#### Run following command to start STRATO:
 
 ```
 HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_STRATO42_FALLBACK=true OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration OAUTH_JWT_USERNAME_PROPERTY=email ./strato.sh --single
 
 ```
 
-### Clone track and trace demo application:
+### Run track and trace application locally
+
+#### Clone track and trace demo application:
 
 ```
 cd ..
@@ -31,7 +44,7 @@ git clone https://github.com/blockapps/track-and-trace.git
 git submodule update --init --recursive
 ```
 
-### Token setup:
+#### Token setup:
 
 ```
 cd track-and-trace/server
@@ -39,7 +52,7 @@ cd track-and-trace/server
 
 Now create `.env` file and add all the tokens here. [Copy tokens only](README.md#tokens)
 
-### SSL mounting (Only for older versions of OS X - pre Sierra):
+#### SSL mounting (Only for older versions of OS X - pre Sierra):
 
 Add the following path to docker's file sharing settings:
 
@@ -49,17 +62,25 @@ Add the following path to docker's file sharing settings:
 
 ![SSL Mounting for mac](docs/mount.png)
 
-### Running project for demo using docker
+#### Running project for demo using docker
 
-`docker-compose up -d`
+To run application against the STRATO node running locally (uses config `server/config/localhost.config.yaml` by default):
 
-**Note:** Your interface might be different
+```
+docker-compose up -d
+```
 
-### Running project for development using OAuth
+To run application with the custom configuration - create the new config file at `server/config/mycustomconfig.config.yaml` and run application as follows:
+```
+SERVER=mycustomconfig docker-compose up -d
+```
+This will make the application use `server/config/mycustomconfig.config.yaml` configuration file instead of the default.
+
+#### Running project for development using OAuth
 
 Wait for all containers to report healthy status in the output of `docker ps`
 
-#### Install dependencies
+##### Install dependencies
 
 ```
 cd server
@@ -67,7 +88,7 @@ git submodule update --init --recursive
 yarn build
 ```
 
-#### Start api server
+##### Start api server
 
 ```
 yarn install
@@ -75,7 +96,7 @@ yarn deploy
 yarn start
 ```
 
-#### Start UI
+##### Start UI
 
 ```
 cd ui
@@ -83,7 +104,7 @@ yarn install
 REACT_APP_URL=http://localhost:3030 yarn start
 ```
 
-#### Start nginx
+##### Start nginx
 
 ```
 cd nginx-docker

@@ -23,15 +23,15 @@ Demo app that uses STRATO to track products through a supply chain using OAuth a
 #### Clone Track and Trace demo application:
 
 ```
-cd ..
 git clone https://github.com/blockapps/track-and-trace.git
+cd track-and-trace
 git submodule update --init --recursive
 ```
 
 #### Token setup:
 
 ```
-cd track-and-trace/server
+cd server
 ```
 
 Now create `.env` file and add all the tokens from here: [Copy tokens only](README.md#tokens)
@@ -105,13 +105,14 @@ Password for all users is `1234`
 
 This app uses oauth for authentication. To get admin token and master tokens, use
 
+**NOTE:** Currently only works on local machine (requires GUI and browser)  
+
 ```
 cd server
 yarn install
 sudo PORT=80 yarn token-getter
 ```
-
-Then open a browser and goto http://localhost to obtain tokens for the admin and master users.
+This opens the OAuth sign-in page in browser. Once signed in with user - the token is displayed.
 
 These tokens can be provided on the command line as `ADMIN_TOKEN` and `MASTER_TOKEN` respectively. The recommended way is to store these tokens in the `.env` file under the `/server` folder. A valid `.env` file is as follows:
 

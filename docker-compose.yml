@@ -13,7 +13,6 @@ services:
     build: ./ui
     restart: always
     environment:
-      - REACT_APP_URL=${APP_URL:-http://localhost}
       - NODE_ENV=${NODE_ENV:-production}
   track-and-trace-nginx:
     depends_on:

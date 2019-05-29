@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
-import { Route } from 'react-router-dom'
-import Dashboard from './scenes/Dashboard'
-import EnsureAuthenticated from './scenes/EnsureAuthenticated'
-import AssetDetail from './scenes/Asset/Detail'
+import React, { Component } from "react";
+import { Route } from "react-router-dom";
+import Dashboard from "./scenes/Dashboard";
+import EnsureAuthenticated from "./components/EnsureAuthenticated";
+import AssetDetail from "./scenes/Asset/Detail";
 
 class Routes extends Component {
   render() {
@@ -15,4 +15,4 @@ class Routes extends Component {
   }
 }
 
-export default Routes
+export default Routes;

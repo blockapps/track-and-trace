@@ -49,7 +49,7 @@ class EnsureAuthenticated extends Component {
     }
 
     if (isGetUserComplete && !isAuthenticated) {
-      // window.location = loginUrl;
+      window.location = loginUrl;
       return null;
     }
 

@@ -9,11 +9,6 @@ class AuthHandler {
       const tokenName = req.app.oauth.getCookieNameAccessToken();
       const accessTokenFromCookie = req.cookies[tokenName];
       if (!accessTokenFromCookie) {
-        console.log("**********No Access token from cookie*************");
-        console.log(accessTokenFromCookie);
-        console.log(tokenName);
-        console.log(JSON.stringify(req.cookies, null, 2));
-        console.log("***********************");
         return rest.response.status(RestStatus.UNAUTHORIZED, res, {
           loginUrl: req.app.oauth.getSigninURL()
         });
@@ -21,11 +16,6 @@ class AuthHandler {
       try {
         await req.app.oauth.validateAndGetNewToken(req, res);
       } catch (err) {
-        console.log("**********Validation Failed*************");
-        console.log(accessTokenFromCookie);
-        console.log(tokenName);
-        console.log(JSON.stringify(req.cookies, null, 2));
-        console.log("***********************");
         return rest.response.status(RestStatus.UNAUTHORIZED, res, {
           loginUrl: req.app.oauth.getSigninURL()
         });

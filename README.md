@@ -37,7 +37,7 @@ Now create `.env` file and add all the tokens from here: [Copy tokens only](READ
 
 #### Run application with docker
 
-To run application against the STRATO node running locally (uses config `server/config/localhost.config.yaml` by default):
+To run application against the STRATO node running locally (uses config `server/config/docker.config.yaml` by default):
 
 ```
 docker-compose up -d

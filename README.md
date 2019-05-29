@@ -10,7 +10,8 @@ Demo app that uses STRATO to track products through a supply chain using OAuth a
 2. Install `docker-compose` from https://docs.docker.com/compose/install/
 3. STRATO node running with parameters:
    `HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_STRATO42_FALLBACK=true OAUTH_JWT_USERNAME_PROPERTY=email OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration`
-   Example command to start STRATO with the correct parameters:
+
+Example command to start STRATO with the correct parameters:
 
 ```
 HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_STRATO42_FALLBACK=true OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration OAUTH_JWT_USERNAME_PROPERTY=email ./strato.sh --single
@@ -77,6 +78,10 @@ cd nginx-docker
 HOST_IP=$(ipconfig getifaddr en0) docker-compose up -d
 ```
 
+**Note:** Your interface might be different
+
+Your ip can be obtained by `ifconfig`.
+
 ##### Start UI
 
 ```
@@ -84,10 +89,6 @@ cd ui
 yarn install
 yarn start
 ```
-
-**Note:** Your interface might be different
-
-Your ip can be obtained by `ifconfig`.
 
 ### Usernames for oauth server
 

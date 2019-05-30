@@ -1,13 +1,11 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom'
-import {
-  getUser
-} from '../../actions/authentication.actions';
-import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
+import { getUser } from "../../actions/authentication.actions";
+import { withStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
+import Typography from "@material-ui/core/Typography";
 
 class EnsureAuthenticated extends Component {
   componentDidMount() {
@@ -15,11 +13,7 @@ class EnsureAuthenticated extends Component {
   }
 
   render() {
-    const {
-      authentication,
-      children,
-      classes
-    } = this.props;
+    const { authentication, children, classes } = this.props;
 
     const {
       isAuthenticated,
@@ -36,7 +30,12 @@ class EnsureAuthenticated extends Component {
     if (!isGetUserComplete) {
       return (
         <Grid item xs={12} className={classes.item}>
-          <Grid container justify="center" alignItems="center" className={classes.container}>
+          <Grid
+            container
+            justify="center"
+            alignItems="center"
+            className={classes.container}
+          >
             <Grid item>
               <Paper className={classes.paper}>
                 <Typography variant="h5" component="h3">
@@ -49,7 +48,7 @@ class EnsureAuthenticated extends Component {
       );
     }
 
-    if(isGetUserComplete && !isAuthenticated) {
+    if (isGetUserComplete && !isAuthenticated) {
       window.location = loginUrl;
       return null;
     }
@@ -59,24 +58,23 @@ class EnsureAuthenticated extends Component {
 }
 
 const styles = theme => ({
-  // (typography) is depricated. So immediate switch to typography v2 you can simply pass useNextVariants: true when calling 
+  // (typography) is depricated. So immediate switch to typography v2 you can simply pass useNextVariants: true when calling
   typography: {
-    useNextVariants: true,
+    useNextVariants: true
   },
   paper: {
-    padding: theme.spacing.unit * 2,
+    padding: theme.spacing.unit * 2
   },
   container: {
-    height: 400,
+    height: 400
   },
-  item: {
-  }
+  item: {}
 });
 
 function mapStateToProp(state) {
   return {
     authentication: state.authentication
-  }
+  };
 }
 
 export default withRouter(
@@ -85,7 +83,5 @@ export default withRouter(
     {
       getUser
     }
-  )(
-    withStyles(styles)(EnsureAuthenticated)
-  )
+  )(withStyles(styles)(EnsureAuthenticated))
 );

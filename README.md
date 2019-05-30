@@ -9,47 +9,47 @@ Demo app that uses STRATO to track products through a supply chain using OAuth a
 1. Install Docker from https://www.docker.com
 2. Install `docker-compose` from https://docs.docker.com/compose/install/
 3. STRATO node running with parameters:
-    ```
-    HTTP_PORT=8080
-    NODE_HOST=localhost:8080
-    OAUTH_JWT_VALIDATION_ENABLED=true
-    OAUTH_STRATO42_FALLBACK=true
-    OAUTH_JWT_USERNAME_PROPERTY=email
-    OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration
-    ```
+   `HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_STRATO42_FALLBACK=true OAUTH_JWT_USERNAME_PROPERTY=email OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration`
+
+Example command to start STRATO with the correct parameters:
+
+```
+HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_STRATO42_FALLBACK=true OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration OAUTH_JWT_USERNAME_PROPERTY=email ./strato.sh --single
+```
 
 ### Run Track and Trace
 
 #### Clone Track and Trace demo application:
 
 ```
-cd ..
 git clone https://github.com/blockapps/track-and-trace.git
+cd track-and-trace
 git submodule update --init --recursive
 ```
 
 #### Token setup:
 
 ```
-cd track-and-trace/server
+cd server
 ```
 
-Now create `.env` file and add all the tokens from here: [Copy tokens only](README.md#tokens)
+Now create `.env` file and add all the tokens from here: [Get tokens](README.md#tokens)
 
 #### Run application with docker
 
-To run application against the STRATO node running locally (uses config `server/config/localhost.config.yaml` by default):
+To run application against the STRATO node running locally (uses config `server/config/docker.config.yaml` by default):
 
 ```
 docker-compose up -d
 ```
 
 To run application with the custom configuration - create the new config file at `server/config/mycustomconfig.config.yaml` and run application as follows:
+
 ```
 SERVER=mycustomconfig docker-compose up -d
 ```
-This will make the application use `server/config/mycustomconfig.config.yaml` configuration file instead of the default.
 
+This will make the application use `server/config/mycustomconfig.config.yaml` configuration file instead of the default.
 
 **Wait for all containers to report healthy status in the output of `docker ps`, then visit http://localhost**
 
@@ -71,14 +71,6 @@ yarn deploy
 yarn start
 ```
 
-##### Start UI
-
-```
-cd ui
-yarn install
-REACT_APP_URL=http://localhost:3030 yarn start
-```
-
 ##### Start nginx
 
 ```
@@ -89,6 +81,14 @@ HOST_IP=$(ipconfig getifaddr en0) docker-compose up -d
 **Note:** Your interface might be different
 
 Your ip can be obtained by `ifconfig`.
+
+##### Start UI
+
+```
+cd ui
+yarn install
+yarn start
+```
 
 ### Usernames for oauth server
 
@@ -105,13 +105,15 @@ Password for all users is `1234`
 
 This app uses oauth for authentication. To get admin token and master tokens, use
 
+**NOTE:** Currently only works on local machine (requires GUI and browser)
+
 ```
 cd server
 yarn install
 sudo PORT=80 yarn token-getter
 ```
 
-Then open a browser and goto http://localhost to obtain tokens for the admin and master users.
+This opens the OAuth sign-in page in browser. Once signed in with user - the token is displayed.
 
 These tokens can be provided on the command line as `ADMIN_TOKEN` and `MASTER_TOKEN` respectively. The recommended way is to store these tokens in the `.env` file under the `/server` folder. A valid `.env` file is as follows:
 
@@ -170,32 +172,39 @@ The above tokens correspond to four different users in in four different roles:
 
 ![Regulator views audit trail](docs/regulator-view-audit-trail.gif)
 
-
 ## Additional information
 
 ### Run with minishift
 
 #### Run STRATO on minishift with OAuth configured for track-and-trace
+
 These are the steps to run this app against the STRATO deployed in minishift (local Openshift).
 STRATO should be deployed in minishift using blockapps/strato-openshift, branch `update-to-4.4` (until merged to master):
+
 ```
 ./deploy_strato_minishift.sh
 ```
+
 Follow the steps, enter:
+
 ```
 OAUTH discovery url: https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration
 STRATO v4.2-compatible OAuth : yes
 uiPassword: any
 ```
+
 Your STRATO should become available at `http://node-strato.$(minishift ip).nip.io` (where `$(minishift ip)` resolves to your local minishift vm ip)
 This may take few minutes.
 
 #### Run track-and-trace app against STRATO in minishift
 
 To run track-and-trace against STRATO in minishift:
+
 1. edit server/config/minishift.config.yaml by changing the url to `http://node-strato.$(minishift ip).nip.io` (resolve the IP first)
 2. from track-and-trace root dir execute:
+
 ```
 SERVER=minishift docker-compose up -d --build
 ```
+
 Done. The application should be available on `http://localhost` in few minutes.

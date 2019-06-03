@@ -61,4 +61,40 @@ describe('Assets End-To-End Tests', function () {
       'values array matches'
     );
   });
+    it('Create Asset w/ special characters', async function () {
+        const createAssetArgs = factory.getAssetArgsSpecialCharacters();
+        const asset = await post(endpoints.Assets.assets, { asset: createAssetArgs }, manufacturerToken.token);
+
+        assert.equal(asset.sku, createAssetArgs.sku, 'sku matches');
+        assert.equal(asset.description, createAssetArgs.description, 'description matches');
+        assert.sameDeepMembers(
+            asset.keys,
+            createAssetArgs.keys,
+            'key array matches'
+          );
+        assert.sameDeepMembers(
+            asset.values,
+            createAssetArgs.values,
+            'values array matches'
+        );
+    });
+
+    it('Create Asset w/ Double Quotes', async function () {
+        const createAssetArgs = factory.getAssetArgsDoubleQuotes();
+        const asset = await post(endpoints.Assets.assets, { asset: createAssetArgs }, manufacturerToken.token);
+
+        assert.equal(asset.sku, createAssetArgs.sku, 'sku matches');
+        assert.equal(asset.description, createAssetArgs.description, 'description matches');
+        assert.sameDeepMembers(
+            asset.keys,
+            createAssetArgs.keys,
+            'key array matches'
+        );
+        assert.sameDeepMembers(
+            asset.values,
+            createAssetArgs.values,
+            'values array matches'
+        );
+    })
+
 });

@@ -79,6 +79,7 @@ async function bind(token, _contract) {
   };
 
   contract.getAssets = async function (args) {
+
     return await assetManager.getAssets(args);
   }
 

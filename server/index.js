@@ -24,11 +24,11 @@ app.disable('x-powered-by');
 
 // setup middleware
 
-app.use(bodyParser.urlencoded({
-  extended: true, type: 'application/json'
-}));
+/*app.use(bodyParser.urlencoded({
+  extended: true
+}));*/
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({strict:false}));
 app.use(cookieParser());
 app.use(cors());
 

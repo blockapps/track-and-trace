@@ -58,8 +58,6 @@ class AssetsController {
   static async createAsset(req, res, next) {
     const { app, accessToken, body } = req;
     const args = { ...body.asset };
-    console.log('/:CreateAsset, args = '+ JSON.stringify(args));
-
     if (
       !Array.isArray(args.keys)
       || !Array.isArray(args.values)

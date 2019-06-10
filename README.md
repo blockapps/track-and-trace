@@ -87,7 +87,7 @@ Your ip can be obtained by `ifconfig`.
 ```
 cd ui
 yarn install
-yarn start
+REACT_APP_URL=http://localhost yarn start
 ```
 
 ### Usernames for oauth server

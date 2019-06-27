@@ -17,7 +17,7 @@ const factory = {
         const defaultArgs = {
             sku: `${util.iuid()}`,
             name: `Flat screen TV "4.7 in" bla bla `,
-            description: `Description_${Math.random().toString(36).substring(7)}`,
+            description: "\"Test String\"",
             price: Math.floor((Math.random() * 100) + 1),
             keys: [Math.random().toString(36).substring(7)],
             values: [Math.random().toString(36).substring(7)]

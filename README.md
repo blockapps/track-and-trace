@@ -1,3 +1,30 @@
+#### Development Log for SER-66_QuotesBug Branch
+When Creating an asset, inputting double quotes, e.g "", anywhere 
+within the description results in the string being stored as \\"\\"
+
+Following the laws of TDD, first we must write the failing tests, Tomas has added some
+changes to the tests that will now check for both name and description.
+
+I will write the tests now that will check if a description created with double quotes in it
+properly saves it with double quotes, test should fail considering we've done nothing yet
+
+Wrote a failing test resulting in:
+ 
+       Asset Manager Tests
+       Create Asset with double quotes in description:
+
+      Description
+      + expected - actual
+
+      -\"Test String\"
+      +"Test String"
+
+This mimics the unwanted behavior that we are getting.
+
+After the creation of the asset, the description turns into the incorrect description 
+
+
+  
 # Track and Trace Demo App
 
 Demo app that uses STRATO to track products through a supply chain using OAuth and Private chains.

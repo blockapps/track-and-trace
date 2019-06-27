@@ -151,4 +151,15 @@ describe('Asset Manager Tests', function () {
     }, RestStatus.BAD_REQUEST, /"method":"handleAssetEvent"/, AssetError.NULL)
 
   });
+
+  it('Create Asset with double quotes in description', async function() {
+    const assetArgs = factory.getAssetArgsDoubleQuotes();
+    const asset = await manufacturerAssetManagerContract.createAsset(assetArgs);
+
+
+    // console.log('asset description is', asset.description);
+    // console.log('assetArgs description is', assetArgs.description);
+    assert.equal(asset.description, assetArgs.description, 'Description');
+
+  })
 });

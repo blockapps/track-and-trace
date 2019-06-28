@@ -29,7 +29,6 @@ const decodeHex = function(hexString) {
 
 const fromBytes32 = function(x) {
   if (x === undefined) return undefined;
-
   return this.decodeHex(x).replace(/\0/g, "");
 };
 

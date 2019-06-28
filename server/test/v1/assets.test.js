@@ -79,5 +79,4 @@ describe('Assets End-To-End Tests', function () {
             'values array matches'
         );
     })
-
 });

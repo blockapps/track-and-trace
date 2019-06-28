@@ -78,12 +78,12 @@ async function exists(token, contract, sku) {
 
 async function createAsset(token, contract, args) {
   const converted = assetJs.toBytes32(args);
-
   const callArgs = {
     contract,
     method: "createAsset",
     args: util.usc(converted)
   };
+
 
   const copyOfOptions = {
     ...options,
@@ -108,6 +108,7 @@ async function createAsset(token, contract, args) {
   };
 
   const asset = await rest.waitForAddress(contractArgs, options);
+  console.log('asset ===', asset.description);
   return assetJs.fromBytes32(asset);
 }
 

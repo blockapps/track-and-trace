@@ -2,7 +2,7 @@
 When Creating an asset, inputting double quotes, e.g "", anywhere 
 within the description results in the string being stored as \\"\\"
 
-Following the laws of TDD, first we must write the failing tests, Tomas has added some
+We must write the failing tests, Tomas has added some
 changes to the tests that will now check for both name and description.
 
 I will write the tests now that will check if a description created with double quotes in it
@@ -23,8 +23,23 @@ This mimics the unwanted behavior that we are getting.
 
 After the creation of the asset, the description turns into the incorrect description 
 
+It seems like the asset description is changed after
+`const asset = await rest.waitForAddress(contractArgs, options);`
 
-  
+The actual description of the asset becomes appended with an extra '\\'
+e.g a description value of 
+"\"Test String\"" with escape characters gets turned into
+'\\"Test String\\"'
+ In the case of the string where escape character are not needed because it is in single quotes or backticks
+ '\\\\' is appended
+ 
+This makes me think the escape character is being properly ignored but then '\\\\' is being appended before the quotation
+
+What exactly does rest.waitForAddress do?
+
+I thought the issue might be that the encoding to and from 32 bytes is adding extra characters, but it does not seem to be the case
+
+
 # Track and Trace Demo App
 
 Demo app that uses STRATO to track products through a supply chain using OAuth and Private chains.

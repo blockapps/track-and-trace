@@ -1,0 +1,182 @@
+
+@startuml
+
+cloud MainChain\n {
+
+  entity TtDapp {
+    * userManager\t\t""UserManager""
+    * assetManager\t\t""AssetManager""
+    * permissionManager\t""TtPermissionManager""
+    --
+    ""constructor(address _permissionManager)""
+  }
+
+  entity UserManager {
+    * owner\t\t""address""
+    * users\t\t""Hashmap""
+    --
+    ""exists(string _username) returns (bool)""
+    ""getUser(string _username) returns (address)""
+    ""createUser(""\n\t""address _account,""\n\t""string _username,""\n\t""uint _role""\n"") returns (uint, address)""
+  }
+  
+  entity User {
+    * account\t\t""address""
+    * username\t\t""string""
+    * role\t\t\t""uint""
+    --
+    ""constructor(""\n\t""address _account,""\n\t""string _username,""\n\t""uint _role""\n"")"" 
+  }
+  
+  entity AssetManager {
+    * ttPermissionManager\t\t""TtPermissionManager""
+    * assets\t\t\t\t""PermissionedHashmap""
+    * assetFSM\t\t\t\t""AssetFSM""
+    --
+    ""constructor(address _ttPermissionManager)""
+    ""exists(string _sku) returns (bool)""
+    ""getAsset(string _sku) returns (address)""
+    ""createAsset(""\n\t""string _sku,""\n\t""string _name,""\n\t""string _description,""\n\t""uint _price,""\n\t""bytes32 [] _keys,""\n\t""bytes32 [] _values""\n"") returns (uint, uint, address""
+    ""handleAssetEvent(string _sku, AssetEvent _assetEvent)""  
+    ""transferOwnership(string _sku, address _owner)""  
+  }
+  
+  entity Asset {
+    * ttPermissionManager\t\t""TtPermissionManager""
+    * sku\t\t\t\t\t""string""
+    * name\t\t\t\t""string""
+    * price\t\t\t\t\t""uint""
+    * description\t\t\t\t""string""
+    * keys\t\t\t\t\t""bytes32 []""
+    * values\t\t\t\t""bytes32 []""
+    * owner\t\t\t\t""address""
+    * assetState\t\t\t\t""AssetState""
+    --
+    ""constructor(""\n\t""address _ttPermissionManager,""\n\t""string _sku,""\n\t""string _name,""\n\t""string _description,""\n\t""uint _price,""\n\t""bytes32 [] _keys,""\n\t""bytes32 [] _values""\n"")""
+    ""setAssetState(AssetState _assetState)""\n\t""returns (uint, uint, uint)""
+    ""function setOwner(address _newOwner)""\n\t""returns (uint, AssetError, uint)""
+  }
+  
+  entity AssetFSM {
+    * transitions\t\t""AssetTransition []""
+    --
+    ""handleEvent(AssetState _state, AssetEvent _event)""\n\t""returns (AssetState)""
+    ""addTransition(""\n\t""AssetState _state,""\n\t""AssetEvent _event,""\n\t""AssetState _newState""\n\t"")""
+  }
+    
+  entity AssetState {
+    CREATED,
+    BIDS_REQUESTED,
+    OWNER_UPDATED,
+  }
+    
+  entity AssetTransition {
+    * event\t\t""AssetEvent""
+    * oldState\t""AssetState""
+    * newState\t""AssetState""
+  }
+    
+  entity AssetEvent {
+    REQUEST_BIDS,
+    CHANGE_OWNER,
+  }
+  
+  entity TtPermissionManager {
+    * master\t\t""address""
+    * owner\t\t""address""
+    --
+    ""constructor(address _master, address  _owner)"" 
+    ""grantRole(""\n\t""string _id,""\n\t""address _address,""\n\t""TtRole _role""\n"") returns (uint, uint)""
+    ""canCreateAsset(address _address) returns (bool)""
+    ""canModifyAsset(address _address) returns (bool)""
+    ""canModifyMap(address _address) returns (bool)""
+    ""canCreateUser(address _address) returns (bool)""
+    ""canTransferOwnership(address _address) returns (bool)""
+  }
+  
+  entity TtRolePermission {
+    * rolePermissions\t\t""uint []""
+    --
+    ""getRolePermissions(TtRole _role) returns (uint)""
+  }
+  
+  entity TtRole {
+    ADMIN,
+    ASSET_MANAGER,
+    MANUFACTURER,
+    DISTRIBUTOR,
+    RETAILER,
+    REGULATOR
+  }
+  
+  entity TtPermission {
+    CREATE_ASSET,
+    MODIFY_ASSET,
+    TRANSFER_OWNERSHIP,
+    CREATE_USER,
+    MODIFY_MAP
+  }
+  
+  TtDapp ||--|| UserManager
+  TtDapp ||--|| AssetManager
+  TtDapp ||--|| TtPermissionManager
+  TtPermissionManager ||--|| TtRolePermission
+  TtRolePermission }|--|| TtRole
+  TtRolePermission }|--|| TtPermission
+  UserManager ||--|{ User
+  AssetManager ||-|{ Asset
+  AssetManager ||--|| AssetFSM
+  AssetFSM ||--|{ AssetTransition
+  AssetTransition ||--|| AssetEvent
+  AssetTransition ||--|{ AssetState
+  Asset ||--|| AssetState
+}
+    
+cloud PrivateChain\n {
+  
+  entity Bid{
+    bidFSM\t\t\t""BidFSM""
+    assetOwner\t\t""address""
+    asset\t\t\t""address""
+    bidState\t\t\t""BidState""
+    value\t\t\t\t""uint""
+    --
+    ""constructor(""\n\t""address _asset,""\n\t""address _assetOwner,""\n\t""uint _value""\n"")""
+    ""handleBidEvent(BidEvent _bidEvent)""\n\t""returns (uint, BidState)""
+  }
+  
+  entity BidEvent {
+    ACCEPT,
+    REJECT
+  }
+  
+  entity BidFSM {
+    transitions\t\t""BidTransition []""
+    --
+    ""handleEvent(BidState _state, BidEvent _event)""\n\t""returns (BidState)""
+    ""addTransition(""\n\t""BidState _state,""\n\t""BidEvent _event,""\n\t""BidState _newState""\n"")""
+  }
+  
+  entity BidState {
+    ENTERED,
+    ACCEPTED,
+    REJECTED
+  }
+  
+  entity BidTransition {
+    * event\t\t""BidEvent""
+    * oldState\t""BidState""
+    * newState\t""BidState""
+  }
+  
+  Bid ||--|| BidFSM
+  BidFSM ||--|{ BidTransition
+  BidTransition ||--|| BidState
+  BidTransition ||--|{ BidEvent
+  Bid ||-|| BidState
+}
+    
+Asset ||-|{ Bid
+
+
+@enduml

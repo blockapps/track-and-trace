@@ -2,11 +2,7 @@
 When Creating an asset, inputting double quotes, e.g "", anywhere 
 within the description results in the string being stored as \\"\\"
 
-We must write the failing tests, Tomas has added some
-changes to the tests that will now check for both name and description.
-
-I will write the tests now that will check if a description created with double quotes in it
-properly saves it with double quotes, test should fail considering we've done nothing yet
+Tomas has added some changes to the tests that will now check for both name and description.
 
 Wrote a failing test resulting in:
  
@@ -33,11 +29,13 @@ e.g a description value of
  In the case of the string where escape character are not needed because it is in single quotes or backticks
  '\\\\' is appended
  
-This makes me think the escape character is being properly ignored but then '\\\\' is being appended before the quotation
-
-What exactly does rest.waitForAddress do?
 
 I thought the issue might be that the encoding to and from 32 bytes is adding extra characters, but it does not seem to be the case
+
+The asset description changes after the call to the blockapps rest api
+rest.waitForAddress().
+ 
+ The assets controller is sending the proper string to the createAsset in assetManager
 
 
 # Track and Trace Demo App

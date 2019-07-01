@@ -107,8 +107,8 @@ async function createAsset(token, contract, args) {
     address: assetAddress
   };
 
+
   const asset = await rest.waitForAddress(contractArgs, options);
-  console.log('asset ===', asset.description);
   return assetJs.fromBytes32(asset);
 }
 

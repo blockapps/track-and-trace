@@ -53,6 +53,8 @@ This will make the application use `server/config/mycustomconfig.config.yaml` co
 
 **Wait for all containers to report healthy status in the output of `docker ps`, then visit http://localhost**
 
+**Note:** to avoid running the deploy script (when running with previously deployed contracts on the blockchain, e.g. on multinode) - copy the deploy file from initial deployment (`docker exec track-and-trace_track-and-trace-server_1 cat config/docker.config.yaml`) to the T&T source directory on the new node: `server/config/docker.deploy.yaml` and rebuild track-and-trace-server docker image. This will make T&T to use existing contracts. For custom SERVER choose the filename accordingly: `server/config/mycustomconfig.deploy.yaml`
+
 #### Run application without docker (for development/debugging)
 
 ##### Install dependencies

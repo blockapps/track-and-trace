@@ -31,4 +31,4 @@ services:
 networks:
   default:
     external:
-      name: strato_default
+      name: strato_static

@@ -88,7 +88,7 @@ REACT_APP_URL=http://localhost:3030 yarn start
 ```
 cd nginx-docker
 HOST_IP=$(ipconfig getifaddr en0) docker-compose up -d
-```
+``` 
 
 **Note:** Your interface might be different
 

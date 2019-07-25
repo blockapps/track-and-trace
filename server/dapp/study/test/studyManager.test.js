@@ -26,5 +26,17 @@ describe('Study Manager Tests', function () {
 
   it('Upload Study Manager', async function () {
     const contract = await studyManagerJs.uploadContract(adminUser);
+    const state = await contract.getState()
+    assert.isDefined(state.studies, 'studies')
+  });
+
+  it('Create Study - 200', async function () {
+    // create contract
+    const contract = await studyManagerJs.uploadContract(adminUser);
+    // create asset
+    const uid = util.uid()
+    const args = factory.createArgs(uid)
+    const study = await contract.createStudy(args)
+    assert.equal(study.studyId, args.studyId, 'studyId')
   });
 });

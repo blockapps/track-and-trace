@@ -18,9 +18,13 @@ async function uploadContract(token) {
   return bind(token, contract);
 }
 
-function bind(token, contract) {
+function bind(token, _contract) {
+  const contract = _contract;
+  contract.getState = async function() {
+    return await rest.getState(contract, options);
+  };
   contract.createStudy = async function(args) {
-    return await createStudy(token, contract, args);
+    return await createStudy(token, contract, args, options);
   };
 
   return contract;
@@ -41,7 +45,7 @@ async function createStudy(token, contract, args) {
 
   const [restStatus, studyError, studyAddress] = await rest.call(token, callArgs, copyOfOptions);
 
-  if (restStatus != RestStatus.CREATED)
+  if (restStatus != 201) // TODO reststatus
     throw new rest.RestError(restStatus, assetError, { callArgs });
 
   const contractArgs = {

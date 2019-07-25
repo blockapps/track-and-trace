@@ -1,6 +1,7 @@
 import { rest, util, assert } from 'blockapps-rest';
 import config from '../../../load.config';
 import dotenv from 'dotenv';
+import RestStatus from "http-status-codes";
 
 const loadEnv = dotenv.config()
 assert.isUndefined(loadEnv.error)
@@ -30,13 +31,27 @@ describe('Study Manager Tests', function () {
     assert.isDefined(state.studies, 'studies')
   });
 
-  it('Create Study - 200', async function () {
+  it('Create Study - 201', async function () {
     // create contract
     const contract = await studyManagerJs.uploadContract(adminUser);
-    // create asset
+    // create study
     const uid = util.uid()
     const args = factory.createArgs(uid)
     const study = await contract.createStudy(args)
     assert.equal(study.studyId, args.studyId, 'studyId')
+  });
+
+  it('Create Study - 400 - exists', async function () {
+    // create contract
+    const contract = await studyManagerJs.uploadContract(adminUser);
+    // create study
+    const uid = util.uid()
+    const args = factory.createArgs(uid)
+    const study = await contract.createStudy(args)
+    assert.equal(study.studyId, args.studyId, 'studyId')
+
+    await assert.restStatus(async function () {
+      return await contract.createStudy(args)
+    }, RestStatus.BAD_REQUEST)
   });
 });

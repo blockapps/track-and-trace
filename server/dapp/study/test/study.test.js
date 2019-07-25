@@ -1,5 +1,6 @@
 import { rest, util } from 'blockapps-rest';
 import { assert } from 'chai';
+import factory from './study.factory';
 import studyJs from '../study';
 import config from '../../../load.config';
 
@@ -23,7 +24,7 @@ describe('Study Tests', function () {
 
   it('Create Study contract', async function () {
     const uid = util.uid()
-    const args = { studyId: uid };
+    const args = factory.createArgs(uid);
     const contract = await studyJs.uploadContract(adminCredentials, args);
 
     const state = await contract.getState();

@@ -1,5 +1,4 @@
 import { rest, util, importer } from "blockapps-rest";
-import encodingHelpers from "../../helpers/encoding";
 import config from "../../load.config";
 
 const contractName = "Study";
@@ -8,13 +7,13 @@ const contractFilename = `${util.cwd}/${config.dappPath}/study/contracts/Study.s
 const options = { config };
 
 async function uploadContract(token, args) {
-  const contractArgs1 = {
+  const contractArgs = {
     name: contractName,
     source: await importer.combine(contractFilename),
     args: util.usc(args)
   };
 
-  const contract = await rest.createContract(token, contractArgs1, options);
+  const contract = await rest.createContract(token, contractArgs, options);
   contract.src = "removed";
 
   return bind(token, contract);

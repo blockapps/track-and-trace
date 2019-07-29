@@ -69,20 +69,21 @@ yarn build
 
 ```
 yarn install
-yarn deploy
-yarn start
+SERVER=localhost yarn deploy
+SERVER=localhost yarn start
 ```
 
 ##### Start nginx
 
-```
-cd nginx-docker
-HOST_IP=$(ipconfig getifaddr en0) docker-compose up -d
-```
-
 **Note:** Your interface might be different
 
-Your ip can be obtained by `ifconfig`.
+On Linux your IP can be obtained by `ifconfig`.
+
+```
+cd nginx-docker
+#
+HOST_IP=$(ipconfig getifaddr en0) docker-compose up -d
+```
 
 ##### Start UI
 

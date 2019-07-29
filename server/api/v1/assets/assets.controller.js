@@ -54,8 +54,14 @@ class AssetsController {
     }
   }
 
+  static async createAsset(req,res,next){
+    rest.response.status(404, res,{});
+    console.log('create asset new');
+    return next;
+  }
+
   // TODO: throw errors correctly from dapp
-  static async createAsset(req, res, next) {
+  static async createAssetOld(req, res, next) {
     const { app, accessToken, body } = req;
     const args = { ...body.asset };
 

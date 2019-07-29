@@ -83,7 +83,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const styles = theme => ({
-  // (typography) is depricated. So immediate switch to typography v2 you can simply pass useNextVariants: true when calling 
+  // (typography) is depricated. So immediate switch to typography v2 you can simply pass useNextVariants: true when calling
   typography: {
     useNextVariants: true,
     margin: '8px'

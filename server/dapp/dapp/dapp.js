@@ -102,7 +102,7 @@ async function bind(token, _contract) {
   }
 
   contract.createStudy = async function (args) {
-    return await studyManager.createAsset(args);
+    return await studyManager.createStudy(args);
   }
 
   contract.transferOwnership = async function (args) {

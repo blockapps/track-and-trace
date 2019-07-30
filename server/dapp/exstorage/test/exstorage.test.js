@@ -62,7 +62,7 @@ describe('External Storage Tests', function () {
     const type = 'image/jpeg'
 
     const args = {
-      host: '192.168.1.66:8080',
+      host: 'localhost:8080',
       username: adminBlocName,
       password: adminBlocPassword,
       address: adminBlocAddress,

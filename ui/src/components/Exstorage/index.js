@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { withStyles } from '@material-ui/core/styles';
-import { connect } from "react-redux";
+import { Grid, AppBar, Typography, Toolbar } from '@material-ui/core';import { connect } from "react-redux";
 import LoadingBar from 'react-redux-loading-bar';
 import ReduxedTextField from "../ReduxedTextField";
 import { apiUrl, HTTP_METHODS } from "../../constants";
@@ -13,11 +12,13 @@ class Exstorage extends Component {
         this.state = {
             formFlag: true,
             filename: null,
+            data: null,
         };
     }
 
     componentDidMount() {
         this.setState({formFlag: true})
+
     }
 
     handleClick = event => {
@@ -45,8 +46,9 @@ class Exstorage extends Component {
         .then(function (response) {
             return response.json()
         })
-        .then(function (data) {
-            console.log('ui/src/component/Exstorage: submit', data);
+        .then(data => {
+            console.log('ui/src/component/Exstorage: submit(), data from api', data);
+            this.setState({data: data.data.args.filename});
             return data;
         })
         .catch(function (error) {
@@ -56,25 +58,32 @@ class Exstorage extends Component {
 
     handleChange = event => {
         this.setState({filename: event.target.value});
-        console.log(this.state.filename);
     };
 
 
         render() {
 
         // const buttonMarkup =  <Button onClick={this.handleClick} color="inherit"> Upload file</Button>;
-
         const formMarkup =
             <form onSubmit={this.submit}>
                 <label>File Path: </label>
                 <input type="text" onChange={this.handleChange} />
-                <input type="submit" value="Upload File" />
+                <input type="submit" value="Upload File" size="500" maxLength="maxlength" />
             </form>
 
-        return(
-            <div style={{display: 'flex',  justifyContent:'center', alignItems:'center', height: '100vh'}}>                {/*{buttonMarkup}*/}
-                {formMarkup}
-            </div>
+        const formResult =
+                <p align="left"> {this.state.data} </p>
+
+
+
+        console.log('ui/src/components/exstorage, render:' , this.state.data);
+            return(
+                <Typography variant="h6" color="inherit" className="appbar-container">
+                    <div style={{display: 'flex', height: '100vh', padding:'20px'}}>                {/*{buttonMarkup}*/}
+                        {formMarkup}
+                        {formResult}
+                    </div>
+                </Typography>
         )
     }
 }

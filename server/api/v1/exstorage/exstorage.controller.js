@@ -6,15 +6,18 @@ import BidsController from "../bids/bids.controller";
 class ExstorageController {
 
     static async upload(req, res, next) {
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
         const { app, accessToken, body } = req;
-        const args = { ...body.asset };
+        console.log('exstorage.controller: upload', 'body', body );
+        const args = { filename: body.filename};
+        console.log('exstorage.controller: upload', 'args', args );
+
 
         try {
             const deploy = app.get('deploy');
             const dapp = await dappJs.bind(accessToken, deploy.contract);
-            const file = await dapp.uploadFile(args);
-            rest.response.status200(res, file);
+            const exstorageDesc = await dapp.uploadFile(args);
+            console.log('exstorage.controller: upload', 'exstorageDesc', exstorageDesc );
+            rest.response.status200(res, exstorageDesc);
         } catch (e) {
             next(e)
         }

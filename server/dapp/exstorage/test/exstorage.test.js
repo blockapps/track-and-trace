@@ -5,6 +5,8 @@ import config from '../../../load.config';
 
 import dotenv from 'dotenv';
 
+import exstorage from '../exstorage'
+
 const loadEnv = dotenv.config()
 assert.isUndefined(loadEnv.error)
 
@@ -72,7 +74,7 @@ describe('External Storage Tests', function () {
       type,
     }
 
-    const results = await upload(args)
+    const results = await exstorage.upload(args)
     // {
     // "contractAddress":"8f8fa44ea0a84a7b4dc9f64fb85e77f3583d65a9",
     // "uri":"https://strato-external-test-bucket.s3.amazonaws.com/1564525231435-upload.jpg",
@@ -99,13 +101,13 @@ describe('External Storage Tests', function () {
       content,
       type,
     }
-    const uploadResults = await upload(uploadArgs)
+    const uploadResults = await exstorage.upload(uploadArgs)
     const args = {
       host: 'localhost:8080',
       contractAddress: uploadResults.contractAddress
     }
 
-    const downloadResults = await download(args)
+    const downloadResults = await exstorage.download(args)
     /*
     {"url":"https://strato-external-test-bucket.s3.amazonaws.com/1564526045712-upload.jpg?AWSAccessKeyId=AKIASUITSAQO7UEK2EN5&Expires=1564583770&Signature=2iET3vts2MRqpgfCTURpyPjtAiU%3D"}
     */
@@ -128,7 +130,7 @@ describe('External Storage Tests', function () {
       content,
       type,
     }
-    const uploadResults = await upload(uploadArgs)
+    const uploadResults = await exstorage.upload(uploadArgs)
 
     const verifyArgs = {
       host: 'localhost:8080',
@@ -136,7 +138,7 @@ describe('External Storage Tests', function () {
       address: adminBlocAddress,
     }
 
-    const verifyResults = await verify(verifyArgs)
+    const verifyResults = await exstorage.verify(verifyArgs)
     /*
     {"uri":"https://strato-external-test-bucket.s3.amazonaws.com/1564526045712-upload.jpg",
     "timeStamp":1564526046,
@@ -148,61 +150,3 @@ describe('External Storage Tests', function () {
   });
 });
 
-async function upload(args) {
-  const command = `curl \
-    -X POST "http://${args.host}/apex-api/bloc/file/upload" \
-    -H "accept: application/json;charset=utf-8" -H "Content-Type: multipart/form-data" \
-    -F "username=${args.username}" \
-    -F "password=${args.password}" \
-    -F "address=${args.address}" \
-    -F "provider=s3" \
-    -F "metadata=${args.metadata}" \
-    -F "content=@${args.content};type=${args.type}"`
-  const resultsString = await exec(command)
-  return JSON.parse(resultsString)
-}
-
-
-async function download(args) {
-  /*
-  curl -X GET "http://<your-ip-address>/apex-api/bloc/file/download?contractAddress=<contract-address-of-externally-stored-object>"
-  -H "accept: application/json;charset=utf-8"
-  */
-  const command = `curl \
-    -X GET "http://${args.host}/apex-api/bloc/file/download?contractAddress=${args.contractAddress}" \
-    -H "accept: application/json;charset=utf-8"`
-  const resultsString = await exec(command)
-  return JSON.parse(resultsString)
-}
-
-async function verify(args) {
-  /*
-  curl -X GET "http://<your-ip-address>/apex-api/bloc/file/verify?contractAddress=<contract-address-of-externally-stored-object>"
-       -H "accept: application/json;charset=utf-8"
-  */
-  const command = `curl \
-    -X GET "http://${args.host}/apex-api/bloc/file/verify?contractAddress=${args.contractAddress}" \
-  -H "accept: application/json;charset=utf-8"`
-  const resultsString = await exec(command)
-  return JSON.parse(resultsString)
-}
-
-
-async function ls(args) {
-  const command = `ls ${args}`
-  const results = await exec(command)
-  return results
-}
-
-
-async function exec(command) {
-  const child = require('child_process')
-  return new Promise(function (resolve, reject) {
-    child.exec(command, (err, stdout, stderr) => {
-      if (err) {
-        reject(err) // throws exception
-      }
-      resolve(stdout) // return value
-    })
-  })
-}

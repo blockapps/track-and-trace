@@ -4,6 +4,7 @@ import config from '../../load.config';
 import * as userManagerJs from '../../blockapps-sol/dist/auth/user/userManager';
 import assetManagerJs from '../asset/assetManager';
 import ttPermissionManagerJs from '../ttPermission/ttPermissionManager';
+import exstorageJs from '../exstorage/exstorage';
 import { yamlWrite } from "../../helpers/config";
 
 const contractName = 'TtDapp';
@@ -102,8 +103,20 @@ async function bind(token, _contract) {
     return await assetManager.transferOwnership(args);
   }
   contract.uploadFile = async function(args){
-    console.log('dapp.js : uploadFile', args);
-    return {args};
+    // get the s3 admin from BLOC
+    const adminBlocName = 'admin'
+    const adminBlocPassword = '1234'
+    const adminBlocAddress = await rest.getUser({ username: adminBlocName }, options)
+    // upload
+    args.host = 'localhost:8080'
+    args.username = adminBlocName
+    args.password = adminBlocPassword
+    args.address = adminBlocAddress
+
+    console.log('dapp.js : uploadFile: args', args);
+    const results = await exstorageJs.upload(args)
+    console.log('dapp.js : uploadFile: results', results);
+    return results;
   }
   contract.downloadFile = async function(args){
     console.log('dapp.js : downloadFile', args);

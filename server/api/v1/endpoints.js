@@ -15,8 +15,13 @@ const Bids = {
   event: '/bids/:address/event'
 };
 
+const Exstorage = {
+  upload: '/exstorage'
+};
+
 export default {
   Assets,
   Users,
   Bids,
+  Exstorage
 };

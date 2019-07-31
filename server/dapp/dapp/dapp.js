@@ -101,6 +101,9 @@ async function bind(token, _contract) {
   contract.transferOwnership = async function (args) {
     return await assetManager.transferOwnership(args);
   }
+  contract.uploadFile = async function(args){
+    console.log('>>>>>>>>>>>>uploadFile in dapp.js', args);
+  }
 
   return contract;
 }

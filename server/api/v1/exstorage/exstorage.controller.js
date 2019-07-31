@@ -8,7 +8,7 @@ class ExstorageController {
     static async upload(req, res, next) {
         const { app, accessToken, body } = req;
         console.log('exstorage.controller: upload', 'body', body );
-        const args = { ...body.file};
+        const args = {...body.file };
         console.log('exstorage.controller: upload', 'args', args );
 
 

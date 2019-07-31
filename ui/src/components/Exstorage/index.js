@@ -11,8 +11,11 @@ class Exstorage extends Component {
         super(props);
         this.state = {
             formFlag: true,
-            filename: null,
+            content: null,
             data: null,
+            responseContract: null,
+            responseMetadata: null,
+            responseURI: null
         };
     }
 
@@ -29,10 +32,12 @@ class Exstorage extends Component {
 
     submitUpload = event => {
         event.preventDefault();
-        const filename = this.state.filename;
-        console.log('exstorage index.js: submitUpload', filename);
+        const content = this.state.content;
+        console.log('exstorage index.js: submitUpload', content);
         const exstorageURL = `${apiUrl}/exstorage`;
-        // uploadFile(this.state.file);
+        const type = 'image/jpeg'
+        const metadata = 'metadata';
+        const file = {content, type, metadata};
         fetch(exstorageURL, {
             method: HTTP_METHODS.POST,
             headers: {
@@ -40,15 +45,17 @@ class Exstorage extends Component {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                filename
+                file
+
             })
         })
         .then(function (response) {
             return response.json()
         })
         .then(data => {
-            console.log('ui/src/component/Exstorage: submitUpload(), data from api', data);
-            this.setState({data: data.data.args.filename});
+            console.log('ui/src/component/Exstorage: submitUpload(), data from api', data.data);
+            const responseString = JSON.stringify(data.data, null, 2);
+            this.setState({data: responseString});
             return data;
         })
         .catch(function (error) {
@@ -116,7 +123,7 @@ class Exstorage extends Component {
 
 
     handleChange = event => {
-        this.setState({filename: event.target.value});
+        this.setState({content: event.target.value});
     };
 
 
@@ -127,36 +134,27 @@ class Exstorage extends Component {
         const formUpload =
             <form onSubmit={this.submitUpload}>
                 <label>File Path: </label>
-                <input type="text" onChange={this.handleChange} />
+                <input type="text" style={{margin:'10px'}} onChange={this.handleChange} />
                 <input type="submit" value="Upload File" size="500" maxLength="maxlength" />
             </form>
 
         const formUploadResult =
-                <p align="left"> {this.state.data} </p>
+            <Typography variant="h6" color="inherit" className="appbar-container">
+                <p align='left'> {this.state.data} </p>
+            </Typography>
 
-        const formDownload =
-            <form onSubmit={this.submitDownload}>
-                <label>File Path: </label>
-                <input type="text" onChange={this.handleChange} />
-                <input type="submit" value="Download File" size="500" maxLength="maxlength" />
-            </form>
-
-        const formSign =
-            <form onSubmit={this.submitSign}>
-                <label>File Path: </label>
-                <input type="text" onChange={this.handleChange} />
-                <input type="submit" value="Sign File" size="500" maxLength="maxlength" />
-            </form>
 
 
         console.log('ui/src/components/exstorage, render:' , this.state.data);
             return(
                 <Typography variant="h6" color="inherit" className="appbar-container">
-                    <div style={{display: 'flex', flexDirection:'column' ,height: '100vh', padding:'20px'}}>
+                    <div style={{height: '100vh', padding:'20px'}}>
+                        <div style={{display:'flex', padding:'20px'}}>
                         {formUpload}
+                        </div>
+                        <div style={{display:'flex', padding:'20px'}}>
                         {formUploadResult}
-                        {formDownload}
-                        {formSign}
+                        </div>
                     </div>
                 </Typography>
         )

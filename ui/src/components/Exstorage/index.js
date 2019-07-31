@@ -42,13 +42,16 @@ class Exstorage extends Component {
                 filename
             })
         })
-            .then(function (response) {
-                console.log('ui/src/component/Exstorage: submit', response.json());
-                return 'response.json()';
-            })
-            .catch(function (error) {
-                throw error;
-            });
+        .then(function (response) {
+            return response.json()
+        })
+        .then(function (data) {
+            console.log('ui/src/component/Exstorage: submit', data);
+            return data;
+        })
+        .catch(function (error) {
+            throw error;
+        });
     }
 
     handleChange = event => {
@@ -69,8 +72,7 @@ class Exstorage extends Component {
             </form>
 
         return(
-            <div>
-                {/*{buttonMarkup}*/}
+            <div style={{display: 'flex',  justifyContent:'center', alignItems:'center', height: '100vh'}}>                {/*{buttonMarkup}*/}
                 {formMarkup}
             </div>
         )

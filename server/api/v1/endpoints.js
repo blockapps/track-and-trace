@@ -16,7 +16,9 @@ const Bids = {
 };
 
 const Exstorage = {
-  upload: '/exstorage'
+  upload: '/exstorage',
+  download: '/exstorage/:address',
+  verify: '/exstorage/:address/sign'
 };
 
 export default {

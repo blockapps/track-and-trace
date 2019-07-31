@@ -6,6 +6,7 @@ import endpoints from '../../api/v1/endpoints';
 import testHelper from '../helpers/test';
 import config from '../../load.config';
 import dotenv from 'dotenv';
+import { util } from "blockapps-rest";
 const loadEnv = dotenv.config()
 assert.isUndefined(loadEnv.error)
 
@@ -23,8 +24,25 @@ describe('External Storage Tests', function () {
         await testHelper.createUser(manufacturerToken, adminToken, TtRole.MANUFACTURER);
     });
     it('Upload', async function () {
-        const uploadArgs = {filename: 'zzzz'};
-        await post(endpoints.Exstorage.upload, { content: uploadArgs }, manufacturerToken.token);
+        const uid = util.uid();
+        const file = {content: 'content' + uid, type: 'type' + uid};
+        const result = await post(endpoints.Exstorage.upload, {file} , manufacturerToken.token);
+        console.log('server/test/v1/exstorageTest Upload test', result);
+        assert.deepEqual(file, result.args);
+    });
+    it('Download', async function () {
+        const uid = util.uid();
+        const address = 'address' + uid;
+        const endpoint = endpoints.Exstorage.download.replace(':address', address);
+        const result = await get(endpoint, manufacturerToken.token);
+        console.log('server/test/v1/exstorageTest Download test', result);
 
     });
+    it('Verify', async function () {
+        const uid = util.uid();
+        const address = 'address' + uid;
+        const endpoint = endpoints.Exstorage.verify.replace(':address', address);
+        const result = await get(endpoint, manufacturerToken.token);
+    });
+
 });

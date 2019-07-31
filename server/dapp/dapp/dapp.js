@@ -104,8 +104,16 @@ async function bind(token, _contract) {
   contract.uploadFile = async function(args){
     console.log('dapp.js : uploadFile', args);
     return {args};
-
   }
+  contract.downloadFile = async function(args){
+    console.log('dapp.js : downloadFile', args);
+    return args;
+  }
+  contract.verifyFile = async function(args){
+    console.log('dapp.js : signFile', args);
+    return args;
+  }
+
 
   return contract;
 }

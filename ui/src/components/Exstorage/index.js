@@ -13,9 +13,8 @@ class Exstorage extends Component {
             formFlag: true,
             content: null,
             data: null,
-            responseContract: null,
-            responseMetadata: null,
-            responseURI: null
+            fileType: null,
+            metadata: null,
         };
     }
 
@@ -35,9 +34,10 @@ class Exstorage extends Component {
         const content = this.state.content;
         console.log('exstorage index.js: submitUpload', content);
         const exstorageURL = `${apiUrl}/exstorage`;
-        const type = 'image/jpeg'
-        const metadata = 'metadata';
+        const type = this.state.fileType;
+        const metadata = this.state.metadata;
         const file = {content, type, metadata};
+
         fetch(exstorageURL, {
             method: HTTP_METHODS.POST,
             headers: {
@@ -126,15 +126,33 @@ class Exstorage extends Component {
         this.setState({content: event.target.value});
     };
 
+    setFileType = event => {
+        this.setState({fileType: event.target.value});
+    };
+
+    setMetadata = event => {
+        this.setState({metadata: event.target.value});
+        console.log('ui/src/components/exstorage/index changeMetadata', this.state.metadata);
+
+    };
 
         render() {
 
         // const buttonMarkup =  <Button onClick={this.handleClick} color="inherit"> Upload file</Button>;
-        // TODO SER-106 Add mime type for file -RA
         const formUpload =
             <form onSubmit={this.submitUpload}>
                 <label>File Path: </label>
                 <input type="text" style={{margin:'10px'}} onChange={this.handleChange} />
+                <label>File Type: </label>
+                <select style={{margin:'10px'}} onChange={this.setFileType}>
+                    <option value="" disabled selected>Select a file type</option>
+                    <option value="image/jpeg">image/jpeg</option>
+                    <option value="image/png">image/png</option>
+                    <option value="plain text">plain text</option>
+                    <option value="pdf">pdf</option>
+                </select>
+                <label>File Metadata: </label>
+                <input type="text" style={{margin:'10px'}} onChange={this.setMetadata} />
                 <input type="submit" value="Upload File" size="500" maxLength="maxlength" />
             </form>
 

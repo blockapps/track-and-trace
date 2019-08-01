@@ -2,6 +2,10 @@
 
 Demo app that uses STRATO to track products through a supply chain using OAuth and Private chains.
 
+SER-106_Upload branch contains Upload to External Storage feature
+
+HOST_IP/exstorage contains new UI. Enter an absolute path and press upload to receive the JSON response from api call displayed on UI
+
 ## Setup
 
 ### Pre-requisites

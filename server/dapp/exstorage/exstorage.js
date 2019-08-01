@@ -1,4 +1,6 @@
 async function upload(args) {
+    console.log('exstorage: upload:', {args})
+
     const command = `curl \
       -X POST "http://${args.host}/apex-api/bloc/file/upload" \
       -H "accept: application/json;charset=utf-8" -H "Content-Type: multipart/form-data" \
@@ -9,6 +11,8 @@ async function upload(args) {
       -F "metadata=${args.metadata}" \
       -F "content=@${args.content};type=${args.type}"`
     const resultsString = await exec(command)
+    console.log('exstorage: upload:', {resultsString})
+
     return JSON.parse(resultsString)
 }
 

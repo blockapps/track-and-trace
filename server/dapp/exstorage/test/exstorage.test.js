@@ -60,11 +60,12 @@ describe('External Storage Tests', function () {
   */
   it('Upload file', async function () {
     const uid = util.uid()
+    const host = 'localhost:8080'
     const content = `${util.cwd}/${config.dappPath}/exstorage/test/fixtures/upload.jpg`
     const type = 'image/jpeg'
 
     const args = {
-      host: 'localhost:8080',
+      host,
       username: adminBlocName,
       password: adminBlocPassword,
       address: adminBlocAddress,

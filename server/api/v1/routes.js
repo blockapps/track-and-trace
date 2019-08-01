@@ -10,6 +10,7 @@ import user from './users';
 import assets from './assets';
 import bids from './bids';
 import constants from './constants';
+import exstorage from './exstorage';
 
 router.use(
   `/authentication`,
@@ -38,6 +39,13 @@ router.use(
   `/constants`,
   constants
 );
+
+router.use(
+    `/exstorage`,
+    authHandler.authorizeRequest(),
+    exstorage
+);
+
 
 // set health handler
 router.get(`/health`, (req, res) => {

@@ -3,6 +3,7 @@ import { Grid, AppBar, Typography, Toolbar } from '@material-ui/core';import { c
 import LoadingBar from 'react-redux-loading-bar';
 import ReduxedTextField from "../ReduxedTextField";
 import { apiUrl, HTTP_METHODS } from "../../constants";
+import './Exstorage.css';
 
 
 
@@ -16,6 +17,8 @@ class Exstorage extends Component {
             fileType: null,
             metadata: null,
             contractAddress: null,
+            uploadResponse : null,
+            downloadResponse: null
         };
     }
 
@@ -53,11 +56,10 @@ class Exstorage extends Component {
         .then(function (response) {
             return response.json()
         })
-        //TODO change data variable name -RA
             .then(data => {
             console.log('ui/src/component/Exstorage: submitUpload(), data from api', data.data);
             const responseString = JSON.stringify(data.data, null, 2);
-            this.setState({data: responseString});
+            this.setState({uploadResponse: responseString});
             return data;
         })
         .catch(function (error) {
@@ -69,18 +71,15 @@ class Exstorage extends Component {
         event.preventDefault();
         const contractAddress = this.state.contractAddress;
         console.log('exstorage index.js: submitDownload', contractAddress);
-        const exstorageURL = `${apiUrl}/exstorage`;
+        const exstorageURL = `${apiUrl}/exstorage/${contractAddress}`;
 
         const downloadArgs = {contractAddress};
         fetch(exstorageURL, {
-            method: HTTP_METHODS.POST,
+            method: HTTP_METHODS.GET,
             headers: {
                 Accept: "application/json",
                 "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                downloadArgs
-            })
+            }
         })
             .then(function (response) {
                 return response.json()
@@ -88,7 +87,8 @@ class Exstorage extends Component {
             .then(data => {
                 console.log('ui/src/component/Exstorage: submitUpload(), data from api', data);
                 const responseString = JSON.stringify(data.data, null, 2);
-                this.setState({contractAddress: responseString});
+                this.setState({downloadResponse: responseString});
+                window.open(data.data.url);
                 return data;
             })
             .catch(function (error) {
@@ -151,9 +151,9 @@ class Exstorage extends Component {
         const formUpload =
             <form onSubmit={this.submitUpload}>
                 <label>File Path: </label>
-                <input type="text" style={{margin:'10px'}} onChange={this.setContent} />
+                <input type="text" onChange={this.setContent} />
                 <label>File Type: </label>
-                <select style={{margin:'10px'}} onChange={this.setFileType}>
+                <select onChange={this.setFileType}>
                     <option value="" disabled selected>Select a file type</option>
                     <option value="image/jpeg">image/jpeg</option>
                     <option value="image/png">image/png</option>
@@ -161,8 +161,8 @@ class Exstorage extends Component {
                     <option value="pdf">pdf</option>
                 </select>
                 <label>File Metadata: </label>
-                <input type="text" style={{margin:'10px'}} onChange={this.setMetadata} />
-                <input type="submit" value="Upload File" size="500" maxLength="maxlength" />
+                <input type="text" onChange={this.setMetadata} />
+                <input type="submit" value="Upload File"/>
             </form>
 
 
@@ -174,13 +174,13 @@ class Exstorage extends Component {
             </form>
 
         const formUploadResult =
-            <Typography variant="h6" color="inherit" className="appbar-container">
-                <p align='left'> {this.state.data} </p>
+            <Typography variant="h7" color="inherit" className="appbar-container">
+                <p align='left'> {this.state.uploadResponse} </p>
             </Typography>
 
         const formDownloadResult =
-            <Typography variant="h6" color="inherit" className="appbar-container">
-                <p align='left'> {this.state.contractAddress} </p>
+            <Typography variant="h7" color="inherit" className="appbar-container">
+                <p align='left'> {this.state.downloadResponse} </p>
             </Typography>
 
 
@@ -189,22 +189,20 @@ class Exstorage extends Component {
 
         console.log('ui/src/components/exstorage, render:' , this.state.data);
             return(
-                <Typography variant="h6" color="inherit" className="appbar-container">
-                    <div style={{height: '100vh', padding:'20px'}}>
-                        <div style={{display:'flex', padding:'20px'}}>
+                    <div>
+                        <div>
                         {formUpload}
                         </div>
-                        <div style={{display:'flex', padding:'20px'}}>
+                        <div>
                         {formUploadResult}
                         </div>
-                        <div style={{display:'flex', padding:'20px'}}>
+                        <div>
                             {formDownload}
                         </div>
                         <div style={{display:'flex', padding:'20px'}}>
                             {formDownloadResult}
                         </div>
                     </div>
-                </Typography>
         )
     }
 }

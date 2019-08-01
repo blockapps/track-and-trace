@@ -116,7 +116,9 @@ async function bind(token, _contract) {
     const adminBlocAddress = await rest.getUser({ username: adminBlocName }, options)
     // upload
     args.host = config.nodes[0].url;
-
+    args.username = adminBlocName;
+    args.password = adminBlocPassword;
+    args.address = adminBlocAddress;
     console.log('dapp.js : uploadFile: args', args);
     const results = await exstorageJs.upload(args)
     console.log('dapp.js : uploadFile: results', results);

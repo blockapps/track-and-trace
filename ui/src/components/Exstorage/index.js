@@ -15,6 +15,7 @@ class Exstorage extends Component {
             data: null,
             fileType: null,
             metadata: null,
+            contractAddress: null,
         };
     }
 
@@ -52,7 +53,8 @@ class Exstorage extends Component {
         .then(function (response) {
             return response.json()
         })
-        .then(data => {
+        //TODO change data variable name -RA
+            .then(data => {
             console.log('ui/src/component/Exstorage: submitUpload(), data from api', data.data);
             const responseString = JSON.stringify(data.data, null, 2);
             this.setState({data: responseString});
@@ -65,10 +67,11 @@ class Exstorage extends Component {
 
     submitDownload = event => {
         event.preventDefault();
-        const filename = this.state.filename;
-        console.log('exstorage index.js: submitDownload', filename);
+        const contractAddress = this.state.contractAddress;
+        console.log('exstorage index.js: submitDownload', contractAddress);
         const exstorageURL = `${apiUrl}/exstorage`;
-        // uploadFile(this.state.file);
+
+        const downloadArgs = {contractAddress};
         fetch(exstorageURL, {
             method: HTTP_METHODS.POST,
             headers: {
@@ -76,15 +79,16 @@ class Exstorage extends Component {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                filename
+                downloadArgs
             })
         })
             .then(function (response) {
                 return response.json()
             })
             .then(data => {
-                console.log('ui/src/component/Exstorage: submitDownload(), data from api', data);
-                this.setState({data: data.data.args.filename});
+                console.log('ui/src/component/Exstorage: submitUpload(), data from api', data);
+                const responseString = JSON.stringify(data.data, null, 2);
+                this.setState({contractAddress: responseString});
                 return data;
             })
             .catch(function (error) {
@@ -122,7 +126,7 @@ class Exstorage extends Component {
     }
 
 
-    handleChange = event => {
+    setContent = event => {
         this.setState({content: event.target.value});
     };
 
@@ -135,6 +139,11 @@ class Exstorage extends Component {
         console.log('ui/src/components/exstorage/index changeMetadata', this.state.metadata);
 
     };
+    setContractAddress = event => {
+    this.setState({contractAddress: event.target.value});
+    console.log('ui/src/components/exstorage/index changeMetadata', this.state.metadata);
+
+    };
 
         render() {
 
@@ -142,7 +151,7 @@ class Exstorage extends Component {
         const formUpload =
             <form onSubmit={this.submitUpload}>
                 <label>File Path: </label>
-                <input type="text" style={{margin:'10px'}} onChange={this.handleChange} />
+                <input type="text" style={{margin:'10px'}} onChange={this.setContent} />
                 <label>File Type: </label>
                 <select style={{margin:'10px'}} onChange={this.setFileType}>
                     <option value="" disabled selected>Select a file type</option>
@@ -156,10 +165,25 @@ class Exstorage extends Component {
                 <input type="submit" value="Upload File" size="500" maxLength="maxlength" />
             </form>
 
+
+        const formDownload =
+            <form onSubmit={this.submitDownload}>
+                <label>Contract Address: </label>
+                <input type="text" style={{margin:'10px'}} onChange={this.setContractAddress} />
+                <input type="submit" value="Download File" size="500" maxLength="maxlength" />
+            </form>
+
         const formUploadResult =
             <Typography variant="h6" color="inherit" className="appbar-container">
                 <p align='left'> {this.state.data} </p>
             </Typography>
+
+        const formDownloadResult =
+            <Typography variant="h6" color="inherit" className="appbar-container">
+                <p align='left'> {this.state.contractAddress} </p>
+            </Typography>
+
+
 
 
 
@@ -172,6 +196,12 @@ class Exstorage extends Component {
                         </div>
                         <div style={{display:'flex', padding:'20px'}}>
                         {formUploadResult}
+                        </div>
+                        <div style={{display:'flex', padding:'20px'}}>
+                            {formDownload}
+                        </div>
+                        <div style={{display:'flex', padding:'20px'}}>
+                            {formDownloadResult}
                         </div>
                     </div>
                 </Typography>

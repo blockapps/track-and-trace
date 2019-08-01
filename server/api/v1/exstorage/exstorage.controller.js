@@ -30,8 +30,8 @@ class ExstorageController {
 
     static async download(req, res, next) {
         const { app, accessToken, body, params} = req;
-        const { address } = params;
-        const args = { address };
+        const { contractAddress } = params;
+        const args = { contractAddress };
 
         try {
             const deploy = app.get('deploy');

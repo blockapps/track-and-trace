@@ -37,10 +37,16 @@ describe('External Storage Tests', function () {
     });
     it('Download', async function () {
         const uid = util.uid();
-        const address = 'address' + uid;
-        const endpoint = endpoints.Exstorage.download.replace(':address', address);
-        const result = await get(endpoint, manufacturerToken.token);
-        console.log('server/test/v1/exstorageTest Download test', result);
+        // upload
+        const content = `${util.cwd}/${config.dappPath}/exstorage/test/fixtures/upload.jpg`
+        const type = 'image/jpeg'
+        const metadata = `metadata${uid}`
+        const file = {content, type, metadata};
+        const {contractAddress} = await post(endpoints.Exstorage.upload, {file} , manufacturerToken.token);
+        const endpoint = endpoints.Exstorage.download.replace(':contractAddress', contractAddress);
+        const results = await get(endpoint, manufacturerToken.token);
+        console.log('server/test/v1/exstorageTest Download test', results);
+        assert.isDefined(results.url, 'url')
 
     });
     it('Verify', async function () {

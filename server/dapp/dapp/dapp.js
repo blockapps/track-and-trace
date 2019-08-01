@@ -126,8 +126,12 @@ async function bind(token, _contract) {
     return results;
   }
   contract.downloadFile = async function(args){
-    console.log('dapp.js : downloadFile', args);
-    return args;
+    args.host = config.nodes[0].url;
+
+    console.log('dapp.js : downloadFile: args', args);
+    const results = await exstorageJs.download(args)
+    console.log('dapp.js : downloadFile: results', results);
+    return results;
   }
   contract.verifyFile = async function(args){
     console.log('dapp.js : signFile', args);

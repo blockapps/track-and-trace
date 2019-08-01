@@ -3,13 +3,14 @@ const { createContract, getState, call } = rest;
 import config from '../../load.config';
 import * as userManagerJs from '../../blockapps-sol/dist/auth/user/userManager';
 import assetManagerJs from '../asset/assetManager';
+import studyManagerJs from '../study/studyManager';
 import ttPermissionManagerJs from '../ttPermission/ttPermissionManager';
 import exstorageJs from '../exstorage/exstorage';
 import { yamlWrite } from "../../helpers/config";
 
 const contractName = 'TtDapp';
 const contractFilename = `${config.dappPath}/dapp/contracts/ttDapp.sol`;
-const managersNames = ['userManager', 'assetManager', 'ttPermissionManager'];
+const managersNames = ['userManager', 'assetManager', 'ttPermissionManager', 'studyManager'];
 
 const options = { config }
 
@@ -50,6 +51,7 @@ async function bind(token, _contract) {
   const unboundManagers = await getManagers(contract);
   const userManager = userManagerJs.bind(token, unboundManagers.userManager);
   const assetManager = assetManagerJs.bind(token, unboundManagers.assetManager);
+  const studyManager = studyManagerJs.bind(token, unboundManagers.studyManager);
   const ttPermissionManager = ttPermissionManagerJs.bind(token, unboundManagers.ttPermissionManager);
 
   // deploy
@@ -57,6 +59,7 @@ async function bind(token, _contract) {
     const managers = {
       userManager,
       assetManager,
+      studyManager,
       ttPermissionManager,
     }
     return await deploy(token, contract, deployFilename, managers)
@@ -97,6 +100,10 @@ async function bind(token, _contract) {
 
   contract.handleAssetEvent = async function (args) {
     return await assetManager.handleAssetEvent(args);
+  }
+
+  contract.createStudy = async function (args) {
+    return await studyManager.createStudy(args);
   }
 
   contract.transferOwnership = async function (args) {

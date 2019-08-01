@@ -54,8 +54,26 @@ class AssetsController {
     }
   }
 
-  // TODO: throw errors correctly from dapp
   static async createAsset(req, res, next) {
+    const { app, accessToken, body } = req;
+    const assetArgs = { ...body.asset };
+    const args = {studyId: assetArgs.sku};
+
+    try {
+      const deploy = app.get('deploy');
+      const dapp = await dappJs.bind(accessToken, deploy.contract);
+      const study = await dapp.createStudy(args);
+      console.log('>>>>>>>>>>>>study = ', study);
+      rest.response.status200(res, study);
+    } catch (e) {
+      next(e)
+    }
+  }
+
+
+
+  // TODO: throw errors correctly from dapp
+  static async createAssetOld(req, res, next) {
     const { app, accessToken, body } = req;
     const args = { ...body.asset };
 

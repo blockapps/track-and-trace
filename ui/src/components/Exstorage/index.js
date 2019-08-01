@@ -3,6 +3,7 @@ import { Grid, AppBar, Typography, Toolbar } from '@material-ui/core';import { c
 import LoadingBar from 'react-redux-loading-bar';
 import ReduxedTextField from "../ReduxedTextField";
 import { apiUrl, HTTP_METHODS } from "../../constants";
+import './Exstorage.css';
 
 
 
@@ -15,6 +16,9 @@ class Exstorage extends Component {
             data: null,
             fileType: null,
             metadata: null,
+            contractAddress: null,
+            uploadResponse : null,
+            downloadResponse: null
         };
     }
 
@@ -52,10 +56,10 @@ class Exstorage extends Component {
         .then(function (response) {
             return response.json()
         })
-        .then(data => {
+            .then(data => {
             console.log('ui/src/component/Exstorage: submitUpload(), data from api', data.data);
             const responseString = JSON.stringify(data.data, null, 2);
-            this.setState({data: responseString});
+            this.setState({uploadResponse: responseString});
             return data;
         })
         .catch(function (error) {
@@ -65,26 +69,26 @@ class Exstorage extends Component {
 
     submitDownload = event => {
         event.preventDefault();
-        const filename = this.state.filename;
-        console.log('exstorage index.js: submitDownload', filename);
-        const exstorageURL = `${apiUrl}/exstorage`;
-        // uploadFile(this.state.file);
+        const contractAddress = this.state.contractAddress;
+        console.log('exstorage index.js: submitDownload', contractAddress);
+        const exstorageURL = `${apiUrl}/exstorage/${contractAddress}`;
+
+        const downloadArgs = {contractAddress};
         fetch(exstorageURL, {
-            method: HTTP_METHODS.POST,
+            method: HTTP_METHODS.GET,
             headers: {
                 Accept: "application/json",
                 "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                filename
-            })
+            }
         })
             .then(function (response) {
                 return response.json()
             })
             .then(data => {
-                console.log('ui/src/component/Exstorage: submitDownload(), data from api', data);
-                this.setState({data: data.data.args.filename});
+                console.log('ui/src/component/Exstorage: submitUpload(), data from api', data);
+                const responseString = JSON.stringify(data.data, null, 2);
+                this.setState({downloadResponse: responseString});
+                window.open(data.data.url);
                 return data;
             })
             .catch(function (error) {
@@ -122,7 +126,7 @@ class Exstorage extends Component {
     }
 
 
-    handleChange = event => {
+    setContent = event => {
         this.setState({content: event.target.value});
     };
 
@@ -135,6 +139,11 @@ class Exstorage extends Component {
         console.log('ui/src/components/exstorage/index changeMetadata', this.state.metadata);
 
     };
+    setContractAddress = event => {
+    this.setState({contractAddress: event.target.value});
+    console.log('ui/src/components/exstorage/index changeMetadata', this.state.metadata);
+
+    };
 
         render() {
 
@@ -142,9 +151,9 @@ class Exstorage extends Component {
         const formUpload =
             <form onSubmit={this.submitUpload}>
                 <label>File Path: </label>
-                <input type="text" style={{margin:'10px'}} onChange={this.handleChange} />
+                <input type="text" onChange={this.setContent} />
                 <label>File Type: </label>
-                <select style={{margin:'10px'}} onChange={this.setFileType}>
+                <select onChange={this.setFileType}>
                     <option value="" disabled selected>Select a file type</option>
                     <option value="image/jpeg">image/jpeg</option>
                     <option value="image/png">image/png</option>
@@ -152,29 +161,48 @@ class Exstorage extends Component {
                     <option value="pdf">pdf</option>
                 </select>
                 <label>File Metadata: </label>
-                <input type="text" style={{margin:'10px'}} onChange={this.setMetadata} />
-                <input type="submit" value="Upload File" size="500" maxLength="maxlength" />
+                <input type="text" onChange={this.setMetadata} />
+                <input type="submit" value="Upload File"/>
+            </form>
+
+
+        const formDownload =
+            <form onSubmit={this.submitDownload}>
+                <label>Contract Address: </label>
+                <input type="text" style={{margin:'10px'}} onChange={this.setContractAddress} />
+                <input type="submit" value="Download File" size="500" maxLength="maxlength" />
             </form>
 
         const formUploadResult =
-            <Typography variant="h6" color="inherit" className="appbar-container">
-                <p align='left'> {this.state.data} </p>
+            <Typography variant="h7" color="inherit" className="appbar-container">
+                <p align='left'> {this.state.uploadResponse} </p>
             </Typography>
+
+        const formDownloadResult =
+            <Typography variant="h7" color="inherit" className="appbar-container">
+                <p align='left'> {this.state.downloadResponse} </p>
+            </Typography>
+
+
 
 
 
         console.log('ui/src/components/exstorage, render:' , this.state.data);
             return(
-                <Typography variant="h6" color="inherit" className="appbar-container">
-                    <div style={{height: '100vh', padding:'20px'}}>
-                        <div style={{display:'flex', padding:'20px'}}>
+                    <div>
+                        <div>
                         {formUpload}
                         </div>
-                        <div style={{display:'flex', padding:'20px'}}>
+                        <div>
                         {formUploadResult}
                         </div>
+                        <div>
+                            {formDownload}
+                        </div>
+                        <div style={{display:'flex', padding:'20px'}}>
+                            {formDownloadResult}
+                        </div>
                     </div>
-                </Typography>
         )
     }
 }

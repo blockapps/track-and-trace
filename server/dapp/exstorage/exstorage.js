@@ -2,7 +2,7 @@ async function upload(args) {
     console.log('exstorage: upload:', {args})
 
     const command = `curl \
-      -X POST "http://${args.host}/apex-api/bloc/file/upload" \
+      -X POST "${args.host}/apex-api/bloc/file/upload" \
       -H "accept: application/json;charset=utf-8" -H "Content-Type: multipart/form-data" \
       -F "username=${args.username}" \
       -F "password=${args.password}" \
@@ -23,7 +23,7 @@ async function download(args) {
     -H "accept: application/json;charset=utf-8"
     */
     const command = `curl \
-      -X GET "http://${args.host}/apex-api/bloc/file/download?contractAddress=${args.contractAddress}" \
+      -X GET "${args.host}/apex-api/bloc/file/download?contractAddress=${args.contractAddress}" \
       -H "accept: application/json;charset=utf-8"`
     const resultsString = await exec(command)
     return JSON.parse(resultsString)
@@ -35,7 +35,7 @@ async function verify(args) {
          -H "accept: application/json;charset=utf-8"
     */
     const command = `curl \
-      -X GET "http://${args.host}/apex-api/bloc/file/verify?contractAddress=${args.contractAddress}" \
+      -X GET "${args.host}/apex-api/bloc/file/verify?contractAddress=${args.contractAddress}" \
     -H "accept: application/json;charset=utf-8"`
     const resultsString = await exec(command)
     return JSON.parse(resultsString)

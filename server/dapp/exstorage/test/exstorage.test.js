@@ -60,7 +60,7 @@ describe('External Storage Tests', function () {
   */
   it('Upload file', async function () {
     const uid = util.uid()
-    const host = 'localhost:8080'
+    const host = config.nodes[0].url;
     const content = `${util.cwd}/${config.dappPath}/exstorage/test/fixtures/upload.jpg`
     const type = 'image/jpeg'
 
@@ -91,9 +91,10 @@ describe('External Storage Tests', function () {
     const uid = util.uid()
     const content = `${util.cwd}/${config.dappPath}/exstorage/test/fixtures/upload.jpg`
     const type = 'image/jpeg'
+    const host = config.nodes[0].url;
 
     const uploadArgs = {
-      host: 'localhost:8080',
+      host,
       username: adminBlocName,
       password: adminBlocPassword,
       address: adminBlocAddress,
@@ -104,7 +105,7 @@ describe('External Storage Tests', function () {
     }
     const uploadResults = await exstorage.upload(uploadArgs)
     const args = {
-      host: 'localhost:8080',
+      host,
       contractAddress: uploadResults.contractAddress
     }
 
@@ -120,9 +121,10 @@ describe('External Storage Tests', function () {
     const uid = util.uid()
     const content = `${util.cwd}/${config.dappPath}/exstorage/test/fixtures/upload.jpg`
     const type = 'image/jpeg'
+    const host = config.nodes[0].url;
 
     const uploadArgs = {
-      host: 'localhost:8080',
+      host,
       username: adminBlocName,
       password: adminBlocPassword,
       address: adminBlocAddress,
@@ -134,7 +136,7 @@ describe('External Storage Tests', function () {
     const uploadResults = await exstorage.upload(uploadArgs)
 
     const verifyArgs = {
-      host: 'localhost:8080',
+      host,
       contractAddress: uploadResults.contractAddress,
       address: adminBlocAddress,
     }

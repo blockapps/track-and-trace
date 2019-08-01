@@ -115,19 +115,22 @@ async function bind(token, _contract) {
     const adminBlocPassword = '1234'
     const adminBlocAddress = await rest.getUser({ username: adminBlocName }, options)
     // upload
-    args.host = 'localhost:8080'
-    args.username = adminBlocName
-    args.password = adminBlocPassword
-    args.address = adminBlocAddress
-
+    args.host = config.nodes[0].url;
+    args.username = adminBlocName;
+    args.password = adminBlocPassword;
+    args.address = adminBlocAddress;
     console.log('dapp.js : uploadFile: args', args);
     const results = await exstorageJs.upload(args)
     console.log('dapp.js : uploadFile: results', results);
     return results;
   }
   contract.downloadFile = async function(args){
-    console.log('dapp.js : downloadFile', args);
-    return args;
+    args.host = config.nodes[0].url;
+
+    console.log('dapp.js : downloadFile: args', args);
+    const results = await exstorageJs.download(args)
+    console.log('dapp.js : downloadFile: results', results);
+    return results;
   }
   contract.verifyFile = async function(args){
     console.log('dapp.js : signFile', args);

@@ -1,13 +1,21 @@
 import dappJs from '../../../dapp/dapp/dapp';
 import {rest} from "blockapps-rest";
 import BidsController from "../bids/bids.controller";
-
+import formidable from 'formidable';
 
 class ExstorageController {
 
     static async upload(req, res, next) {
+    new formidable.IncomingForm().parse(req)
+        .on('fileBegin', (name, file) => {
+            file.path = '/tmp/uploads/' + file.name
+        })
+        .on('file', (name, file) => {
+            console.log('Uploaded file', name, file)
+        })
+
         const { app, accessToken, body } = req;
-        console.log('exstorage.controller: upload', 'body', body );
+        console.log('exstorage.controller: upload', 'body', body);
         const args = {...body.file };
         console.log('exstorage.controller: upload', 'args', args );
 

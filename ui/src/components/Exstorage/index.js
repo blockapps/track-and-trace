@@ -94,6 +94,7 @@ class Exstorage extends Component {
             });
     }
 
+    // not used at the moment
     submitSign = event => {
         event.preventDefault();
         const filename = this.state.filename;
@@ -151,14 +152,8 @@ class Exstorage extends Component {
             <form onSubmit={this.submitUpload} enctype="multipart/form-data">
                 <label>File Path: </label>
                 <input type="file" onChange={this.setContent} />
-                <label>File Type: </label>
-                <select onChange={this.setFileType}>
-                    <option value="" disabled selected>Select a file type</option>
-                    <option value="image/jpeg">image/jpeg</option>
-                    <option value="image/png">image/png</option>
-                    <option value="plain text">plain text</option>
-                    <option value="pdf">pdf</option>
-                </select>
+                <br></br>
+                <br/>
                 <label>File Metadata: </label>
                 <input type="text" onChange={this.setMetadata} />
                 <input type="submit" value="Upload File"/>

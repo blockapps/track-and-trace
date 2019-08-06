@@ -61,7 +61,7 @@ describe('External Storage Tests', function () {
   it('Upload file', async function () {
     const uid = util.uid()
     const host = config.nodes[0].url;
-    const content = `${util.cwd}/${config.dappPath}/exstorage/test/fixtures/upload.jpg`
+    const content = `${util.cwd}/${config.dappPath}/exstorage/test/fixtures/`
     const type = 'image/jpeg'
 
     const args = {

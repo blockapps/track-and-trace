@@ -35,28 +35,25 @@ class Exstorage extends Component {
 
     submitUpload = event => {
         event.preventDefault();
+        let form = new FormData();
+        form.append('file', this.state.content);
+        console.log('u/src/components/formdata in submitUpload@@@@@@@@@', form);
         const content = this.state.content;
         console.log('exstorage index.js: submitUpload', content);
         const exstorageURL = `${apiUrl}/exstorage`;
         const type = this.state.fileType;
         const metadata = this.state.metadata;
-        const file = {content, type, metadata};
+        const file = {form, type, metadata};
+        // console.log('ui/src/components/exstorage/index file in submitUpload', file);
 
         fetch(exstorageURL, {
             method: HTTP_METHODS.POST,
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                file
-
-            })
+            body: form
         })
         .then(function (response) {
             return response.json()
         })
-            .then(data => {
+        .then(data => {
             console.log('ui/src/component/Exstorage: submitUpload(), data from api', data.data);
             const responseString = JSON.stringify(data.data, null, 2);
             this.setState({uploadResponse: responseString});
@@ -127,7 +124,8 @@ class Exstorage extends Component {
 
 
     setContent = event => {
-        this.setState({content: event.target.value});
+        console.log('ui/src/components/Exstroage/index.js event.target.value =', event.target.files[0]);
+        this.setState({content: event.target.files[0]});
     };
 
     setFileType = event => {
@@ -149,9 +147,9 @@ class Exstorage extends Component {
 
         // const buttonMarkup =  <Button onClick={this.handleClick} color="inherit"> Upload file</Button>;
         const formUpload =
-            <form onSubmit={this.submitUpload}>
+            <form onSubmit={this.submitUpload} enctype="multipart/form-data">
                 <label>File Path: </label>
-                <input type="text" onChange={this.setContent} />
+                <input type="file" onChange={this.setContent} />
                 <label>File Type: </label>
                 <select onChange={this.setFileType}>
                     <option value="" disabled selected>Select a file type</option>

@@ -37,7 +37,8 @@ class Exstorage extends Component {
         event.preventDefault();
         let form = new FormData();
         form.append('file', this.state.content);
-        console.log('u/src/components/formdata in submitUpload@@@@@@@@@', form);
+        form.append('metadata', this.state.metadata);
+        console.log('@@@@@@@@@@@@@@@', form.get('metadata'));
         const content = this.state.content;
         console.log('exstorage index.js: submitUpload', content);
         const exstorageURL = `${apiUrl}/exstorage`;

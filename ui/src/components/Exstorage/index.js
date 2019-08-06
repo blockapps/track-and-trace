@@ -35,29 +35,23 @@ class Exstorage extends Component {
 
     submitUpload = event => {
         event.preventDefault();
+        let form = new FormData();
+        form.append('file', this.state.content);
+        form.append('metadata', this.state.metadata);
         const content = this.state.content;
-        console.log('exstorage index.js: submitUpload', content);
         const exstorageURL = `${apiUrl}/exstorage`;
         const type = this.state.fileType;
         const metadata = this.state.metadata;
-        const file = {content, type, metadata};
+        const file = {form, type, metadata};
 
         fetch(exstorageURL, {
             method: HTTP_METHODS.POST,
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                file
-
-            })
+            body: form
         })
         .then(function (response) {
             return response.json()
         })
-            .then(data => {
-            console.log('ui/src/component/Exstorage: submitUpload(), data from api', data.data);
+        .then(data => {
             const responseString = JSON.stringify(data.data, null, 2);
             this.setState({uploadResponse: responseString});
             return data;
@@ -70,7 +64,6 @@ class Exstorage extends Component {
     submitDownload = event => {
         event.preventDefault();
         const contractAddress = this.state.contractAddress;
-        console.log('exstorage index.js: submitDownload', contractAddress);
         const exstorageURL = `${apiUrl}/exstorage/${contractAddress}`;
 
         const downloadArgs = {contractAddress};
@@ -85,7 +78,6 @@ class Exstorage extends Component {
                 return response.json()
             })
             .then(data => {
-                console.log('ui/src/component/Exstorage: submitUpload(), data from api', data);
                 const responseString = JSON.stringify(data.data, null, 2);
                 this.setState({downloadResponse: responseString});
                 window.open(data.data.url);
@@ -96,10 +88,10 @@ class Exstorage extends Component {
             });
     }
 
+    // not used at the moment
     submitSign = event => {
         event.preventDefault();
         const filename = this.state.filename;
-        console.log('exstorage index.js: submitSign', filename);
         const exstorageURL = `${apiUrl}/exstorage`;
         // uploadFile(this.state.file);
         fetch(exstorageURL, {
@@ -116,7 +108,6 @@ class Exstorage extends Component {
                 return response.json()
             })
             .then(data => {
-                console.log('ui/src/component/Exstorage: submitSign(), data from api', data);
                 this.setState({data: data.data.args.filename});
                 return data;
             })
@@ -127,7 +118,7 @@ class Exstorage extends Component {
 
 
     setContent = event => {
-        this.setState({content: event.target.value});
+        this.setState({content: event.target.files[0]});
     };
 
     setFileType = event => {
@@ -136,30 +127,21 @@ class Exstorage extends Component {
 
     setMetadata = event => {
         this.setState({metadata: event.target.value});
-        console.log('ui/src/components/exstorage/index changeMetadata', this.state.metadata);
 
     };
     setContractAddress = event => {
     this.setState({contractAddress: event.target.value});
-    console.log('ui/src/components/exstorage/index changeMetadata', this.state.metadata);
-
     };
 
         render() {
 
         // const buttonMarkup =  <Button onClick={this.handleClick} color="inherit"> Upload file</Button>;
         const formUpload =
-            <form onSubmit={this.submitUpload}>
+            <form onSubmit={this.submitUpload} enctype="multipart/form-data">
                 <label>File Path: </label>
-                <input type="text" onChange={this.setContent} />
-                <label>File Type: </label>
-                <select onChange={this.setFileType}>
-                    <option value="" disabled selected>Select a file type</option>
-                    <option value="image/jpeg">image/jpeg</option>
-                    <option value="image/png">image/png</option>
-                    <option value="plain text">plain text</option>
-                    <option value="pdf">pdf</option>
-                </select>
+                <input type="file" onChange={this.setContent} />
+                <br></br>
+                <br/>
                 <label>File Metadata: </label>
                 <input type="text" onChange={this.setMetadata} />
                 <input type="submit" value="Upload File"/>
@@ -186,8 +168,6 @@ class Exstorage extends Component {
 
 
 
-
-        console.log('ui/src/components/exstorage, render:' , this.state.data);
             return(
                     <div>
                         <div>

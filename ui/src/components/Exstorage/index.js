@@ -38,14 +38,11 @@ class Exstorage extends Component {
         let form = new FormData();
         form.append('file', this.state.content);
         form.append('metadata', this.state.metadata);
-        console.log('@@@@@@@@@@@@@@@', form.get('metadata'));
         const content = this.state.content;
-        console.log('exstorage index.js: submitUpload', content);
         const exstorageURL = `${apiUrl}/exstorage`;
         const type = this.state.fileType;
         const metadata = this.state.metadata;
         const file = {form, type, metadata};
-        // console.log('ui/src/components/exstorage/index file in submitUpload', file);
 
         fetch(exstorageURL, {
             method: HTTP_METHODS.POST,
@@ -55,7 +52,6 @@ class Exstorage extends Component {
             return response.json()
         })
         .then(data => {
-            console.log('ui/src/component/Exstorage: submitUpload(), data from api', data.data);
             const responseString = JSON.stringify(data.data, null, 2);
             this.setState({uploadResponse: responseString});
             return data;
@@ -68,7 +64,6 @@ class Exstorage extends Component {
     submitDownload = event => {
         event.preventDefault();
         const contractAddress = this.state.contractAddress;
-        console.log('exstorage index.js: submitDownload', contractAddress);
         const exstorageURL = `${apiUrl}/exstorage/${contractAddress}`;
 
         const downloadArgs = {contractAddress};
@@ -83,7 +78,6 @@ class Exstorage extends Component {
                 return response.json()
             })
             .then(data => {
-                console.log('ui/src/component/Exstorage: submitUpload(), data from api', data);
                 const responseString = JSON.stringify(data.data, null, 2);
                 this.setState({downloadResponse: responseString});
                 window.open(data.data.url);
@@ -98,7 +92,6 @@ class Exstorage extends Component {
     submitSign = event => {
         event.preventDefault();
         const filename = this.state.filename;
-        console.log('exstorage index.js: submitSign', filename);
         const exstorageURL = `${apiUrl}/exstorage`;
         // uploadFile(this.state.file);
         fetch(exstorageURL, {
@@ -115,7 +108,6 @@ class Exstorage extends Component {
                 return response.json()
             })
             .then(data => {
-                console.log('ui/src/component/Exstorage: submitSign(), data from api', data);
                 this.setState({data: data.data.args.filename});
                 return data;
             })
@@ -126,7 +118,6 @@ class Exstorage extends Component {
 
 
     setContent = event => {
-        console.log('ui/src/components/Exstroage/index.js event.target.value =', event.target.files[0]);
         this.setState({content: event.target.files[0]});
     };
 
@@ -136,13 +127,10 @@ class Exstorage extends Component {
 
     setMetadata = event => {
         this.setState({metadata: event.target.value});
-        console.log('ui/src/components/exstorage/index changeMetadata', this.state.metadata);
 
     };
     setContractAddress = event => {
     this.setState({contractAddress: event.target.value});
-    console.log('ui/src/components/exstorage/index changeMetadata', this.state.metadata);
-
     };
 
         render() {
@@ -180,8 +168,6 @@ class Exstorage extends Component {
 
 
 
-
-        console.log('ui/src/components/exstorage, render:' , this.state.data);
             return(
                     <div>
                         <div>

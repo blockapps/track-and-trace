@@ -9,9 +9,7 @@ class ExstorageController {
 
         const dirName = '/tmp/uploads'
         const { app, accessToken, body } = req;
-        console.log('exstorage.controller: upload', 'body', body);
         const args = {...body.file };
-        console.log('exstorage.controller: upload', 'args', args );
 
         if (!fs.existsSync(dirName)){
             fs.mkdirSync(dirName);
@@ -27,10 +25,8 @@ class ExstorageController {
                         parsedForm.type = file.type
                     })
                     .on('file', (name, file) => {
-                        console.log('Uploaded file', name, file)
                     })
                     .on('field', (name,value) => {
-                        console.log('meta from exstorage.controller@@@@@@@@@@', name, value);
                         if(name == 'metadata') {
                             parsedForm.metadata = value
                         } else {
@@ -57,7 +53,6 @@ class ExstorageController {
             const deploy = app.get('deploy');
             const dapp = await dappJs.bind(accessToken, deploy.contract);
             const exstorageDesc = await dapp.uploadFile(args);
-            console.log('exstorage.controller: upload', 'exstorageDesc', exstorageDesc );
             try {
                 fs.unlinkSync(args.content)
                 fs.rmdirSync(dirName);
@@ -77,10 +72,8 @@ class ExstorageController {
                 file.path = '/tmp/uploads/' + file.name
             })
             .on('file', (name, file) => {
-                console.log('Uploaded file', name, file)
             })
             .on('field', (name,value) => {
-                console.log('meta from exstorage.controller@@@@@@@@@@', name, value);
             })
 
         const { app, accessToken, body } = req;
@@ -103,7 +96,6 @@ class ExstorageController {
     }
 
     static async getAll(req, res, next) {
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
             rest.response.status200(res, {});
     }
 

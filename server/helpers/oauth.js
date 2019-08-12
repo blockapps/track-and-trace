@@ -14,7 +14,7 @@ async function createStratoUser(accessToken) {
     return { status: 200, message: 'success', user };
   } catch (e) {
     console.log(e)
-    return { status: r.response ? e.response.status : 'Unknown', message: `error while creating user` };
+    return { status: e.response ? e.response.status : 'Unknown', message: `error while creating user` };
   }
 };
 

@@ -76,7 +76,7 @@ function* placeBid(action) {
       yield put(bidSubmitSuccess(response.data));
       yield put(setUserMessage("Bid has been placed", true));
       // Update bids
-      yield put(getBids());
+      yield put(getBids(action.payload.address));
       // Update asset
       yield put(getAssetDetail(action.sku));
     } else {
@@ -118,7 +118,7 @@ function* bidEvent(action) {
 
       yield put(getAssetDetail(action.sku));
       yield delay(1000);
-      yield put(getBids());
+      yield put(getBids(action.payload.address));
     } else {
       yield put(bidEventFailure(response.error));
       yield put(setUserMessage("Unable to accept bid"));

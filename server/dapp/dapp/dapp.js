@@ -29,8 +29,8 @@ async function uploadContract(token, ttPermissionManager) {
   return await bind(token, contract);
 }
 
-async function getManagers(contract) {
-  const state = await getState(contract, options);
+async function getManagers(token, contract) {
+  const state = await getState(token, contract, options);
   const managers = {};
   managersNames.forEach((name) => {
     const address = state[name];
@@ -46,11 +46,10 @@ async function getManagers(contract) {
 async function bind(token, _contract) {
   const contract = _contract;
   // set the managers
-  const unboundManagers = await getManagers(contract);
+  const unboundManagers = await getManagers(token, contract);
   const userManager = userManagerJs.bind(token, unboundManagers.userManager);
   const assetManager = assetManagerJs.bind(token, unboundManagers.assetManager);
   const ttPermissionManager = ttPermissionManagerJs.bind(token, unboundManagers.ttPermissionManager);
-
   // deploy
   contract.deploy = async function (deployFilename) {
     const managers = {

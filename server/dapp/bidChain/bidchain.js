@@ -59,7 +59,7 @@ async function createChain(token, assetOwner, regulatorAddress) {
     }
   }
 
-  const chain = await rest.createChain(chainArgs, contractArgs, copyOfOptions)
+  const chain = await rest.createChain(token, chainArgs, contractArgs, copyOfOptions)
   // createChain returns chainId. we need to use as object { chainId: chain }. So that we can bind other methods as well.
   return bind(token, { chainId: chain });
 }
@@ -143,7 +143,7 @@ async function getChains(token, chainIds = []) {
     TODO: Remove Try and catch once STRATO-1304 is done
   */
   try {
-    chains = await rest.getChains(chainIds, options);
+    chains = await rest.getChains(token, chainIds, options);
   } catch (e) {
     if (e.response.status === 500) {
       chains = [];

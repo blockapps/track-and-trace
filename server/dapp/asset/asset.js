@@ -31,7 +31,7 @@ async function uploadContract(token, ttPermissionManagerContract, args) {
 
 function bind(token, contract) {
   contract.getState = async function() {
-    return await rest.getState(contract, options);
+    return await rest.getState(token, contract, options);
   };
 
   return contract;
@@ -45,7 +45,7 @@ function bindAddress(token, address) {
   return bind(token, contract);
 }
 
-async function waitForRequiredUpdate(sku, searchCounter) {
+async function waitForRequiredUpdate(token, sku, searchCounter) {
   function predicate(response) {
     if (response.length) return response;
   }
@@ -62,7 +62,7 @@ async function waitForRequiredUpdate(sku, searchCounter) {
     }
   };
 
-  const results = await rest.searchUntil(contract, predicate, copyOfOptions);
+  const results = await rest.searchUntil(token, contract, predicate, copyOfOptions);
   const asset = fromBytes32(results[0]);
 
   return asset;
@@ -86,7 +86,7 @@ function toBytes32(asset) {
   return converted;
 }
 
-async function getAssetByAddress(address) {
+async function getAssetByAddress(token, address) {
   const copyOfOptions = {
     ...options,
     query: {
@@ -96,7 +96,7 @@ async function getAssetByAddress(address) {
   const contract = {
     name: contractName
   };
-  const results = await rest.search(contract, copyOfOptions);
+  const results = await rest.search(token, contract, copyOfOptions);
   if (results.length === 0) return undefined;
   return results[0];
 }

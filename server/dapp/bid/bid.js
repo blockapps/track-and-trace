@@ -55,7 +55,7 @@ async function createBid(
     }
   };
 
-  const results = await rest.searchUntil(contract, predicate, copyOfOptions);
+  const results = await rest.searchUntil(token, contract, predicate, copyOfOptions);
   return results[0];
 }
 
@@ -85,7 +85,7 @@ function bind(token, chainId, contract) {
   };
 
   contract.getBid = async function() {
-    return await getBid(chainId, contract.address);
+    return await getBid(token, chainId, contract.address);
   };
 
   return contract;
@@ -121,6 +121,7 @@ async function handleBidEvent(token, chainId, contract, bidEvent) {
 
   // make sure state changes are persisted
   await rest.searchUntil(
+    token,
     contract,
     r => {
       return r && r.length > 0;
@@ -138,7 +139,7 @@ async function handleBidEvent(token, chainId, contract, bidEvent) {
   return newState;
 }
 
-async function getBid(chainId, address) {
+async function getBid(token, chainId, address) {
   const contract = {
     name: contractName
   };
@@ -150,7 +151,7 @@ async function getBid(chainId, address) {
     }
   };
 
-  const results = await rest.search(contract, copyOfOptions);
+  const results = await rest.search(token, contract, copyOfOptions);
   if (results.length === 0) return undefined;
   return results[0];
 }
@@ -175,7 +176,7 @@ async function getBids(token, searchParams) {
     ...options,
     query
   };
-  const results = await rest.searchUntil(contract, predicate, copyOfOptions);
+  const results = await rest.searchUntil(token, contract, predicate, copyOfOptions);
   return results;
 }
 
@@ -200,7 +201,7 @@ async function getBidsHistory(token, assetAddress) {
     query
   };
 
-  const results = await rest.search(contract, copyOfOptions);
+  const results = await rest.search(token, contract, copyOfOptions);
   return results;
 }
 

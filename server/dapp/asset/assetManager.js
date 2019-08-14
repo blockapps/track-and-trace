@@ -107,7 +107,7 @@ async function createAsset(token, contract, args) {
     address: assetAddress
   };
 
-  const asset = await rest.waitForAddress(contractArgs, options);
+  const asset = await rest.waitForAddress(token, contractArgs, options);
   return assetJs.fromBytes32(asset);
 }
 
@@ -130,13 +130,13 @@ async function handleAssetEvent(token, contract, args) {
       args
     });
 
-  await assetJs.waitForRequiredUpdate(args.sku, searchCounter);
+  await assetJs.waitForRequiredUpdate(token, args.sku, searchCounter);
 
   return newState;
 }
 
 async function getAssets(token, contract, args) {
-  const { assets: assetsHashMap } = await rest.getState(contract, options);
+  const { assets: assetsHashMap } = await rest.getState(token, contract, options);
   const hashmap = permissionHashmapJs.bindAddress(token, assetsHashMap);
 
   const name = "values";
@@ -165,7 +165,7 @@ async function getAssets(token, contract, args) {
     }
   };
 
-  const results = await rest.search(contractArgs, copyOfOptions);
+  const results = await rest.search(token, contractArgs, copyOfOptions);
   const converted = results.map(r => assetJs.fromBytes32(r));
 
   return converted;
@@ -197,7 +197,7 @@ async function getAsset(token, contract, sku) {
     }
   };
 
-  const result = await rest.search(contractArgs, copyOfOptions);
+  const result = await rest.search(token, contractArgs, copyOfOptions);
 
   if (result.length != 1) {
     throw new rest.RestError(
@@ -237,7 +237,7 @@ async function getAssetHistory(token, contract, sku) {
     }
   };
 
-  const history = await rest.search(contractArgs, copyOfOptions);
+  const history = await rest.search(token, contractArgs, copyOfOptions);
   return history.map(h => assetJs.fromBytes32(h));
 }
 
@@ -260,7 +260,7 @@ async function transferOwnership(token, contract, args) {
       args
     });
 
-  await assetJs.waitForRequiredUpdate(args.sku, searchCounter);
+  await assetJs.waitForRequiredUpdate(token, args.sku, searchCounter);
 
   return newState;
 }

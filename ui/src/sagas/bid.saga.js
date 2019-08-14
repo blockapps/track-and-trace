@@ -118,7 +118,7 @@ function* bidEvent(action) {
 
       yield put(getAssetDetail(action.sku));
       yield delay(1000);
-      yield put(getBids(action.payload.address));
+      yield put(getBids(action.assetAddress));
     } else {
       yield put(bidEventFailure(response.error));
       yield put(setUserMessage("Unable to accept bid"));

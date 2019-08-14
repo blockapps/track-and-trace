@@ -127,8 +127,8 @@ async function removeMember(token, contract, member, chainId) {
   return result
 }
 
-async function getChainById(chainId) {
-  const chainInfo = await rest.getChain(chainId, options);
+async function getChainById(token, chainId) {
+  const chainInfo = await rest.getChain(token, chainId, options);
   return chainInfo;
 }
 

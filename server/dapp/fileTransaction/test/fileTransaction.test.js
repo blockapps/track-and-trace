@@ -29,7 +29,7 @@ describe('FileTransaction Tests', function () {
     const contract = await fileTransactionJs.uploadContract(adminCredentials, constructorArgs);
     // set details
     const detailsArgs = factory.createDetailsArgs(uid);
-    contract.setDetails(detailsArgs)
+    await contract.setDetails(detailsArgs)
     // check state
     const state = await contract.getState();
     assert.equal(state.fileTransactionId, constructorArgs.fileTransactionId, 'fileTransactionId')

@@ -85,7 +85,7 @@ cd nginx-docker
 HOST_IP=$(ipconfig getifaddr en0) docker-compose up -d
 ```
 
-##### Start UI
+#### Start UI
 
 ```
 cd ui

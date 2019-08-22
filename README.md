@@ -38,6 +38,8 @@ cd track-and-trace
 git submodule update --init --recursive
 ```
 
+**NOTE:** *STRATO-1565_compatibilityWithOauth* this version of blockapps-sol will be used for new version
+
 #### Token setup:
 
 ```

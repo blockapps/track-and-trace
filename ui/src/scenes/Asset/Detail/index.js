@@ -94,7 +94,7 @@ class AssetDetail extends Component {
     const { bidEventRequest, asset, BID_EVENT, BID_STATE } = this.props;
 
     const payload = { address, chainId, bidEvent };
-    bidEventRequest(payload, asset.sku, BID_EVENT, BID_STATE);
+    bidEventRequest(payload, asset.sku, BID_EVENT, BID_STATE, asset.address);
   };
 
   render() {

@@ -152,7 +152,7 @@ describe("Bid Tests", function() {
         );
       },
       RestStatus.FORBIDDEN,
-      /"method":"handleAssetEvent"/,
+      /"handleAssetEvent"/,
       AssetError.NULL
     );
   });
@@ -374,7 +374,7 @@ describe("Bid Tests", function() {
         );
       },
       RestStatus.FORBIDDEN,
-      /"method":"transferOwnership"/,
+      /"transferOwnership"/,
       AssetError.NULL
     );
     // TODO: test new owner. Might have to write a get asset call.

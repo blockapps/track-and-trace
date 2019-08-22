@@ -54,7 +54,7 @@ describe("Bid Chain Tests", function() {
     // takes a few to populate
     await util.sleep(2 * 1000);
 
-    const chain = await bidChain.getChainById(chainId);
+    const chain = await bidChain.getChainById(distributorUser, chainId);
 
     assert.equal(
       chain.info.label,
@@ -82,7 +82,7 @@ describe("Bid Chain Tests", function() {
     // takes a few to populate
     await util.sleep(2 * 1000);
 
-    const chain = await bidChain.getChainById(chainId);
+    const chain = await bidChain.getChainById(distributorUser, chainId);
     assert.equal(
       chain.info.label,
       `bid_${distributorUser.address}_${manufacturerUser.address}`,
@@ -114,7 +114,7 @@ describe("Bid Chain Tests", function() {
       chainId
     );
 
-    const updatedChain = await bidChain.getChainById(chainId);
+    const updatedChain = await bidChain.getChainById(distributorUser, chainId);
     assert.equal(
       updatedChain.info.label,
       `bid_${distributorUser.address}_${manufacturerUser.address}`,
@@ -137,7 +137,7 @@ describe("Bid Chain Tests", function() {
     // takes a few to populate
     await util.sleep(2 * 1000);
 
-    const chain = await bidChain.getChainById(chainId);
+    const chain = await bidChain.getChainById(distributorUser, chainId);
     assert.equal(
       chain.info.label,
       `bid_${distributorUser.address}_${manufacturerUser.address}`,
@@ -169,7 +169,7 @@ describe("Bid Chain Tests", function() {
       chainId
     );
 
-    const updatedChain = await bidChain.getChainById(chainId);
+    const updatedChain = await bidChain.getChainById(distributorUser, chainId);
 
     assert.equal(
       updatedChain.info.label,

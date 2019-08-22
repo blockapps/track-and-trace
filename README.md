@@ -9,12 +9,23 @@ Demo app that uses STRATO to track products through a supply chain using OAuth a
 1. Install Docker from https://www.docker.com
 2. Install `docker-compose` from https://docs.docker.com/compose/install/
 3. STRATO node running with parameters:
-   `HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_STRATO42_FALLBACK=true OAUTH_JWT_USERNAME_PROPERTY=email OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration`
+   `HTTP_PORT=8080
+    NODE_HOST=localhost:8080
+    OAUTH_ENABLED=true
+    OAUTH_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration 
+    OAUTH_CLIENT_ID=<OAUTH_CLIENT_ID_HERE> 
+    OAUTH_CLIENT_SECRET=<OAUTH_CLIENT_SECRET_HERE>`
 
 Example command to start STRATO with the correct parameters:
 
 ```
-HTTP_PORT=8080 NODE_HOST=localhost:8080 OAUTH_JWT_VALIDATION_ENABLED=true OAUTH_STRATO42_FALLBACK=true OAUTH_JWT_VALIDATION_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration OAUTH_JWT_USERNAME_PROPERTY=email ./strato.sh --single
+HTTP_PORT=8080
+NODE_HOST=localhost:8080
+OAUTH_ENABLED=true
+OAUTH_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration 
+OAUTH_CLIENT_ID=<OAUTH_CLIENT_ID_HERE> 
+OAUTH_CLIENT_SECRET=<OAUTH_CLIENT_SECRET_HERE>
+./strato --single
 ```
 
 ### Run Track and Trace
@@ -26,6 +37,8 @@ git clone https://github.com/blockapps/track-and-trace.git
 cd track-and-trace
 git submodule update --init --recursive
 ```
+
+**NOTE:** *STRATO-1565_compatibilityWithOauth* this version of blockapps-sol will be used for new version
 
 #### Token setup:
 

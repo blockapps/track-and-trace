@@ -12,7 +12,7 @@ const managersNames = ['userManager', 'assetManager', 'ttPermissionManager'];
 
 const options = { config }
 
-async function uploadContract(token, ttPermissionManager) {
+async function uploadContract(user, ttPermissionManager) {
   const args = {
     ttPermissionManager: ttPermissionManager.address,
   };
@@ -23,14 +23,14 @@ async function uploadContract(token, ttPermissionManager) {
     args: util.usc(args)
   }
 
-  const contract = await createContract(token, contractArgs, options);
+  const contract = await createContract(user, contractArgs, options);
   contract.src = 'removed';
   await util.sleep(5 * 1000);
-  return await bind(token, contract);
+  return await bind(user, contract);
 }
 
-async function getManagers(contract) {
-  const state = await getState(contract, options);
+async function getManagers(user, contract) {
+  const state = await getState(user, contract, options);
   const managers = {};
   managersNames.forEach((name) => {
     const address = state[name];
@@ -43,14 +43,13 @@ async function getManagers(contract) {
   return managers;
 }
 
-async function bind(token, _contract) {
+async function bind(user, _contract) {
   const contract = _contract;
   // set the managers
-  const unboundManagers = await getManagers(contract);
-  const userManager = userManagerJs.bind(token, unboundManagers.userManager);
-  const assetManager = assetManagerJs.bind(token, unboundManagers.assetManager);
-  const ttPermissionManager = ttPermissionManagerJs.bind(token, unboundManagers.ttPermissionManager);
-
+  const unboundManagers = await getManagers(user, contract);
+  const userManager = userManagerJs.bind(user, unboundManagers.userManager);
+  const assetManager = assetManagerJs.bind(user, unboundManagers.assetManager);
+  const ttPermissionManager = ttPermissionManagerJs.bind(user, unboundManagers.ttPermissionManager);
   // deploy
   contract.deploy = async function (deployFilename) {
     const managers = {
@@ -58,7 +57,7 @@ async function bind(token, _contract) {
       assetManager,
       ttPermissionManager,
     }
-    return await deploy(token, contract, deployFilename, managers)
+    return await deploy(user, contract, deployFilename, managers)
   }
 
   // create user
@@ -106,7 +105,7 @@ async function bind(token, _contract) {
 }
 
 // =========================== deployment ========================
-async function deploy(token, contract, deployFilename, managers) {
+async function deploy(user, contract, deployFilename, managers) {
   const { assetManager, ttPermissionManager, userManager } = managers;
 
   // grant permissions

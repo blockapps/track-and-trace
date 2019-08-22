@@ -12,7 +12,7 @@ const contractFilename = `${process.cwd()}/${
 
 const options = { config };
 
-async function uploadContract(token, ttPermissionManagerContract) {
+async function uploadContract(user, ttPermissionManagerContract) {
   const args = {
     ttPermissionManager: ttPermissionManagerContract.address
   };
@@ -23,47 +23,47 @@ async function uploadContract(token, ttPermissionManagerContract) {
     args: util.usc(args)
   };
 
-  const contract = await rest.createContract(token, contractArgs, options);
+  const contract = await rest.createContract(user, contractArgs, options);
   contract.src = "removed";
 
   await ttPermissionManagerContract.grantAssetManager(contract);
 
-  return bind(token, contract);
+  return bind(user, contract);
 }
 
-function bind(token, contract) {
+function bind(user, contract) {
   contract.exists = async function(sku) {
-    return await exists(token, contract, sku);
+    return await exists(user, contract, sku);
   };
 
   contract.createAsset = async function(args) {
-    return await createAsset(token, contract, args);
+    return await createAsset(user, contract, args);
   };
 
   contract.handleAssetEvent = async function(args) {
-    return await handleAssetEvent(token, contract, args);
+    return await handleAssetEvent(user, contract, args);
   };
 
   contract.getAssets = async function(args) {
-    return await getAssets(token, contract, args);
+    return await getAssets(user, contract, args);
   };
 
   contract.getAsset = async function(sku) {
-    return await getAsset(token, contract, sku);
+    return await getAsset(user, contract, sku);
   };
 
   contract.getAssetHistory = async function(sku) {
-    return await getAssetHistory(token, contract, sku);
+    return await getAssetHistory(user, contract, sku);
   };
 
   contract.transferOwnership = async function(args) {
-    return await transferOwnership(token, contract, args);
+    return await transferOwnership(user, contract, args);
   };
 
   return contract;
 }
 
-async function exists(token, contract, sku) {
+async function exists(user, contract, sku) {
   const args = { sku: sku };
   const callArgs = {
     contract,
@@ -71,12 +71,12 @@ async function exists(token, contract, sku) {
     args: util.usc(args)
   };
 
-  const result = await rest.call(token, callArgs, options);
+  const result = await rest.call(user, callArgs, options);
 
   return result[0] === true;
 }
 
-async function createAsset(token, contract, args) {
+async function createAsset(user, contract, args) {
   const converted = assetJs.toBytes32(args);
 
   const callArgs = {
@@ -91,7 +91,7 @@ async function createAsset(token, contract, args) {
   };
 
   const [restStatus, assetError, assetAddress] = await rest.call(
-    token,
+    user,
     callArgs,
     copyOfOptions
   );
@@ -107,11 +107,11 @@ async function createAsset(token, contract, args) {
     address: assetAddress
   };
 
-  const asset = await rest.waitForAddress(contractArgs, options);
+  const asset = await rest.waitForAddress(user, contractArgs, options);
   return assetJs.fromBytes32(asset);
 }
 
-async function handleAssetEvent(token, contract, args) {
+async function handleAssetEvent(user, contract, args) {
   const callArgs = {
     contract,
     method: "handleAssetEvent",
@@ -119,7 +119,7 @@ async function handleAssetEvent(token, contract, args) {
   };
 
   const [restStatus, assetError, searchCounter, newState] = await rest.call(
-    token,
+    user,
     callArgs,
     options
   );
@@ -130,14 +130,14 @@ async function handleAssetEvent(token, contract, args) {
       args
     });
 
-  await assetJs.waitForRequiredUpdate(args.sku, searchCounter);
+  await assetJs.waitForRequiredUpdate(user, args.sku, searchCounter);
 
   return newState;
 }
 
-async function getAssets(token, contract, args) {
-  const { assets: assetsHashMap } = await rest.getState(contract, options);
-  const hashmap = permissionHashmapJs.bindAddress(token, assetsHashMap);
+async function getAssets(user, contract, args) {
+  const { assets: assetsHashMap } = await rest.getState(user, contract, options);
+  const hashmap = permissionHashmapJs.bindAddress(user, assetsHashMap);
 
   const name = "values";
   const values = await hashmap.getArray(name);
@@ -165,14 +165,14 @@ async function getAssets(token, contract, args) {
     }
   };
 
-  const results = await rest.search(contractArgs, copyOfOptions);
+  const results = await rest.search(user, contractArgs, copyOfOptions);
   const converted = results.map(r => assetJs.fromBytes32(r));
 
   return converted;
 }
 
-async function getAsset(token, contract, sku) {
-  const found = await exists(token, contract, sku);
+async function getAsset(user, contract, sku) {
+  const found = await exists(user, contract, sku);
 
   if (!found) {
     throw new rest.RestError(RestStatus.NOT_FOUND, `SKU ${sku} not found`);
@@ -184,7 +184,7 @@ async function getAsset(token, contract, sku) {
     args: util.usc({ sku })
   };
 
-  const address = await rest.call(token, callArgs, options);
+  const address = await rest.call(user, callArgs, options);
 
   const contractArgs = {
     name: assetJs.contractName
@@ -197,7 +197,7 @@ async function getAsset(token, contract, sku) {
     }
   };
 
-  const result = await rest.search(contractArgs, copyOfOptions);
+  const result = await rest.search(user, contractArgs, copyOfOptions);
 
   if (result.length != 1) {
     throw new rest.RestError(
@@ -211,8 +211,8 @@ async function getAsset(token, contract, sku) {
   return converted;
 }
 
-async function getAssetHistory(token, contract, sku) {
-  const found = await exists(token, contract, sku);
+async function getAssetHistory(user, contract, sku) {
+  const found = await exists(user, contract, sku);
 
   if (!found) {
     throw new rest.RestError(restStatus.NOT_FOUND, `SKU ${sku} not found`);
@@ -224,7 +224,7 @@ async function getAssetHistory(token, contract, sku) {
     args: util.usc({ sku })
   };
 
-  const address = await rest.call(token, callArgs, options);
+  const address = await rest.call(user, callArgs, options);
 
   const contractArgs = {
     name: `history@${assetJs.contractName}`
@@ -237,11 +237,11 @@ async function getAssetHistory(token, contract, sku) {
     }
   };
 
-  const history = await rest.search(contractArgs, copyOfOptions);
+  const history = await rest.search(user, contractArgs, copyOfOptions);
   return history.map(h => assetJs.fromBytes32(h));
 }
 
-async function transferOwnership(token, contract, args) {
+async function transferOwnership(user, contract, args) {
   const callArgs = {
     contract,
     method: "transferOwnership",
@@ -249,7 +249,7 @@ async function transferOwnership(token, contract, args) {
   };
 
   const [restStatus, assetError, searchCounter, newState] = await rest.call(
-    token,
+    user,
     callArgs,
     options
   );
@@ -260,7 +260,7 @@ async function transferOwnership(token, contract, args) {
       args
     });
 
-  await assetJs.waitForRequiredUpdate(args.sku, searchCounter);
+  await assetJs.waitForRequiredUpdate(user, args.sku, searchCounter);
 
   return newState;
 }

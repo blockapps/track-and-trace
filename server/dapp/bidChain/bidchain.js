@@ -12,8 +12,8 @@ const enode = `enode://${publicKey}@${localIp}:${port}`
 
 const options = { config };
 
-async function createChain(token, assetOwner, regulatorAddress) {
-  const getKeyResponse = await rest.getKey(token, options);
+async function createChain(user, assetOwner, regulatorAddress) {
+  const getKeyResponse = await rest.getKey(user, options);
 
   const chainArgs = {
     label: `bid_${getKeyResponse}_${assetOwner}`,
@@ -59,24 +59,24 @@ async function createChain(token, assetOwner, regulatorAddress) {
     }
   }
 
-  const chain = await rest.createChain(chainArgs, contractArgs, copyOfOptions)
+  const chain = await rest.createChain(user, chainArgs, contractArgs, copyOfOptions)
   // createChain returns chainId. we need to use as object { chainId: chain }. So that we can bind other methods as well.
-  return bind(token, { chainId: chain });
+  return bind(user, { chainId: chain });
 }
 
-function bind(token, contract) {
+function bind(user, contract) {
   contract.addMember = async function (member) {
-    return await addMember(token, contract, member)
+    return await addMember(user, contract, member)
   }
 
   contract.removeMember = async function (member) {
-    return await removeMember(token, contract, member)
+    return await removeMember(user, contract, member)
   }
 
   return contract;
 }
 
-async function addMember(token, contract, member, chainId) {
+async function addMember(user, contract, member, chainId) {
   const args = {
     member,
     enode
@@ -94,7 +94,7 @@ async function addMember(token, contract, member, chainId) {
   }
 
   const result = await rest.call(
-    token,
+    user,
     callArgs,
     copyOfOptions
   );
@@ -102,7 +102,7 @@ async function addMember(token, contract, member, chainId) {
   return result
 }
 
-async function removeMember(token, contract, member, chainId) {
+async function removeMember(user, contract, member, chainId) {
   const args = {
     member
   }
@@ -119,7 +119,7 @@ async function removeMember(token, contract, member, chainId) {
   }
   
   const result = await rest.call(
-    token,
+    user,
     callArgs,
     copyOfOptions
   );
@@ -127,14 +127,14 @@ async function removeMember(token, contract, member, chainId) {
   return result
 }
 
-async function getChainById(chainId) {
-  const chainInfo = await rest.getChain(chainId, options);
+async function getChainById(user, chainId) {
+  const chainInfo = await rest.getChain(user, chainId, options);
   return chainInfo;
 }
 
 // only return chains where current user is a member
-async function getChains(token, chainIds = []) {
-  const keyResponse = await rest.getKey(token, options);
+async function getChains(user, chainIds = []) {
+  const keyResponse = await rest.getKey(user, options);
   let chains;
 
   /*
@@ -143,7 +143,7 @@ async function getChains(token, chainIds = []) {
     TODO: Remove Try and catch once STRATO-1304 is done
   */
   try {
-    chains = await rest.getChains(chainIds, options);
+    chains = await rest.getChains(user, chainIds, options);
   } catch (e) {
     if (e.response.status === 500) {
       chains = [];

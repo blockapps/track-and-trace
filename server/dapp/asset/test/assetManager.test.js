@@ -80,10 +80,9 @@ describe('Asset Manager Tests', function () {
 
   it('Create Asset -- unauthorized', async function () {
     const assetArgs = factory.getAssetArgs();
-
     await assert.restStatus(async function () {
-      await distributorAssetManagerContract.createAsset(assetArgs);
-    }, RestStatus.UNAUTHORIZED, /"method":"createAsset"/, AssetError.NULL)
+      await distributorAssetManagerContract.createAsset(assetArgs)
+    }, RestStatus.UNAUTHORIZED, /"createAsset"/, AssetError.NULL)
   });
 
   it('Create Asset', async function () {
@@ -103,7 +102,7 @@ describe('Asset Manager Tests', function () {
 
     await assert.restStatus(async function () {
       await manufacturerAssetManagerContract.createAsset(assetArgs);
-    }, RestStatus.BAD_REQUEST, /"method":"createAsset"/, AssetError.SKU_EMPTY)
+    }, RestStatus.BAD_REQUEST, /"createAsset"/, AssetError.SKU_EMPTY)
   });
 
   it('Create Asset -- already exists', async function () {
@@ -112,7 +111,7 @@ describe('Asset Manager Tests', function () {
 
     await assert.restStatus(async function () {
       await manufacturerAssetManagerContract.createAsset(assetArgs);
-    }, RestStatus.BAD_REQUEST, /"method":"createAsset"/, AssetError.SKU_EXISTS)
+    }, RestStatus.BAD_REQUEST, /"createAsset"/, AssetError.SKU_EXISTS)
   });
 
   it('Handle Asset Event', async function () {
@@ -148,7 +147,7 @@ describe('Asset Manager Tests', function () {
 
     await assert.restStatus(async function () {
       await manufacturerAssetManagerContract.handleAssetEvent(handleAssetEventArgs);
-    }, RestStatus.BAD_REQUEST, /"method":"handleAssetEvent"/, AssetError.NULL)
+    }, RestStatus.BAD_REQUEST, /"handleAssetEvent"/, AssetError.NULL)
 
   });
 });

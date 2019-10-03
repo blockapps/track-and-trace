@@ -7,7 +7,7 @@
   "author": "BlockApps Inc.",
   "license": "MIT",
   "dependencies": {
-    "blockapps-rest": "alpha",
+    "blockapps-rest": "^7.4.3",
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
     "cookie-parser": "^1.4.3",
@@ -38,11 +38,11 @@
     "test": "yarn test:asset && yarn test:bidChain && yarn test:bid && yarn test:permissions && yarn test:e2e"
   },
   "devDependencies": {
-    "chai-http": "^4.2.1",
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.4.0",
     "@babel/node": "^7.2.2",
     "@babel/preset-env": "^7.4.2",
-    "@babel/register": "^7.4.0"
+    "@babel/register": "^7.4.0",
+    "chai-http": "^4.2.1"
   }
 }

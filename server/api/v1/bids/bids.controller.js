@@ -83,7 +83,7 @@ class BidsController {
         // 1 refers to ACCEPT
         case BidEvent.ACCEPT:
           const bid = await bidContract.getBid();
-          const asset = await assetJs.getAssetByAddress(bid.asset);
+          const asset = await assetJs.getAssetByAddress(accessToken, bid.asset);
           if (!asset) {
             throw new rest.RestError(
               RestStatus.BAD_REQUEST,

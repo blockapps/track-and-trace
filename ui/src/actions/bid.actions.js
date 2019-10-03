@@ -51,13 +51,14 @@ export const getBidsFailure = () => {
   };
 };
 
-export const bidEventRequest = (payload, sku, BID_EVENT, BID_STATE) => {
+export const bidEventRequest = (payload, sku, BID_EVENT, BID_STATE, assetAddress) => {
   return {
     type: BID_EVENT_REQUEST,
     payload,
     sku,
     BID_EVENT,
-    BID_STATE
+    BID_STATE,
+    assetAddress
   };
 };
 

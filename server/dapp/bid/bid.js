@@ -15,14 +15,14 @@ import { equal } from "assert";
 const options = { config };
 
 async function createBid(
-  token,
+  user,
   assetAddress,
   ownerAddress,
   bidValue,
   regulatorAddress
 ) {
   const { chainId } = await bidChainJs.createChain(
-    token,
+    user,
     ownerAddress,
     regulatorAddress
   );
@@ -33,7 +33,7 @@ async function createBid(
 
   // TODO: prevent bid from getting created if the asset is not in BIDS_REQUESTED state
 
-  const bid = await uploadContract(token, chainId, {
+  const bid = await uploadContract(user, chainId, {
     asset: assetAddress,
     assetOwner: ownerAddress,
     value: bidValue
@@ -55,11 +55,11 @@ async function createBid(
     }
   };
 
-  const results = await rest.searchUntil(contract, predicate, copyOfOptions);
+  const results = await rest.searchUntil(user, contract, predicate, copyOfOptions);
   return results[0];
 }
 
-async function uploadContract(token, chainId, args) {
+async function uploadContract(user, chainId, args) {
   const contractArgs = {
     name: contractName,
     source: await importer.combine(contractFilename),
@@ -72,26 +72,26 @@ async function uploadContract(token, chainId, args) {
   };
 
   const contract = await rest.createContract(
-    token,
+    user,
     contractArgs,
     copyOfOptions
   );
-  return bind(token, chainId, contract);
+  return bind(user, chainId, contract);
 }
 
-function bind(token, chainId, contract) {
+function bind(user, chainId, contract) {
   contract.handleBidEvent = async function(bidEvent) {
-    return await handleBidEvent(token, chainId, contract, bidEvent);
+    return await handleBidEvent(user, chainId, contract, bidEvent);
   };
 
   contract.getBid = async function() {
-    return await getBid(chainId, contract.address);
+    return await getBid(user, chainId, contract.address);
   };
 
   return contract;
 }
 
-async function handleBidEvent(token, chainId, contract, bidEvent) {
+async function handleBidEvent(user, chainId, contract, bidEvent) {
   const args = {
     bidEvent
   };
@@ -107,7 +107,7 @@ async function handleBidEvent(token, chainId, contract, bidEvent) {
     chainIds: [chainId]
   };
   const [restStatus, newState] = await rest.call(
-    token,
+    user,
     callArgs,
     copyOfOptions
   );
@@ -121,6 +121,7 @@ async function handleBidEvent(token, chainId, contract, bidEvent) {
 
   // make sure state changes are persisted
   await rest.searchUntil(
+    user,
     contract,
     r => {
       return r && r.length > 0;
@@ -138,7 +139,7 @@ async function handleBidEvent(token, chainId, contract, bidEvent) {
   return newState;
 }
 
-async function getBid(chainId, address) {
+async function getBid(user, chainId, address) {
   const contract = {
     name: contractName
   };
@@ -150,13 +151,13 @@ async function getBid(chainId, address) {
     }
   };
 
-  const results = await rest.search(contract, copyOfOptions);
+  const results = await rest.search(user, contract, copyOfOptions);
   if (results.length === 0) return undefined;
   return results[0];
 }
 
-async function getBids(token, searchParams) {
-  const chains = await bidChainJs.getChains(token);
+async function getBids(user, searchParams) {
+  const chains = await bidChainJs.getChains(user);
 
   const query = {
     ...searchParams,
@@ -175,12 +176,12 @@ async function getBids(token, searchParams) {
     ...options,
     query
   };
-  const results = await rest.searchUntil(contract, predicate, copyOfOptions);
+  const results = await rest.searchUntil(user, contract, predicate, copyOfOptions);
   return results;
 }
 
-async function getBidsHistory(token, assetAddress) {
-  const chains = await bidChainJs.getChains(token);
+async function getBidsHistory(user, assetAddress) {
+  const chains = await bidChainJs.getChains(user);
 
   if (chains.length === 0) {
     return [];
@@ -200,7 +201,7 @@ async function getBidsHistory(token, assetAddress) {
     query
   };
 
-  const results = await rest.search(contract, copyOfOptions);
+  const results = await rest.search(user, contract, copyOfOptions);
   return results;
 }
 

@@ -9,8 +9,8 @@ const contractFilename = `${process.cwd()}/${
 
 const options = { config };
 
-async function uploadContract(token, ttPermissionManagerContract, args) {
-  const getKeyResponse = await rest.getKey(token, options);
+async function uploadContract(user, ttPermissionManagerContract, args) {
+  const getKeyResponse = await rest.getKey(user, options);
 
   const contractArgs = Object.assign({}, toBytes32(args), {
     ttPermissionManager: ttPermissionManagerContract.address,
@@ -23,29 +23,29 @@ async function uploadContract(token, ttPermissionManagerContract, args) {
     args: util.usc(contractArgs)
   };
 
-  const contract = await rest.createContract(token, contractArgs1, options);
+  const contract = await rest.createContract(user, contractArgs1, options);
   contract.src = "removed";
 
-  return bind(token, contract);
+  return bind(user, contract);
 }
 
-function bind(token, contract) {
+function bind(user, contract) {
   contract.getState = async function() {
-    return await rest.getState(contract, options);
+    return await rest.getState(user, contract, options);
   };
 
   return contract;
 }
 
-function bindAddress(token, address) {
+function bindAddress(user, address) {
   let contract = {
     name: contractName,
     address
   };
-  return bind(token, contract);
+  return bind(user, contract);
 }
 
-async function waitForRequiredUpdate(sku, searchCounter) {
+async function waitForRequiredUpdate(user, sku, searchCounter) {
   function predicate(response) {
     if (response.length) return response;
   }
@@ -62,7 +62,7 @@ async function waitForRequiredUpdate(sku, searchCounter) {
     }
   };
 
-  const results = await rest.searchUntil(contract, predicate, copyOfOptions);
+  const results = await rest.searchUntil(user, contract, predicate, copyOfOptions);
   const asset = fromBytes32(results[0]);
 
   return asset;
@@ -86,7 +86,7 @@ function toBytes32(asset) {
   return converted;
 }
 
-async function getAssetByAddress(address) {
+async function getAssetByAddress(user, address) {
   const copyOfOptions = {
     ...options,
     query: {
@@ -96,7 +96,7 @@ async function getAssetByAddress(address) {
   const contract = {
     name: contractName
   };
-  const results = await rest.search(contract, copyOfOptions);
+  const results = await rest.search(user, contract, copyOfOptions);
   if (results.length === 0) return undefined;
   return results[0];
 }

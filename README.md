@@ -110,12 +110,12 @@ REACT_APP_URL=http://localhost yarn start
 
 ### Usernames for oauth server
 
-administrator@tt.app
-distributor@tt.app
-manufacturer@tt.app
-master@tt.app
-regulator@tt.app
-retailer@tt.app
+- administrator@tt.app
+- distributor@tt.app
+- manufacturer@tt.app
+- master@tt.app
+- regulator@tt.app
+- retailer@tt.app
 
 Password for all users is `1234`
 

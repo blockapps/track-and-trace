@@ -37,7 +37,6 @@ HTTP_PORT=8080 \
 ```
 git clone https://github.com/blockapps/track-and-trace.git
 cd track-and-trace
-git submodule update --init --recursive
 ```
 
 **NOTE:** *STRATO-1565_compatibilityWithOauth* this version of blockapps-sol will be used for new version
@@ -76,7 +75,6 @@ This will make the application use `server/config/mycustomconfig.config.yaml` co
 
 ```
 cd server
-git submodule update --init --recursive
 yarn build
 ```
 
@@ -110,12 +108,12 @@ REACT_APP_URL=http://localhost yarn start
 
 ### Usernames for oauth server
 
-administrator@tt.app
-distributor@tt.app
-manufacturer@tt.app
-master@tt.app
-regulator@tt.app
-retailer@tt.app
+- administrator@tt.app
+- distributor@tt.app
+- manufacturer@tt.app
+- master@tt.app
+- regulator@tt.app
+- retailer@tt.app
 
 Password for all users is `1234`
 

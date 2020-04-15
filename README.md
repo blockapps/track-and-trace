@@ -37,7 +37,6 @@ HTTP_PORT=8080 \
 ```
 git clone https://github.com/blockapps/track-and-trace.git
 cd track-and-trace
-git submodule update --init --recursive
 ```
 
 **NOTE:** *STRATO-1565_compatibilityWithOauth* this version of blockapps-sol will be used for new version
@@ -76,7 +75,6 @@ This will make the application use `server/config/mycustomconfig.config.yaml` co
 
 ```
 cd server
-git submodule update --init --recursive
 yarn build
 ```
 

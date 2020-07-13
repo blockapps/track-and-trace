@@ -14,8 +14,8 @@ Demo app that uses STRATO to track products through a supply chain using OAuth a
     - NODE_HOST=localhost:8080
     - OAUTH_ENABLED=true
     - OAUTH_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/public/.well-known/openid-configuration
-    - OAUTH_CLIENT_ID=<OAUTH_CLIENT_ID_HERE>
-    - OAUTH_CLIENT_SECRET=<OAUTH_CLIENT_SECRET_HERE>
+    - OAUTH_CLIENT_ID=public-dev
+    - OAUTH_CLIENT_SECRET=d93cde7e-5de1-4f59-80d2-31017c444f0c
    ```
 
 Example command to start STRATO with the correct parameters:
@@ -25,8 +25,8 @@ HTTP_PORT=8080 \
   NODE_HOST=localhost:8080 \
   OAUTH_ENABLED=true \
   OAUTH_DISCOVERY_URL=https://keycloak.blockapps.net/auth/realms/public/.well-known/openid-configuration \
-  OAUTH_CLIENT_ID=<OAUTH_CLIENT_ID_HERE> \
-  OAUTH_CLIENT_SECRET=<OAUTH_CLIENT_SECRET_HERE> \
+  OAUTH_CLIENT_ID=public-dev \
+  OAUTH_CLIENT_SECRET=d93cde7e-5de1-4f59-80d2-31017c444f0c \
   ./strato --single
 ```
 

@@ -11,8 +11,8 @@ RUN apt-get update && \
 
 # ui specific steps:
 
-HEALTHCHECK --interval=2s --timeout=1s --start-period=300s \
-  CMD lsof -i -P -n  | grep "LISTEN" | grep ":5000 " || \
+HEALTHCHECK --interval=3s --timeout=3s --start-period=300s \
+  CMD lsof -i :5000 || \
         exit 1
 
 RUN mkdir -p /usr/src/track-and-trace-ui

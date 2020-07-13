@@ -15,8 +15,8 @@ nodes:
       appTokenCookieName: "tt_session"
       scope: "email openid"
       appTokenCookieMaxAge: 7776000000 # 90 days: 90 * 24 * 60 * 60 * 1000
-      clientId: "tt-localhost"
-      clientSecret: "10352ea6-f286-47cf-936c-2cb7ce6c1c39"
-      openIdDiscoveryUrl: "https://keycloak.blockapps.net/auth/realms/track-and-trace/.well-known/openid-configuration"
+      clientId: "public-dev"
+      clientSecret: "d93cde7e-5de1-4f59-80d2-31017c444f0c"
+      openIdDiscoveryUrl: "https://keycloak.blockapps.net/auth/realms/public/.well-known/openid-configuration"
       redirectUri: "http://localhost/api/v1/authentication/callback"
       logoutRedirectUri: "http://localhost"

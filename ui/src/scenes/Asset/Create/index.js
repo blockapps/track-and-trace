@@ -13,9 +13,20 @@ import {
 import './Create.css'
 
 class CreateAssetModal extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      file: null
+    }
+  }
+
+  onFileLoad = (e) => {
+    this.setState({ files: e.target.files[0] });
+  }
 
   submit = (asset) => {
     const { specs } = asset;
+    const { file } = this.state;
 
     const params = {
       sku: asset.sku,
@@ -23,7 +34,8 @@ class CreateAssetModal extends Component {
       name: asset.name,
       price: asset.price,
       keys: specs.map(s => s.key),
-      values: specs.map(s => s.value)
+      values: specs.map(s => s.value),
+      file
     }
 
     this.props.createAsset(params);
@@ -70,10 +82,13 @@ class CreateAssetModal extends Component {
             </div>
           </div>
         )}
-        <div>
+        {/* <div>
           <Button variant="contained" color="primary" onClick={() => fields.push({})}>
             add spec
           </Button>
+        </div> */}
+        <div className="create-asset">
+          <input type="file" onChange={this.onFileLoad} />
         </div>
       </div>
     )

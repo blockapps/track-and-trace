@@ -2,7 +2,7 @@ import { rest, util, importer } from 'blockapps-rest';
 import ip from 'ip';
 import config from '../../load.config';
 
-const contractName = 'BidChain';
+const contractName = 'BidGovernance';
 const contractFileName = `${process.cwd()}/${config.dappPath}/bidChain/contracts/BidChain.sol`;
 const balance = 100000000000000000000;
 const publicKey = '6d8a80d14311c39f35f516fa664deaaaa13e85b2f7493f37f6144d86991ec012937307647bd3b9a82abe2974e1407241d54947bbb39763a4cac9f77166ad92a0';

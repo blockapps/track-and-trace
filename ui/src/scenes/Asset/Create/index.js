@@ -25,7 +25,7 @@ class CreateAssetModal extends Component {
   }
 
   submit = (asset) => {
-    const { specs } = asset;
+    // TODO: add validation
     const { file } = this.state;
 
     const params = {
@@ -33,8 +33,6 @@ class CreateAssetModal extends Component {
       description: asset.description,
       name: asset.name,
       price: asset.price,
-      keys: specs.map(s => s.key),
-      values: specs.map(s => s.value),
       file
     }
 
@@ -48,48 +46,8 @@ class CreateAssetModal extends Component {
     }
 
     return (
-      <div>
-        {/* {fields.map((user, index) =>
-          <div key={index}>
-            <div>
-              <Field
-                id={`${user}.key`}
-                name={`${user}.key`}
-                type="text"
-                label="Key"
-                margin="normal"
-                className="spec-field"
-                component={ReduxedTextField}
-                required
-              />
-              <Field
-                id={`${user}.value`}
-                name={`${user}.value`}
-                type="text"
-                margin="normal"
-                label="Value"
-                component={ReduxedTextField}
-                required
-              />
-              <span className="spec-delete">
-                {
-                  index ?
-                    <IconButton aria-label="Delete" className="remove-button" onClick={() => fields.remove(index)}>
-                      <Icon color="action">delete</Icon>
-                    </IconButton> : ''
-                }
-              </span>
-            </div>
-          </div>
-        )} */}
-        {/* <div>
-          <Button variant="contained" color="primary" onClick={() => fields.push({})}>
-            add spec
-          </Button>
-        </div> */}
-        <div className="create-asset">
-          <input type="file" onChange={this.onFileLoad} />
-        </div>
+      <div className="create-asset">
+        <input type="file" onChange={this.onFileLoad} />
       </div>
     )
   }

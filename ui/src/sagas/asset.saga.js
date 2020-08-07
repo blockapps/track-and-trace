@@ -66,15 +66,17 @@ function handleEventApiCall(payload) {
 }
 
 function createAssetApiCall(asset) {
+
+  let formData = new FormData();
+  formData.append("sku", asset.sku);
+  formData.append("description", asset.description);
+  formData.append("name", asset.name);
+  formData.append("price", asset.price);
+  formData.append("file", asset.file);
+
   return fetch(createAssetUrl, {
     method: HTTP_METHODS.POST,
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      asset
-    })
+    body: formData
   })
     .then(function(response) {
       return response.json();

@@ -49,7 +49,7 @@ class CreateAssetModal extends Component {
 
     return (
       <div>
-        {fields.map((user, index) =>
+        {/* {fields.map((user, index) =>
           <div key={index}>
             <div>
               <Field
@@ -81,7 +81,7 @@ class CreateAssetModal extends Component {
               </span>
             </div>
           </div>
-        )}
+        )} */}
         {/* <div>
           <Button variant="contained" color="primary" onClick={() => fields.push({})}>
             add spec

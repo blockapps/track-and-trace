@@ -21,7 +21,7 @@ class CreateAssetModal extends Component {
   }
 
   onFileLoad = (e) => {
-    this.setState({ files: e.target.files[0] });
+    this.setState({ file: e.target.files[0] });
   }
 
   submit = (asset) => {

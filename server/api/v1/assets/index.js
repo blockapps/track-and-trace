@@ -18,9 +18,13 @@ const fileUploader = multer({ storage: storage });
 
 const multerMiddleware = (req, res, next) => {
   fileUploader.single("file")(req, res, async (error) => {
-    const parsedData = await csv().fromFile(req.file.path);
-    // TODO: please continue from here
-    console.log("-----------------------", parsedData)
+
+    if (!req.file) {
+      rest.response.status400(res, "Missing file");
+    }
+    
+    const parsedCsv = await csv().fromFile(req.file.path);
+    req.parsedCsv = parsedCsv;
     next();
   });
 };

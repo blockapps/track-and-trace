@@ -56,8 +56,10 @@ class AssetsController {
 
   // TODO: throw errors correctly from dapp
   static async createAsset(req, res, next) {
-    const { app, accessToken, body } = req;
+    const { app, accessToken, body, parsedCsv } = req;
+    console.log("-------------------------------", parsedCsv)
     const args = { ...body.asset };
+
 
     if (
       !Array.isArray(args.keys)

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Icon, IconButton } from '@material-ui/core';
-import { Field, reduxForm, Form, FieldArray } from 'redux-form'
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
+import { Field, reduxForm, Form } from 'redux-form'
 import ReduxedTextField from "../../../components/ReduxedTextField";
 import {
   openCreateAssetOverlay,
@@ -25,7 +25,6 @@ class CreateAssetModal extends Component {
   }
 
   submit = (asset) => {
-    // TODO: add validation
     const { file } = this.state;
 
     const params = {
@@ -37,19 +36,6 @@ class CreateAssetModal extends Component {
     }
 
     this.props.createAsset(params);
-  }
-
-  renderSpec = ({ fields }) => {
-
-    if (!fields.length) {
-      fields.push({});
-    }
-
-    return (
-      <div className="create-asset">
-        <input type="file" onChange={this.onFileLoad} />
-      </div>
-    )
   }
 
   componentDidUpdate(prevProps) {
@@ -118,7 +104,9 @@ class CreateAssetModal extends Component {
                   <div>error</div>
                 )
               }
-              <FieldArray name="specs" component={this.renderSpec} />
+              <div className="create-asset">
+                <input type="file" onChange={this.onFileLoad} accept=".csv" required />
+              </div>
             </DialogContent>
             <DialogActions>
               <Button onClick={closeCreateAssetOverlay} color="primary"> Cancel </Button>

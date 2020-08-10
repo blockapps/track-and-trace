@@ -56,19 +56,19 @@ class AssetsController {
 
   // TODO: throw errors correctly from dapp
   static async createAsset(req, res, next) {
-    const { app, accessToken, body, parsedCsv } = req;
-    console.log("-------------------------------", parsedCsv)
-    const args = { ...body.asset };
+    const { app, accessToken, parsedCsv } = req;
 
+    // first row which is used as a keys in the csv file
+    const keys = Object.keys(parsedCsv[0]);
+    const values = [];
 
-    if (
-      !Array.isArray(args.keys)
-      || !Array.isArray(args.values)
-      || args.keys.length !== args.values.length
-    ) {
-      rest.response.status400(res, 'Missing spec or bad spec format');
-      return next();
+    for (let i=0; i<keys.length; i++) {
+      // second row used as a values of the csv file
+      const value = parsedCsv[0];
+      values.push(value[keys[i]])
     }
+
+    const args = { ...req.body, keys, values };
 
     try {
       const deploy = app.get('deploy');

@@ -4,6 +4,7 @@ const router = express.Router();
 import AssetsController from "./assets.controller";
 import path from "path";
 import csv from "csvtojson";
+import { rest } from 'blockapps-rest';
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -24,8 +25,14 @@ const multerMiddleware = (req, res, next) => {
     }
     
     const parsedCsv = await csv().fromFile(req.file.path);
+
+    if (!parsedCsv.length) {
+      rest.response.status400(res, 'Uploaded file should not be empty');
+      return next();
+    }
+
     req.parsedCsv = parsedCsv;
-    next();
+    return next();
   });
 };
 router.get("/", AssetsController.getAssets);

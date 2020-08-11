@@ -2,8 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
-import { Field, reduxForm, Form } from 'redux-form'
-import ReduxedTextField from "../../../components/ReduxedTextField";
+import { reduxForm, Form } from 'redux-form'
 import {
   openCreateAssetOverlay,
   closeCreateAssetOverlay,
@@ -27,14 +26,7 @@ class CreateAssetModal extends Component {
   submit = (asset) => {
     const { file } = this.state;
 
-    const params = {
-      sku: asset.sku,
-      description: asset.description,
-      name: asset.name,
-      price: asset.price,
-      file
-    }
-
+    const params = { file };
     this.props.createAsset(params);
   }
 
@@ -53,7 +45,7 @@ class CreateAssetModal extends Component {
           openCreateAssetOverlay();
           this.props.reset();
         }}>
-          Create asset
+          Import assets
         </Button>
         <Dialog
           open={isOpen}
@@ -61,56 +53,15 @@ class CreateAssetModal extends Component {
           aria-labelledby="form-dialog-title"
         >
           <Form onSubmit={handleSubmit(this.submit)}>
-            <DialogTitle id="form-dialog-title">Create Asset</DialogTitle>
+            <DialogTitle id="form-dialog-title">Import assets</DialogTitle>
             <DialogContent>
-              <Field
-                name="sku"
-                type="text"
-                placeholder="Stock Keeping Unit"
-                margin="normal"
-                component={ReduxedTextField}
-                fullWidth
-                required
-              />
-              <Field
-                name="name"
-                type="text"
-                placeholder="Name"
-                margin="normal"
-                component={ReduxedTextField}
-                fullWidth
-                required
-              />
-              <Field
-                name="description"
-                type="text"
-                placeholder="Description"
-                margin="normal"
-                component={ReduxedTextField}
-                fullWidth
-                required
-              />
-              <Field
-                name="price"
-                type="text"
-                placeholder="Price"
-                margin="normal"
-                component={ReduxedTextField}
-                fullWidth
-                required
-              />
-              {
-                this.props.error && (
-                  <div>error</div>
-                )
-              }
               <div className="create-asset">
                 <input type="file" onChange={this.onFileLoad} accept=".csv" required />
               </div>
             </DialogContent>
             <DialogActions>
               <Button onClick={closeCreateAssetOverlay} color="primary"> Cancel </Button>
-              <Button type="submit" color="primary"> Create </Button>
+              <Button type="submit" color="primary"> Import </Button>
             </DialogActions>
           </Form>
         </Dialog>

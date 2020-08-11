@@ -135,7 +135,7 @@ function* createAsset(action) {
     if (response.success) {
       yield put(createAssetSuccess(response.data));
       yield put(
-        setUserMessage(`Asset '${response.data.name}' has been created`, true)
+        setUserMessage(`'${response.data.length}  ${response.data.length > 1 ? 'assets' : 'asset'}' has been created`, true)
       );
     } else {
       yield put(createAssetFailure(response.error));

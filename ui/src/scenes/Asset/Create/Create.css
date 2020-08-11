@@ -13,3 +13,8 @@
 .create-asset {
   margin-top: 20px;
 }
+
+.select-mode-dropdown {
+  width: 100%;
+  margin-bottom: 10px;
+}

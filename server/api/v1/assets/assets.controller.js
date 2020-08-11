@@ -56,12 +56,28 @@ class AssetsController {
 
   // TODO: throw errors correctly from dapp
   static async createAsset(req, res, next) {
-    const { app, accessToken, parsedCsv } = req;
+    const { app, accessToken, body, parsedCsv, query } = req;
 
-    // TODO: validate name, description and price should be unique
     try {
       const deploy = app.get('deploy');
       const dapp = await dappJs.bind(accessToken, deploy.contract);
+
+      if (query.createAssetMode === 'USING_FIELDS') {
+        const args = { ...body.asset };
+
+        if (
+          !Array.isArray(args.keys)
+          || !Array.isArray(args.values)
+          || args.keys.length !== args.values.length
+        ) {
+          rest.response.status400(res, 'Missing spec or bad spec format');
+          return next();
+        }
+
+        const asset = await dapp.createAsset(args);
+        rest.response.status200(res, asset);
+      }
+
       const assets = [];
 
       // first row which is used as a keys in the csv file

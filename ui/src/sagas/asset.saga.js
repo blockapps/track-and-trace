@@ -19,6 +19,7 @@ import {
   getAssetDetail
 } from "../actions/asset.actions";
 import { setUserMessage } from "../actions/user-message.actions";
+import { CREATE_ASSET_MODES } from "../constants";
 
 const assetsUrl = `${apiUrl}/assets`;
 const createAssetUrl = `${apiUrl}/assets`;
@@ -57,33 +58,54 @@ function handleEventApiCall(payload) {
     },
     body: JSON.stringify(payload)
   })
-    .then(function(response) {
+    .then(function (response) {
       return response.json();
     })
-    .catch(function(error) {
+    .catch(function (error) {
       throw error;
     });
 }
 
-function createAssetApiCall(asset) {
+function createAssetApiCall(asset, createAssetMode) {
 
-  let formData = new FormData();
-  formData.append("sku", asset.sku);
-  formData.append("description", asset.description);
-  formData.append("name", asset.name);
-  formData.append("price", asset.price);
-  formData.append("file", asset.file);
-
-  return fetch(createAssetUrl, {
-    method: HTTP_METHODS.POST,
-    body: formData
-  })
-    .then(function(response) {
-      return response.json();
+  if (createAssetMode === CREATE_ASSET_MODES.USING_FIELDS) {
+    return fetch(`${createAssetUrl}?createAssetMode=${CREATE_ASSET_MODES.USING_FIELDS}`, {
+      method: HTTP_METHODS.POST,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        asset
+      })
     })
-    .catch(function(error) {
-      throw error;
-    });
+      .then(function (response) {
+        return response.json();
+      })
+      .catch(function (error) {
+        throw error;
+      });
+  } else {
+
+    let formData = new FormData();
+    formData.append("sku", asset.sku);
+    formData.append("description", asset.description);
+    formData.append("name", asset.name);
+    formData.append("price", asset.price);
+    formData.append("file", asset.file);
+
+    return fetch(`${createAssetUrl}?createAssetMode=${CREATE_ASSET_MODES.USING_CSV}`, {
+      method: HTTP_METHODS.POST,
+      body: formData
+    })
+      .then(function (response) {
+        return response.json();
+      })
+      .catch(function (error) {
+        throw error;
+      });
+
+  }
 }
 
 function changeOwnerApiCall(payload) {
@@ -95,10 +117,10 @@ function changeOwnerApiCall(payload) {
     },
     body: JSON.stringify(payload)
   })
-    .then(function(response) {
+    .then(function (response) {
       return response.json();
     })
-    .catch(function(error) {
+    .catch(function (error) {
       throw error;
     });
 }
@@ -131,12 +153,13 @@ function* getAssets() {
 
 function* createAsset(action) {
   try {
-    const response = yield call(createAssetApiCall, action.asset);
+    const response = yield call(createAssetApiCall, action.asset, action.createAssetMode);
     if (response.success) {
       yield put(createAssetSuccess(response.data));
-      yield put(
-        setUserMessage(`Asset '${response.data.name}' has been created`, true)
-      );
+      const message = action.createAssetMode === CREATE_ASSET_MODES.USING_FIELDS ?
+        `Asset '${response.data.name}' has been created` :
+        `'${response.data.length}  ${response.data.length > 1 ? 'assets' : 'asset'}' has been created`
+      yield put(setUserMessage(message, true));
     } else {
       yield put(createAssetFailure(response.error));
       // FIXME: if anything that could be better

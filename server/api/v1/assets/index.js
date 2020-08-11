@@ -19,6 +19,7 @@ const fileUploader = multer({ storage: storage });
 
 const multerMiddleware = (req, res, next) => {
   fileUploader.single("file")(req, res, async (error) => {
+    if (req.query.createAssetMode === 'USING_FIELDS') return next();
 
     if (!req.file) {
       rest.response.status400(res, "Missing file");

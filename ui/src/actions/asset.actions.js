@@ -73,10 +73,11 @@ export const closeCreateAssetOverlay = function () {
   }
 }
 
-export const createAsset = function (asset) {
+export const createAsset = function (asset, createAssetMode) {
   return {
     type: CREATE_ASSET_REQUEST,
-    asset
+    asset,
+    createAssetMode
   }
 }
 

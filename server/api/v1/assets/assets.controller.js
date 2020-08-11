@@ -1,4 +1,4 @@
-import { rest } from 'blockapps-rest';
+import { rest, util } from 'blockapps-rest';
 
 import dappJs from '../../../dapp/dapp/dapp';
 import bidJs from '../../../dapp/bid/bid';
@@ -56,25 +56,53 @@ class AssetsController {
 
   // TODO: throw errors correctly from dapp
   static async createAsset(req, res, next) {
-    const { app, accessToken, parsedCsv } = req;
-
-    // first row which is used as a keys in the csv file
-    const keys = Object.keys(parsedCsv[0]);
-    const values = [];
-
-    for (let i=0; i<keys.length; i++) {
-      // second row used as a values of the csv file
-      const value = parsedCsv[0];
-      values.push(value[keys[i]])
-    }
-
-    const args = { ...req.body, keys, values };
+    const { app, accessToken, body, parsedCsv, query } = req;
 
     try {
       const deploy = app.get('deploy');
       const dapp = await dappJs.bind(accessToken, deploy.contract);
-      const asset = await dapp.createAsset(args);
-      rest.response.status200(res, asset);
+
+      if (query.createAssetMode === 'USING_FIELDS') {
+        const args = { ...body.asset };
+
+        if (
+          !Array.isArray(args.keys)
+          || !Array.isArray(args.values)
+          || args.keys.length !== args.values.length
+        ) {
+          rest.response.status400(res, 'Missing spec or bad spec format');
+          return next();
+        }
+
+        const asset = await dapp.createAsset(args);
+        rest.response.status200(res, asset);
+      }
+
+      const assets = [];
+
+      // first row which is used as a keys in the csv file
+      for (let i = 0; i < parsedCsv.length; i++) {
+        const row = parsedCsv[i];
+        const assetKeys = Object.keys(row);
+
+        // second row used as a values of the csv file
+        const args = { keys: [], values: [] };
+
+        for (let j = 0; j < assetKeys.length; j++) {
+          const key = assetKeys[j].toLowerCase();
+          if (key === 'name' || key === 'price' || key === 'description') {
+            args[assetKeys[j]] = row[assetKeys[j]]
+          } else {
+            args['keys'].push(assetKeys[j]);
+            args['values'].push(row[assetKeys[j]]);
+          }
+        }
+
+        const asset = await dapp.createAsset({ sku: util.iuid().toString(), ...args });
+        assets.push(asset);
+      }
+
+      rest.response.status200(res, assets);
     } catch (e) {
       next(e)
     }

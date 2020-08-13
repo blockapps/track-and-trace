@@ -16,10 +16,12 @@ import {
   CHANGE_OWNER_REQUEST,
   changeOwnerSuccess,
   changeOwnerFailure,
-  getAssetDetail
+  getAssetDetail,
+  IMPORT_ASSETS_REQUEST,
+  updateAssetImportCount,
+  importAssetsSuccess
 } from "../actions/asset.actions";
 import { setUserMessage } from "../actions/user-message.actions";
-import { CREATE_ASSET_MODES } from "../constants";
 
 const assetsUrl = `${apiUrl}/assets`;
 const createAssetUrl = `${apiUrl}/assets`;
@@ -58,54 +60,31 @@ function handleEventApiCall(payload) {
     },
     body: JSON.stringify(payload)
   })
-    .then(function (response) {
+    .then(function(response) {
       return response.json();
     })
-    .catch(function (error) {
+    .catch(function(error) {
       throw error;
     });
 }
 
-function createAssetApiCall(asset, createAssetMode) {
-
-  if (createAssetMode === CREATE_ASSET_MODES.USING_FIELDS) {
-    return fetch(`${createAssetUrl}?createAssetMode=${CREATE_ASSET_MODES.USING_FIELDS}`, {
-      method: HTTP_METHODS.POST,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        asset
-      })
+function createAssetApiCall(asset) {
+  return fetch(`${createAssetUrl}`, {
+    method: HTTP_METHODS.POST,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      asset
     })
-      .then(function (response) {
-        return response.json();
-      })
-      .catch(function (error) {
-        throw error;
-      });
-  } else {
-
-    let formData = new FormData();
-    formData.append("sku", asset.sku);
-    formData.append("description", asset.description);
-    formData.append("name", asset.name);
-    formData.append("price", asset.price);
-    formData.append("file", asset.file);
-
-    return fetch(`${createAssetUrl}?createAssetMode=${CREATE_ASSET_MODES.USING_CSV}`, {
-      method: HTTP_METHODS.POST,
-      body: formData
+  })
+    .then(function(response) {
+      return response.json();
     })
-      .then(function (response) {
-        return response.json();
-      })
-      .catch(function (error) {
-        throw error;
-      });
-
-  }
+    .catch(function(error) {
+      throw error;
+    });
 }
 
 function changeOwnerApiCall(payload) {
@@ -117,10 +96,10 @@ function changeOwnerApiCall(payload) {
     },
     body: JSON.stringify(payload)
   })
-    .then(function (response) {
+    .then(function(response) {
       return response.json();
     })
-    .catch(function (error) {
+    .catch(function(error) {
       throw error;
     });
 }
@@ -153,16 +132,15 @@ function* getAssets() {
 
 function* createAsset(action) {
   try {
-    const response = yield call(createAssetApiCall, action.asset, action.createAssetMode);
+    const response = yield call(createAssetApiCall, action.asset);
     if (response.success) {
       yield put(createAssetSuccess(response.data));
-      const message = action.createAssetMode === CREATE_ASSET_MODES.USING_FIELDS ?
-        `Asset '${response.data.name}' has been created` :
-        `'${response.data.length}  ${response.data.length > 1 ? 'assets' : 'asset'}' has been created`
+      const message = `Asset '${response.data.name}' has been created`;
       yield put(setUserMessage(message, true));
     } else {
       yield put(createAssetFailure(response.error));
       // FIXME: if anything that could be better
+
       if (typeof response.error === "string")
         yield put(setUserMessage(response.error));
       else yield put(setUserMessage("Unable to create asset"));
@@ -170,6 +148,21 @@ function* createAsset(action) {
   } catch (err) {
     yield put(createAssetFailure(err));
   }
+}
+
+function* importAssets(action) {
+  for (let i = 0; i < action.assets.length; i++) {
+    try {
+      const response = yield call(createAssetApiCall, action.assets[i]);
+      if (response.success) {
+        yield put(updateAssetImportCount(i + 1));
+      }
+    } catch (err) {
+      // do nothing
+    }
+  }
+  yield put(importAssetsSuccess());
+  yield put(setUserMessage(`Imported ${action.assets.length} records`, true));
 }
 
 function* assetEvent(action) {
@@ -209,4 +202,5 @@ export default function* watchAssets() {
   yield takeLatest(GET_ASSET_DETAIL_REQUEST, getAsset);
   yield takeLatest(ASSET_EVENT_REQUEST, assetEvent);
   yield takeLatest(CHANGE_OWNER_REQUEST, changeOwner);
+  yield takeLatest(IMPORT_ASSETS_REQUEST, importAssets);
 }

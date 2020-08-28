@@ -33,6 +33,7 @@
     "test:bid": "yarn mocha-babel dapp/bid/test -b",
     "test:bidChain": "yarn mocha-babel dapp/bidChain/test -b",
     "test:e2e": "yarn deploy && yarn mocha-babel test/v1  -b",
+    "test:load50assets": "yarn mocha-babel test/load/assets.load.test.js --batchSize 50 -b",
     "test:permissions": "yarn mocha-babel dapp/ttPermission/test/ttPermissionManager.test.js -b",
     "test": "yarn test:asset && yarn test:bidChain && yarn test:bid && yarn test:permissions && yarn test:e2e"
   },

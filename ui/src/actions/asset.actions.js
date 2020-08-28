@@ -21,24 +21,35 @@ export const IMPORT_ASSETS_REQUEST = "IMPORT_ASSETS_REQUEST";
 export const IMPORT_ASSETS_SUCCESS = "IMPORT_ASSETS_SUCCESS";
 export const IMPORT_ASSETS_FAILURE = "IMPORT_ASSETS_FAILURE";
 export const UPDATE_ASSET_IMPORT_COUNT = "UPDATE_ASSET_IMPORT_COUNT";
+export const ASSET_NEXT_PAGE = "ASSET_NEXT_PAGE";
 
-export const getAssets = () => {
+export const assetType = {
+  MINE: "MINE",
+  BIDDING: "BIDDING",
+  READ_ONLY: "READ_ONLY",
+};
+
+export const getAssets = (assetType, limit, offset, user, state) => {
   return {
-    type: GET_ASSETS_REQUEST
+    payload: { aType: assetType, limit, offset, user, state },
+    type: GET_ASSETS_REQUEST,
   };
 };
 
-export const getAssetsSuccess = assets => {
+export const getAssetsSuccess = (assets, assetType, limit, offset) => {
   return {
     type: GET_ASSETS_SUCCESS,
-    assets
+    assets,
+    assetType,
+    limit,
+    offset,
   };
 };
 
-export const getAssetsFailure = error => {
+export const getAssetsFailure = (error) => {
   return {
     type: GET_ASSETS_FAILURE,
-    error
+    error,
   };
 };
 
@@ -46,137 +57,137 @@ export const getAssetDetail = (sku, isDataUpdate) => {
   return {
     type: GET_ASSET_DETAIL_REQUEST,
     sku,
-    isDataUpdate
+    isDataUpdate,
   };
 };
 
-export const getAssetDetailSuccess = asset => {
+export const getAssetDetailSuccess = (asset) => {
   return {
     type: GET_ASSET_DETAIL_SUCCESS,
-    asset
+    asset,
   };
 };
 
-export const getAssetDetailFailure = error => {
+export const getAssetDetailFailure = (error) => {
   return {
     type: GET_ASSET_DETAIL_FAILURE,
-    error
+    error,
   };
 };
 
 export const openCreateAssetOverlay = function() {
   return {
     type: OPEN_CREATE_ASSET_OVERLAY,
-    isOpen: true
+    isOpen: true,
   };
 };
 
 export const closeCreateAssetOverlay = function() {
   return {
     type: CLOSE_CREATE_ASSET_OVERLAY,
-    isOpen: false
+    isOpen: false,
   };
 };
 
 export const openImportAssetsOverlay = function() {
   return {
     type: OPEN_IMPORT_ASSETS_OVERLAY,
-    isOpen: true
+    isOpen: true,
   };
 };
 
 export const closeImportAssetsOverlay = function() {
   return {
     type: CLOSE_IMPORT_ASSETS_OVERLAY,
-    isOpen: false
+    isOpen: false,
   };
 };
 
 export const createAsset = function(asset) {
   return {
     type: CREATE_ASSET_REQUEST,
-    asset
+    asset,
   };
 };
 
 export const createAssetSuccess = function() {
   return {
-    type: CREATE_ASSET_SUCCESS
+    type: CREATE_ASSET_SUCCESS,
   };
 };
 
 export const createAssetFailure = function(error) {
   return {
     type: CREATE_ASSET_FAILURE,
-    error
+    error,
   };
 };
 
 export const importAssets = function(assets) {
   return {
     type: IMPORT_ASSETS_REQUEST,
-    assets
+    assets,
   };
 };
 
 export const importAssetsSuccess = function() {
   return {
-    type: IMPORT_ASSETS_SUCCESS
+    type: IMPORT_ASSETS_SUCCESS,
   };
 };
 
 export const importAssetsFailure = function(error) {
   return {
     type: IMPORT_ASSETS_FAILURE,
-    error
+    error,
   };
 };
 
 export const assetEventRequest = function(payload) {
   return {
     type: ASSET_EVENT_REQUEST,
-    payload
+    payload,
   };
 };
 
 export const assetEventSuccess = function(newState) {
   return {
     type: ASSET_EVENT_SUCCESS,
-    newState
+    newState,
   };
 };
 
 export const assetEventFailure = function(error) {
   return {
     type: ASSET_EVENT_FAILURE,
-    error
+    error,
   };
 };
 
 export const changeOwner = function(payload) {
   return {
     type: CHANGE_OWNER_REQUEST,
-    payload
+    payload,
   };
 };
 
 export const changeOwnerSuccess = function(newState) {
   return {
     type: CHANGE_OWNER_SUCCESS,
-    newState
+    newState,
   };
 };
 
 export const changeOwnerFailure = function(error) {
   return {
     type: CHANGE_OWNER_FAILURE,
-    error
+    error,
   };
 };
 
 export const updateAssetImportCount = function(count) {
   return {
     type: UPDATE_ASSET_IMPORT_COUNT,
-    count
+    count,
   };
 };

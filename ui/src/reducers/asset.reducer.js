@@ -16,11 +16,26 @@ import {
   IMPORT_ASSETS_REQUEST,
   IMPORT_ASSETS_SUCCESS,
   IMPORT_ASSETS_FAILURE,
-  UPDATE_ASSET_IMPORT_COUNT
+  UPDATE_ASSET_IMPORT_COUNT,
+  assetType,
 } from "../actions/asset.actions";
 
 const initialState = {
-  assets: [],
+  readonlyAssets: {
+    assets: [],
+    limit: 5,
+    offset: 0,
+  },
+  myAssets: {
+    assets: [],
+    limit: 5,
+    offset: 0,
+  },
+  biddingAssets: {
+    assets: [],
+    limit: 5,
+    offset: 0,
+  },
   error: null,
   isAssetImportInProgress: false,
   assetsUploaded: 0,
@@ -28,11 +43,11 @@ const initialState = {
   isImportAssetsModalOpen: false,
   isChangeOwnerModalOpen: false,
   asset: {},
-  changedOwner: false
+  changedOwner: false,
 };
 
 const reducer = (state = initialState, action) => {
-  return producer(state, draft => {
+  return producer(state, (draft) => {
     switch (action.type) {
       case GET_ASSET_DETAIL_REQUEST:
         draft.asset = action.isDataUpdate ? {} : draft.asset;
@@ -75,7 +90,25 @@ const reducer = (state = initialState, action) => {
         draft.isImportAssetsModalOpen = true;
         break;
       case GET_ASSETS_SUCCESS:
-        draft.assets = action.assets;
+        switch (action.assetType) {
+          case assetType.MINE:
+            draft.myAssets.assets = action.assets;
+            draft.myAssets.limit = action.limit;
+            draft.myAssets.offset = action.offset;
+            break;
+          case assetType.BIDDING:
+            draft.biddingAssets.assets = action.assets;
+            draft.biddingAssets.limit = action.limit;
+            draft.biddingAssets.offset = action.offset;
+            break;
+          case assetType.READ_ONLY:
+            draft.readonlyAssets.assets = action.assets;
+            draft.readonlyAssets.limit = action.limit;
+            draft.readonlyAssets.offset = action.offset;
+            break;
+          default:
+            break;
+        }
         draft.error = null;
         break;
       case GET_ASSETS_FAILURE:

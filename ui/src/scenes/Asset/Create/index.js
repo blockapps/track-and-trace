@@ -35,7 +35,8 @@ class CreateAssetModal extends Component {
     super(props);
     this.state = {
       file: null,
-      assetData: {}
+      assetData: {},
+      isValidated: true,
     };
   }
 
@@ -49,9 +50,11 @@ class CreateAssetModal extends Component {
         );
         return;
       }
+      this.setState({ isValidated: true });
       const reader = new FileReader();
       reader.onload = evt => {
         const contents = readString(evt.target.result, { header: true });
+
         if (contents.data.length === 0) {
           this.props.setUserMessage("No records to import");
           return;
@@ -69,21 +72,33 @@ class CreateAssetModal extends Component {
           return;
         }
 
-        this.setState({
-          assetData: contents.data.map((d, i) => {
-            const keys = Object.keys(d).filter(
-              k => k !== "name" && k !== "description" && k !== "price"
-            );
-            return {
-              sku: `${moment().valueOf()}_${file.name}_${i}`,
-              description: d.description,
-              name: d.name,
-              price: d.price,
-              keys: keys,
-              values: keys.map(k => d[k])
-            };
-          })
-        });
+        const assetData = [];
+
+        for (let i = 0; i < contents.data.length - 1; i++) {
+          const row = contents.data[i];
+
+          const price = parseInt(row.price);
+          if (isNaN(price)) {
+            this.setState({ isValidated: false });
+            this.props.setUserMessage("'Price' should be an number");
+            break;
+          }
+
+          const keys = Object.keys(row).filter(
+            k => k !== "name" && k !== "description" && k !== "price"
+          );
+
+          assetData.push({
+            sku: `${moment().valueOf()}_${file.name}_${i}`,
+            description: row.description,
+            name: row.name,
+            price: row.price,
+            keys: keys,
+            values: keys.map(k => row[k])
+          });
+        }
+
+        this.setState({ assetData });
       };
       reader.readAsText(file, "UTF-8");
     }
@@ -165,8 +180,8 @@ class CreateAssetModal extends Component {
                     <Icon color="action">delete</Icon>
                   </IconButton>
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
               </span>
             </div>
           </div>
@@ -184,6 +199,11 @@ class CreateAssetModal extends Component {
     );
   };
 
+  closeImportAssetsOverlay = () => {
+    this.setState({ isValidated: true, assetData: {} })
+    this.props.closeImportAssetsOverlay();
+  }
+
   render() {
     const {
       handleSubmit,
@@ -192,10 +212,13 @@ class CreateAssetModal extends Component {
       openCreateAssetOverlay,
       closeCreateAssetOverlay,
       openImportAssetsOverlay,
-      closeImportAssetsOverlay,
       assetsUploaded,
       isAssetImportInProgress
     } = this.props;
+
+    const {
+      isValidated
+    } = this.state;
 
     return (
       <div>
@@ -203,6 +226,7 @@ class CreateAssetModal extends Component {
           <Button
             variant="contained"
             color="primary"
+            style={{ marginRight: '15px' }}
             onClick={() => {
               openImportAssetsOverlay();
               this.props.reset();
@@ -223,7 +247,7 @@ class CreateAssetModal extends Component {
         </ButtonGroup>
         <Dialog
           open={isImportAssetsModalOpen}
-          onClose={closeImportAssetsOverlay}
+          onClose={this.closeImportAssetsOverlay}
           aria-labelledby="form-dialog-title"
           disableBackdropClick={true}
           disableEscapeKeyDown={true}
@@ -241,7 +265,7 @@ class CreateAssetModal extends Component {
                   required
                 />
               </div>
-              {this.state.assetData.length > 0 ? (
+              {isValidated && this.state.assetData.length > 0 ? (
                 <div style={{ marginTop: 16 }}>
                   <Typography variant="body2" color="textSecondary">
                     {isAssetImportInProgress
@@ -255,12 +279,12 @@ class CreateAssetModal extends Component {
                   />
                 </div>
               ) : (
-                <div></div>
-              )}
+                  <div></div>
+                )}
             </DialogContent>
             <DialogActions>
               <Button
-                onClick={closeImportAssetsOverlay}
+                onClick={this.closeImportAssetsOverlay}
                 color="primary"
                 disabled={isAssetImportInProgress}
               >
@@ -270,7 +294,7 @@ class CreateAssetModal extends Component {
                 type="submit"
                 color="primary"
                 disabled={
-                  isAssetImportInProgress || this.state.assetData.length === 0
+                  !isValidated || isAssetImportInProgress || this.state.assetData.length === 0
                 }
               >
                 Import

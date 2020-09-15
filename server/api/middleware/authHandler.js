@@ -10,20 +10,27 @@ class AuthHandler {
       const accessTokenFromCookie = req.cookies[tokenName];
       if (!accessTokenFromCookie) {
         return rest.response.status(RestStatus.UNAUTHORIZED, res, {
-          loginUrl: req.app.oauth.getSigninURL()
+          loginUrl: req.app.oauth.getSigninURL(),
         });
       }
       try {
         await req.app.oauth.validateAndGetNewToken(req, res);
       } catch (err) {
+        this.clearAuthCookies(req, res);
         return rest.response.status(RestStatus.UNAUTHORIZED, res, {
-          loginUrl: req.app.oauth.getSigninURL()
+          loginUrl: req.app.oauth.getSigninURL(),
         });
       }
       req.accessToken = { token: accessTokenFromCookie };
       req.decodedToken = jwtDecode(accessTokenFromCookie);
       return next();
     };
+  }
+
+  static clearAuthCookies(req, res) {
+    res.clearCookie(req.app.oauth.getCookieNameAccessToken());
+    res.clearCookie(req.app.oauth.getCookieNameAccessTokenExpiry());
+    res.clearCookie(req.app.oauth.getCookieNameRefreshToken());
   }
 
   static init(app) {

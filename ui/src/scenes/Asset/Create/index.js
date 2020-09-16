@@ -222,11 +222,8 @@ class CreateAssetModal extends Component {
 
     return (
       <div>
-        <ButtonGroup>
+        <ButtonGroup color="primary" variant="contained">
           <Button
-            variant="contained"
-            color="primary"
-            style={{ marginRight: '15px' }}
             onClick={() => {
               openImportAssetsOverlay();
               this.props.reset();
@@ -235,8 +232,6 @@ class CreateAssetModal extends Component {
             Import Assets
           </Button>
           <Button
-            variant="contained"
-            color="primary"
             onClick={() => {
               openCreateAssetOverlay();
               this.props.reset();

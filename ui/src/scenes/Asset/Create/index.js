@@ -255,9 +255,8 @@ class CreateAssetModal extends Component {
             <DialogTitle id="form-dialog-title">Import Assets</DialogTitle>
             <DialogContent>
               {assetsUploadedErrors.length ? <div></div> : <div>
-                <div>
+                <div className="upload-container">
                   <Input
-                    color="primary"
                     type="file"
                     onChange={this.onFileLoad}
                     accept=".csv"

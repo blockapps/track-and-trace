@@ -14,3 +14,11 @@
   width: 100%;
   margin-bottom: 10px;
 }
+
+.upload-container .MuiInput-underline:before {
+  content: none !important;
+}
+
+.upload-container .MuiInput-underline:after {
+  content: none !important;
+}

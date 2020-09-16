@@ -21,6 +21,7 @@ export const IMPORT_ASSETS_REQUEST = "IMPORT_ASSETS_REQUEST";
 export const IMPORT_ASSETS_SUCCESS = "IMPORT_ASSETS_SUCCESS";
 export const IMPORT_ASSETS_FAILURE = "IMPORT_ASSETS_FAILURE";
 export const UPDATE_ASSET_IMPORT_COUNT = "UPDATE_ASSET_IMPORT_COUNT";
+export const UPDATE_ASSET_UPLOAD_ERROR = "UPDATE_ASSET_UPLOAD_ERROR";
 export const ASSET_NEXT_PAGE = "ASSET_NEXT_PAGE";
 
 export const assetType = {
@@ -189,5 +190,12 @@ export const updateAssetImportCount = function(count) {
   return {
     type: UPDATE_ASSET_IMPORT_COUNT,
     count,
+  };
+};
+
+export const updateAssetUploadError = function(errors) {
+  return {
+    type: UPDATE_ASSET_UPLOAD_ERROR,
+    errors,
   };
 };

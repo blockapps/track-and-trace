@@ -21,6 +21,7 @@ import {
   updateAssetImportCount,
   importAssetsSuccess,
   assetType,
+  updateAssetUploadError
 } from "../actions/asset.actions";
 import { setUserMessage } from "../actions/user-message.actions";
 
@@ -97,7 +98,9 @@ function createAssetApiCall(asset) {
     }),
   })
     .then(function(response) {
-      return response.json();
+      return response.json().then(json => {
+        return { ...json, httpStatus: response.status }
+      })
     })
     .catch(function(error) {
       throw error;
@@ -176,17 +179,23 @@ function* createAsset(action) {
 }
 
 function* importAssets(action) {
+  const errors = [];
   for (let i = 0; i < action.assets.length; i++) {
     try {
       const response = yield call(createAssetApiCall, action.assets[i]);
       if (response.success) {
         yield put(updateAssetImportCount(i + 1));
+      } else {
+        const parsedError = JSON.parse(response.error);
+        const error = Array.isArray(parsedError) ? parsedError[0] : parsedError;
+        errors.push({ ...response, error, sku: action.assets[i].sku })
       }
     } catch (err) {
       // do nothing
     }
   }
   yield put(importAssetsSuccess());
+  yield put(updateAssetUploadError(errors));
   yield put(setUserMessage(`Imported ${action.assets.length} records`, true));
 }
 

@@ -12,7 +12,10 @@ import {
   Icon,
   Input,
   LinearProgress,
-  Typography
+  Typography,
+  List,
+  ListItem,
+  ListItemText
 } from "@material-ui/core";
 import { reduxForm, Form, Field, FieldArray } from "redux-form";
 import ReduxedTextField from "../../../components/ReduxedTextField";
@@ -213,7 +216,8 @@ class CreateAssetModal extends Component {
       closeCreateAssetOverlay,
       openImportAssetsOverlay,
       assetsUploaded,
-      isAssetImportInProgress
+      isAssetImportInProgress,
+      assetsUploadedErrors,
     } = this.props;
 
     const {
@@ -250,50 +254,80 @@ class CreateAssetModal extends Component {
           <Form onSubmit={handleSubmit(this.startImport)}>
             <DialogTitle id="form-dialog-title">Import Assets</DialogTitle>
             <DialogContent>
-              <div>
-                <Input
-                  color="primary"
-                  type="file"
-                  onChange={this.onFileLoad}
-                  accept=".csv"
-                  id="icon-button-file"
-                  required
-                />
-              </div>
-              {isValidated && this.state.assetData.length > 0 ? (
-                <div style={{ marginTop: 16 }}>
-                  <Typography variant="body2" color="textSecondary">
-                    {isAssetImportInProgress
-                      ? `${assetsUploaded} / ${this.state.assetData.length} records imported`
-                      : `Click on IMPORT button to ingest ${this.state.assetData.length} records`}
-                  </Typography>
-                  <LinearProgress
+              {assetsUploadedErrors.length ? <div></div> : <div>
+                <div>
+                  <Input
                     color="primary"
-                    variant="determinate"
-                    value={(assetsUploaded * 100) / this.state.assetData.length}
+                    type="file"
+                    onChange={this.onFileLoad}
+                    accept=".csv"
+                    id="icon-button-file"
+                    required
                   />
                 </div>
-              ) : (
-                  <div></div>
-                )}
+                {isValidated && this.state.assetData.length > 0 ? (
+                  <div style={{ marginTop: 16 }}>
+                    <Typography variant="body2" color="textSecondary">
+                      {isAssetImportInProgress
+                        ? `${assetsUploaded} / ${this.state.assetData.length} records imported`
+                        : `Click on IMPORT button to ingest ${this.state.assetData.length} records`}
+                    </Typography>
+                    <LinearProgress
+                      color="primary"
+                      variant="determinate"
+                      value={(assetsUploaded * 100) / this.state.assetData.length}
+                    />
+                  </div>
+                ) : (
+                    <div></div>
+                  )}
+              </div>
+              }
+              {assetsUploadedErrors.length ?
+                <div style={{ marginTop: 16 }}>
+                  <List component="ul" aria-label="mailbox folders">
+                    Imported {assetsUploaded} out of {this.state.assetData.length} successfully. {assetsUploadedErrors.length} failed:
+                    {assetsUploadedErrors.map((value, key) => {
+                    return (
+                      <ListItem button divider key={key}>
+                        <ListItemText
+                          primary={value.sku}
+                          secondary={`${value.httpStatus} - ${value.error}`}
+                        />
+                      </ListItem>
+                    )
+                  })}
+                  </List>
+                </div> : <div></div>
+              }
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={this.closeImportAssetsOverlay}
-                color="primary"
-                disabled={isAssetImportInProgress}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                color="primary"
-                disabled={
-                  !isValidated || isAssetImportInProgress || this.state.assetData.length === 0
-                }
-              >
-                Import
-              </Button>
+              {assetsUploadedErrors.length ?
+                <Button
+                  onClick={this.closeImportAssetsOverlay}
+                  color="primary"
+                >
+                  Ok
+                </Button>
+                : <div>
+                  <Button
+                    onClick={this.closeImportAssetsOverlay}
+                    color="primary"
+                    disabled={isAssetImportInProgress}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    color="primary"
+                    disabled={
+                      !isValidated || isAssetImportInProgress || this.state.assetData.length === 0
+                    }
+                  >
+                    Import
+                  </Button>
+                </div>
+              }
             </DialogActions>
           </Form>
         </Dialog>
@@ -367,6 +401,7 @@ const mapStateToProps = state => {
     isImportAssetsModalOpen: state.asset.isImportAssetsModalOpen,
     isAssetImportInProgress: state.asset.isAssetImportInProgress,
     assetsUploaded: state.asset.assetsUploaded,
+    assetsUploadedErrors: state.asset.assetsUploadedErrors,
     error: state.asset.error
   };
 };

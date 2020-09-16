@@ -18,6 +18,7 @@ import {
   IMPORT_ASSETS_FAILURE,
   UPDATE_ASSET_IMPORT_COUNT,
   assetType,
+  UPDATE_ASSET_UPLOAD_ERROR
 } from "../actions/asset.actions";
 
 const initialState = {
@@ -39,6 +40,7 @@ const initialState = {
   error: null,
   isAssetImportInProgress: false,
   assetsUploaded: 0,
+  assetsUploadedErrors: [],
   isCreateAssetModalOpen: false,
   isImportAssetsModalOpen: false,
   isChangeOwnerModalOpen: false,
@@ -68,6 +70,8 @@ const reducer = (state = initialState, action) => {
       case OPEN_IMPORT_ASSETS_OVERLAY:
       case CLOSE_IMPORT_ASSETS_OVERLAY:
         draft.isImportAssetsModalOpen = action.isOpen;
+        draft.assetsUploadedErrors = [];
+        draft.assetsUploaded = 0;
         break;
       case IMPORT_ASSETS_REQUEST:
         draft.isAssetImportInProgress = true;
@@ -78,7 +82,7 @@ const reducer = (state = initialState, action) => {
         draft.error = null;
         break;
       case IMPORT_ASSETS_SUCCESS:
-        draft.isImportAssetsModalOpen = false;
+        draft.isAssetImportInProgress = false;
         draft.error = null;
         break;
       case CREATE_ASSET_FAILURE:
@@ -87,6 +91,7 @@ const reducer = (state = initialState, action) => {
         break;
       case IMPORT_ASSETS_FAILURE:
         draft.error = action.error;
+        draft.isAssetImportInProgress = false;
         draft.isImportAssetsModalOpen = true;
         break;
       case GET_ASSETS_SUCCESS:
@@ -120,6 +125,9 @@ const reducer = (state = initialState, action) => {
         break;
       case UPDATE_ASSET_IMPORT_COUNT:
         draft.assetsUploaded = action.count;
+        break;
+      case UPDATE_ASSET_UPLOAD_ERROR:
+        draft.assetsUploadedErrors = action.errors;
         break;
       default:
         break;

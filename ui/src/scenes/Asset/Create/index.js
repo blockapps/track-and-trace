@@ -250,6 +250,7 @@ class CreateAssetModal extends Component {
           aria-labelledby="form-dialog-title"
           disableBackdropClick={true}
           disableEscapeKeyDown={true}
+          fullWidth={true}
         >
           <Form onSubmit={handleSubmit(this.startImport)}>
             <DialogTitle id="form-dialog-title">Import Assets</DialogTitle>

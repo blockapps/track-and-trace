@@ -62,6 +62,10 @@ class CreateAssetModal extends Component {
           this.props.setUserMessage("No records to import");
           return;
         }
+        if (!contents.data[0].sku) {
+          this.props.setUserMessage("Missing required column 'sku'");
+          return;
+        }
         if (!contents.data[0].name) {
           this.props.setUserMessage("Missing required column 'name'");
           return;
@@ -92,7 +96,7 @@ class CreateAssetModal extends Component {
           );
 
           assetData.push({
-            sku: `${moment().valueOf()}_${file.name}_${i}`,
+            sku: row.sku,
             description: row.description,
             name: row.name,
             price: row.price,
@@ -223,7 +227,6 @@ class CreateAssetModal extends Component {
     const {
       isValidated
     } = this.state;
-
     return (
       <div>
         <ButtonGroup color="primary" variant="contained">
@@ -291,8 +294,8 @@ class CreateAssetModal extends Component {
                     return (
                       <ListItem button divider key={key}>
                         <ListItemText
-                          primary={value.sku}
-                          secondary={`${value.httpStatus} - ${value.error}`}
+                          primary={`SKU: ${value.sku}`}
+                          secondary={`${value.status} - ${value.error}`}
                         />
                       </ListItem>
                     )

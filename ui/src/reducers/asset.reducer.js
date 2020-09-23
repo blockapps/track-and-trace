@@ -76,6 +76,7 @@ const reducer = (state = initialState, action) => {
       case IMPORT_ASSETS_REQUEST:
         draft.isAssetImportInProgress = true;
         draft.assetsUploaded = 0;
+        draft.assetsUploadedErrors = [];
         break;
       case CREATE_ASSET_SUCCESS:
         draft.isCreateAssetModalOpen = false;

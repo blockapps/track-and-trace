@@ -98,9 +98,7 @@ function createAssetApiCall(asset) {
     }),
   })
     .then(function(response) {
-      return response.json().then(json => {
-        return { ...json, httpStatus: response.status }
-      })
+      return response.json();
     })
     .catch(function(error) {
       throw error;
@@ -186,9 +184,9 @@ function* importAssets(action) {
       if (response.success) {
         yield put(updateAssetImportCount(i + 1));
       } else {
-        const parsedError = JSON.parse(response.error);
-        const error = Array.isArray(parsedError) ? parsedError[0] : parsedError;
-        errors.push({ ...response, error, sku: action.assets[i].sku })
+        // TODO: send specific error from backend
+        const error = response.error;
+        errors.push({ status: error.status, error: error.data.method, sku: action.assets[i].sku })
       }
     } catch (err) {
       // do nothing

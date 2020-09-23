@@ -80,8 +80,7 @@ class CreateAssetModal extends Component {
         }
 
         const assetData = [];
-
-        for (let i = 0; i < contents.data.length - 1; i++) {
+        for (let i = 0; i < contents.data.length; i++) {
           const row = contents.data[i];
 
           const price = parseInt(row.price);

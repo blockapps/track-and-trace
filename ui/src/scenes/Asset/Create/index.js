@@ -31,7 +31,6 @@ import {
 import "./Create.css";
 import { setUserMessage } from "../../../actions/user-message.actions";
 import { readString } from "react-papaparse";
-import moment from "moment";
 
 class CreateAssetModal extends Component {
   constructor(props) {

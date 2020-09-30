@@ -30,9 +30,9 @@ export const assetType = {
   READ_ONLY: "READ_ONLY",
 };
 
-export const getAssets = (assetType, limit, offset, user, state) => {
+export const getAssets = (assetType, limit, offset, user, state, searchQuery) => {
   return {
-    payload: { aType: assetType, limit, offset, user, state },
+    payload: { aType: assetType, limit, offset, user, state, searchQuery },
     type: GET_ASSETS_REQUEST,
   };
 };

@@ -6,6 +6,7 @@ import AssetsTable from "./table";
 
 import { getAssets, assetType } from "../../../actions/asset.actions";
 import "./list.css";
+import { reduxForm } from "redux-form";
 
 class AssetsList extends Component {
   componentDidMount() {
@@ -17,6 +18,7 @@ class AssetsList extends Component {
       readonlyAssets,
       ASSET_STATE,
     } = this.props;
+
     if (parseInt(user.role, 10) !== USER_ROLE.REGULATOR) {
       this.props.getAssets(
         assetType.MINE,
@@ -45,7 +47,7 @@ class AssetsList extends Component {
     this.props.history.push(`/asset/${sku}`);
   };
 
-  onChangePage = (aType, page) => {
+  onChangePage = (aType, page, search) => {
     const {
       user,
       myAssets,
@@ -53,13 +55,16 @@ class AssetsList extends Component {
       readonlyAssets,
       ASSET_STATE,
     } = this.props;
+
     switch (aType) {
       case assetType.MINE:
         this.props.getAssets(
           assetType.MINE,
           myAssets.limit,
           page * myAssets.limit,
-          user.account
+          user.account,
+          '',
+          search
         );
         break;
       case assetType.BIDDING:
@@ -68,7 +73,8 @@ class AssetsList extends Component {
           biddingAssets.limit,
           biddingAssets.limit * page,
           user.account,
-          ASSET_STATE.BIDS_REQUESTED
+          ASSET_STATE.BIDS_REQUESTED,
+          search
         );
         break;
       case assetType.READ_ONLY:
@@ -76,7 +82,9 @@ class AssetsList extends Component {
           assetType.READ_ONLY,
           readonlyAssets.limit,
           readonlyAssets.limit * page,
-          user.account
+          user.account,
+          '',
+          search
         );
         break;
       default:
@@ -97,7 +105,7 @@ class AssetsList extends Component {
       USER_ROLE,
       ASSET_STATE,
     } = this.props;
-
+    
     if (parseInt(user.role, 10) === USER_ROLE.REGULATOR) {
       return (
         <AssetsTable
@@ -156,9 +164,10 @@ const mapStateToProps = (state) => {
   };
 };
 
+const formed = reduxForm({ form: "asset-list" })(AssetsList);
 const connected = connect(
   mapStateToProps,
   { getAssets }
-)(AssetsList);
+)(formed);
 
 export default withRouter(connected);

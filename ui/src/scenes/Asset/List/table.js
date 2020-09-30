@@ -7,10 +7,20 @@ import {
   TableRow,
   TableCell,
   Paper,
-  Typography,
+  Typography, Grid
 } from "@material-ui/core";
+import { Field } from "redux-form";
+import ReduxedTextField from "../../../components/ReduxedTextField";
 
 class AssetsTable extends Component {
+  constructor(props) {
+    super(props);
+    this.timeout = 0;
+    this.state = {
+      search: null
+    }
+  }
+
   renderRows = (assets) => {
     const { redirectToAssetDetail, ASSET_STATE } = this.props;
 
@@ -41,6 +51,22 @@ class AssetsTable extends Component {
     );
   };
 
+  search = (event, search) => {
+    const {
+      limit,
+      offset,
+      assetType,
+      onChangePage
+    } = this.props;
+
+    this.setState({ search })
+
+    if (this.timeout) clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => {
+      onChangePage(assetType, offset / limit, search);
+    }, 1000);
+  }
+
   render() {
     const {
       assets,
@@ -48,15 +74,36 @@ class AssetsTable extends Component {
       onChangePage,
       limit,
       offset,
-      assetType,
+      assetType
     } = this.props;
+
+    const {
+      search
+    } = this.state;
 
     return (
       <Paper className="assets-container">
         <div className="asset-table-title">
-          <Typography variant="h6" id="tableTitle">
-            {title}
-          </Typography>
+          <Grid container spacing={3}>
+            <Grid item xs={8}>
+              <Typography variant="h6" id="tableTitle">
+                {title}
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Field
+                type="text"
+                name={`search-${assetType}`}
+                className="search-box"
+                placeholder="Search by sku, name or description"
+                margin="normal"
+                component={ReduxedTextField}
+                onChange={this.search}
+                fullWidth
+                required
+              />
+            </Grid>
+          </Grid>
         </div>
         <Table className="assets-table">
           <TableHead>
@@ -84,7 +131,7 @@ class AssetsTable extends Component {
             "aria-label": "Next Page",
           }}
           onChangePage={(event, page) => {
-            onChangePage(assetType, page);
+            onChangePage(assetType, page, search);
           }}
         />
       </Paper>

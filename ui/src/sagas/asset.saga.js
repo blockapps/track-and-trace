@@ -32,17 +32,20 @@ const handleAssetEventUrl = `${apiUrl}/assets/:sku/event`;
 const changeAssetOwnerUrl = `${apiUrl}/assets/transferOwnership`;
 
 function fetchAssets(payload) {
-  const { aType, limit, offset, user, state } = payload;
+  const { aType, limit, offset, user, state, searchQuery } = payload;
   let url = assetsUrl;
+
+  const search = searchQuery ? `&or=(sku.ilike.${searchQuery},name.ilike.${searchQuery},description.ilike.${searchQuery})` : '';
+
   switch (aType) {
     case assetType.MINE:
-      url = `${assetsUrl}?owner=eq.${user}&limit=${limit}&offset=${offset}`;
+      url = `${assetsUrl}?owner=eq.${user}&limit=${limit}&offset=${offset}${search}`;
       break;
     case assetType.BIDDING:
-      url = `${assetsUrl}?limit=${limit}&offset=${offset}&assetState=eq.${state}`;
+      url = `${assetsUrl}?limit=${limit}&offset=${offset}&assetState=eq.${state}${search}`;
       break;
     case assetType.READ_ONLY:
-      url = `${assetsUrl}?limit=${limit}&offset=${offset}`;
+      url = `${assetsUrl}?limit=${limit}&offset=${offset}${search}`;
       break;
     default:
       url = assetsUrl;

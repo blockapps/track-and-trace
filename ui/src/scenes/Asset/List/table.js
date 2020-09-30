@@ -85,17 +85,17 @@ class AssetsTable extends Component {
       <Paper className="assets-container">
         <div className="asset-table-title">
           <Grid container spacing={3}>
-            <Grid item xs={8}>
+            <Grid item xs={9}>
               <Typography variant="h6" id="tableTitle">
                 {title}
               </Typography>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={3}>
               <Field
                 type="text"
                 name={`search-${assetType}`}
                 className="search-box"
-                placeholder="Search by sku, name or description"
+                placeholder="Search by SKU, Name or Description"
                 margin="normal"
                 component={ReduxedTextField}
                 onChange={this.search}

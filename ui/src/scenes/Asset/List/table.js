@@ -32,6 +32,7 @@ class AssetsTable extends Component {
             hover
             onClick={(event) => redirectToAssetDetail(event, asset.sku)}
           >
+            <TableCell align="left"> {asset.sku} </TableCell>
             <TableCell align="left"> {asset.name} </TableCell>
             <TableCell align="left">{asset.description}</TableCell>
             <TableCell align="left">{asset.price}</TableCell>
@@ -108,6 +109,7 @@ class AssetsTable extends Component {
         <Table className="assets-table">
           <TableHead>
             <TableRow>
+              <TableCell align="left">SKU</TableCell>
               <TableCell align="left">Name</TableCell>
               <TableCell align="left">Description</TableCell>
               <TableCell align="left">Price</TableCell>

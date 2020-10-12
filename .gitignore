@@ -60,3 +60,6 @@ node_modules/
 # blockapps config
 server/config.yaml
 server/config/*.deploy.yaml
+
+# ignore upload files
+server/uploads

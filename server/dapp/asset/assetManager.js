@@ -14,13 +14,13 @@ const options = { config };
 
 async function uploadContract(user, ttPermissionManagerContract) {
   const args = {
-    ttPermissionManager: ttPermissionManagerContract.address
+    ttPermissionManager: ttPermissionManagerContract.address,
   };
 
   const contractArgs = {
     name: contractName,
     source: await importer.combine(contractFilename),
-    args: util.usc(args)
+    args: util.usc(args),
   };
 
   const contract = await rest.createContract(user, contractArgs, options);
@@ -32,31 +32,31 @@ async function uploadContract(user, ttPermissionManagerContract) {
 }
 
 function bind(user, contract) {
-  contract.exists = async function(sku) {
+  contract.exists = async function (sku) {
     return await exists(user, contract, sku);
   };
 
-  contract.createAsset = async function(args) {
+  contract.createAsset = async function (args) {
     return await createAsset(user, contract, args);
   };
 
-  contract.handleAssetEvent = async function(args) {
+  contract.handleAssetEvent = async function (args) {
     return await handleAssetEvent(user, contract, args);
   };
 
-  contract.getAssets = async function(args) {
+  contract.getAssets = async function (args) {
     return await getAssets(user, contract, args);
   };
 
-  contract.getAsset = async function(sku) {
+  contract.getAsset = async function (sku) {
     return await getAsset(user, contract, sku);
   };
 
-  contract.getAssetHistory = async function(sku) {
+  contract.getAssetHistory = async function (sku) {
     return await getAssetHistory(user, contract, sku);
   };
 
-  contract.transferOwnership = async function(args) {
+  contract.transferOwnership = async function (args) {
     return await transferOwnership(user, contract, args);
   };
 
@@ -68,7 +68,7 @@ async function exists(user, contract, sku) {
   const callArgs = {
     contract,
     method: "exists",
-    args: util.usc(args)
+    args: util.usc(args),
   };
 
   const result = await rest.call(user, callArgs, options);
@@ -82,12 +82,12 @@ async function createAsset(user, contract, args) {
   const callArgs = {
     contract,
     method: "createAsset",
-    args: util.usc(converted)
+    args: util.usc(converted),
   };
 
   const copyOfOptions = {
     ...options,
-    history: [assetJs.contractName]
+    history: [assetJs.contractName],
   };
 
   const [restStatus, assetError, assetAddress] = await rest.call(
@@ -99,12 +99,12 @@ async function createAsset(user, contract, args) {
   if (restStatus != RestStatus.CREATED)
     throw new rest.RestError(restStatus, assetError, {
       method: callArgs.method,
-      converted
+      converted,
     });
 
   const contractArgs = {
     name: assetJs.contractName,
-    address: assetAddress
+    address: assetAddress,
   };
 
   const asset = await rest.waitForAddress(user, contractArgs, options);
@@ -115,7 +115,7 @@ async function handleAssetEvent(user, contract, args) {
   const callArgs = {
     contract,
     method: "handleAssetEvent",
-    args: util.usc(args)
+    args: util.usc(args),
   };
 
   const [restStatus, assetError, searchCounter, newState] = await rest.call(
@@ -127,7 +127,7 @@ async function handleAssetEvent(user, contract, args) {
   if (restStatus != RestStatus.OK)
     throw new rest.RestError(restStatus, assetError, {
       method: callArgs.method,
-      args
+      args,
     });
 
   await assetJs.waitForRequiredUpdate(user, args.sku, searchCounter);
@@ -136,37 +136,22 @@ async function handleAssetEvent(user, contract, args) {
 }
 
 async function getAssets(user, contract, args) {
-  const { assets: assetsHashMap } = await rest.getState(user, contract, options);
-  const hashmap = permissionHashmapJs.bindAddress(user, assetsHashMap);
-
-  const name = "values";
-  const values = await hashmap.getArray(name);
-  const addresses = values.slice(1);
-
-  const params = {
-    address: args.address
-      ? addresses.filter(a =>
-          Array.isArray(args.address)
-            ? args.address.indexOf(a) !== -1
-            : a === args.address
-        )
-      : addresses,
-    ...args
-  };
+  const { ttPermissionManager } = await rest.getState(user, contract, options);
 
   const contractArgs = {
-    name: assetJs.contractName
+    name: assetJs.contractName,
   };
 
   const copyOfOptions = {
     ...options,
     query: {
-      address: `in.${util.toCsv(params.address)}`
-    }
+      ttPermissionManager: `eq.${ttPermissionManager}`,
+      ...args,
+    },
   };
 
   const results = await rest.search(user, contractArgs, copyOfOptions);
-  const converted = results.map(r => assetJs.fromBytes32(r));
+  const converted = results.map((r) => assetJs.fromBytes32(r));
 
   return converted;
 }
@@ -181,20 +166,20 @@ async function getAsset(user, contract, sku) {
   const callArgs = {
     contract,
     method: "getAsset",
-    args: util.usc({ sku })
+    args: util.usc({ sku }),
   };
 
   const address = await rest.call(user, callArgs, options);
 
   const contractArgs = {
-    name: assetJs.contractName
+    name: assetJs.contractName,
   };
 
   const copyOfOptions = {
     ...options,
     query: {
-      address: `eq.${address}`
-    }
+      address: `eq.${address}`,
+    },
   };
 
   const result = await rest.search(user, contractArgs, copyOfOptions);
@@ -221,31 +206,31 @@ async function getAssetHistory(user, contract, sku) {
   const callArgs = {
     contract,
     method: "getAsset",
-    args: util.usc({ sku })
+    args: util.usc({ sku }),
   };
 
   const address = await rest.call(user, callArgs, options);
 
   const contractArgs = {
-    name: `history@${assetJs.contractName}`
+    name: `history@${assetJs.contractName}`,
   };
 
   const copyOfOptions = {
     ...options,
     query: {
-      address: `eq.${address}`
-    }
+      address: `eq.${address}`,
+    },
   };
 
   const history = await rest.search(user, contractArgs, copyOfOptions);
-  return history.map(h => assetJs.fromBytes32(h));
+  return history.map((h) => assetJs.fromBytes32(h));
 }
 
 async function transferOwnership(user, contract, args) {
   const callArgs = {
     contract,
     method: "transferOwnership",
-    args: util.usc(args)
+    args: util.usc(args),
   };
 
   const [restStatus, assetError, searchCounter, newState] = await rest.call(
@@ -257,7 +242,7 @@ async function transferOwnership(user, contract, args) {
   if (restStatus != RestStatus.OK)
     throw new rest.RestError(restStatus, assetError, {
       method: callArgs.method,
-      args
+      args,
     });
 
   await assetJs.waitForRequiredUpdate(user, args.sku, searchCounter);
@@ -267,5 +252,5 @@ async function transferOwnership(user, contract, args) {
 
 export default {
   uploadContract,
-  bind
+  bind,
 };

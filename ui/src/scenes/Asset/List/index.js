@@ -1,60 +1,173 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Grid } from '@material-ui/core';
-import AssetsTable from './table';
+import { Grid } from "@material-ui/core";
+import AssetsTable from "./table";
 
-import { getAssets } from "../../../actions/asset.actions";
-import './list.css';
+import { getAssets, assetType } from "../../../actions/asset.actions";
+import "./list.css";
+import { reduxForm } from "redux-form";
 
 class AssetsList extends Component {
-
   componentDidMount() {
-    this.props.getAssets();
+    const {
+      user,
+      USER_ROLE,
+      myAssets,
+      biddingAssets,
+      readonlyAssets,
+      ASSET_STATE,
+    } = this.props;
+
+    if (parseInt(user.role, 10) !== USER_ROLE.REGULATOR) {
+      this.props.getAssets(
+        assetType.MINE,
+        myAssets.limit,
+        myAssets.offset,
+        user.account
+      );
+      this.props.getAssets(
+        assetType.BIDDING,
+        biddingAssets.limit,
+        biddingAssets.offset,
+        user.account,
+        ASSET_STATE.BIDS_REQUESTED
+      );
+    } else {
+      this.props.getAssets(
+        assetType.READ_ONLY,
+        readonlyAssets.limit,
+        readonlyAssets.offset,
+        user.account
+      );
+    }
   }
 
   redirectToAssetDetail = (event, sku) => {
     this.props.history.push(`/asset/${sku}`);
   };
 
+  onChangePage = (aType, page, search) => {
+    const {
+      user,
+      myAssets,
+      biddingAssets,
+      readonlyAssets,
+      ASSET_STATE,
+    } = this.props;
+
+    switch (aType) {
+      case assetType.MINE:
+        this.props.getAssets(
+          assetType.MINE,
+          myAssets.limit,
+          page * myAssets.limit,
+          user.account,
+          '',
+          search
+        );
+        break;
+      case assetType.BIDDING:
+        this.props.getAssets(
+          assetType.BIDDING,
+          biddingAssets.limit,
+          biddingAssets.limit * page,
+          user.account,
+          ASSET_STATE.BIDS_REQUESTED,
+          search
+        );
+        break;
+      case assetType.READ_ONLY:
+        this.props.getAssets(
+          assetType.READ_ONLY,
+          readonlyAssets.limit,
+          readonlyAssets.limit * page,
+          user.account,
+          '',
+          search
+        );
+        break;
+      default:
+        break;
+    }
+  };
+
+  getNextPage = (type, limit, offset) => {
+    this.props.getAssets(type, limit, offset);
+  };
+
   renderTable = () => {
-    const { assets, user, USER_ROLE, ASSET_STATE } = this.props;
-
-    // Filter assets
-    const ownedAssets = assets.filter((asset) => asset.owner === user.account);
-    const requestedAssets = assets.filter((asset) => parseInt(asset.assetState, 10) === ASSET_STATE.BIDS_REQUESTED);
-
+    const {
+      myAssets,
+      biddingAssets,
+      readonlyAssets,
+      user,
+      USER_ROLE,
+      ASSET_STATE,
+    } = this.props;
+    
     if (parseInt(user.role, 10) === USER_ROLE.REGULATOR) {
-      return (<AssetsTable assets={assets} title={'Asset List'} redirectToAssetDetail={this.redirectToAssetDetail} ASSET_STATE={ASSET_STATE} />)
+      return (
+        <AssetsTable
+          assets={readonlyAssets.assets}
+          title={"Asset List"}
+          redirectToAssetDetail={this.redirectToAssetDetail}
+          ASSET_STATE={ASSET_STATE}
+          limit={readonlyAssets.limit}
+          offset={readonlyAssets.offset}
+          onChangePage={this.onChangePage}
+          assetType={assetType.READ_ONLY}
+        />
+      );
     }
 
     return (
       <div className="dashboard-container">
-        <AssetsTable assets={ownedAssets} title={'My assets'} redirectToAssetDetail={this.redirectToAssetDetail} ASSET_STATE={ASSET_STATE} />
-        <AssetsTable assets={requestedAssets} title={'Bidding assets'} redirectToAssetDetail={this.redirectToAssetDetail} ASSET_STATE={ASSET_STATE} />
+        <AssetsTable
+          assets={myAssets.assets}
+          title={"My assets"}
+          redirectToAssetDetail={this.redirectToAssetDetail}
+          ASSET_STATE={ASSET_STATE}
+          limit={myAssets.limit}
+          offset={myAssets.offset}
+          onChangePage={this.onChangePage}
+          assetType={assetType.MINE}
+        />
+        <AssetsTable
+          assets={biddingAssets.assets}
+          title={"Bidding assets"}
+          redirectToAssetDetail={this.redirectToAssetDetail}
+          ASSET_STATE={ASSET_STATE}
+          limit={biddingAssets.limit}
+          offset={biddingAssets.offset}
+          onChangePage={this.onChangePage}
+          assetType={assetType.BIDDING}
+        />
       </div>
     );
-  }
+  };
 
   render() {
-    return (
-      <Grid container>
-        {this.renderTable()}
-      </Grid>
-    )
+    return <Grid container>{this.renderTable()}</Grid>;
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    assets: state.asset.assets,
+    myAssets: state.asset.myAssets,
+    biddingAssets: state.asset.biddingAssets,
+    readonlyAssets: state.asset.readonlyAssets,
     user: state.authentication.user,
     USER_ROLE: state.constants.TT.TtRole,
     BID_STATE: state.constants.Bid.BidState,
-    ASSET_STATE: state.constants.Asset.AssetState
+    ASSET_STATE: state.constants.Asset.AssetState,
   };
 };
 
-const connected = connect(mapStateToProps, { getAssets })(AssetsList);
+const formed = reduxForm({ form: "asset-list" })(AssetsList);
+const connected = connect(
+  mapStateToProps,
+  { getAssets }
+)(formed);
 
 export default withRouter(connected);

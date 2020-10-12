@@ -1,4 +1,4 @@
-import { call, takeLatest, put } from "redux-saga/effects";
+import { call, takeLatest, put, takeEvery } from "redux-saga/effects";
 import { apiUrl, HTTP_METHODS } from "../constants";
 import {
   GET_ASSETS_REQUEST,
@@ -16,7 +16,12 @@ import {
   CHANGE_OWNER_REQUEST,
   changeOwnerSuccess,
   changeOwnerFailure,
-  getAssetDetail
+  getAssetDetail,
+  IMPORT_ASSETS_REQUEST,
+  updateAssetImportCount,
+  importAssetsSuccess,
+  assetType,
+  updateAssetUploadError
 } from "../actions/asset.actions";
 import { setUserMessage } from "../actions/user-message.actions";
 
@@ -26,12 +31,31 @@ const getAssetUrl = `${apiUrl}/assets/:sku`;
 const handleAssetEventUrl = `${apiUrl}/assets/:sku/event`;
 const changeAssetOwnerUrl = `${apiUrl}/assets/transferOwnership`;
 
-function fetchAssets() {
-  return fetch(assetsUrl, { method: HTTP_METHODS.GET })
-    .then(response => {
+function fetchAssets(payload) {
+  const { aType, limit, offset, user, state, searchQuery } = payload;
+  let url = assetsUrl;
+
+  const search = searchQuery ? `&or=(sku.ilike.${searchQuery},name.ilike.${searchQuery},description.ilike.${searchQuery})` : '';
+
+  switch (aType) {
+    case assetType.MINE:
+      url = `${assetsUrl}?owner=eq.${user}&limit=${limit}&offset=${offset}${search}`;
+      break;
+    case assetType.BIDDING:
+      url = `${assetsUrl}?limit=${limit}&offset=${offset}&assetState=eq.${state}${search}`;
+      break;
+    case assetType.READ_ONLY:
+      url = `${assetsUrl}?limit=${limit}&offset=${offset}${search}`;
+      break;
+    default:
+      url = assetsUrl;
+  }
+
+  return fetch(url, { method: HTTP_METHODS.GET })
+    .then((response) => {
       return response.json();
     })
-    .catch(err => {
+    .catch((err) => {
       throw err;
     });
 }
@@ -39,10 +63,10 @@ function fetchAssets() {
 function fetchAsset(sku) {
   const url = getAssetUrl.replace(":sku", sku);
   return fetch(url, { method: HTTP_METHODS.GET })
-    .then(response => {
+    .then((response) => {
       return response.json();
     })
-    .catch(err => {
+    .catch((err) => {
       throw err;
     });
 }
@@ -53,9 +77,9 @@ function handleEventApiCall(payload) {
     method: HTTP_METHODS.POST,
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   })
     .then(function(response) {
       return response.json();
@@ -66,15 +90,15 @@ function handleEventApiCall(payload) {
 }
 
 function createAssetApiCall(asset) {
-  return fetch(createAssetUrl, {
+  return fetch(`${createAssetUrl}`, {
     method: HTTP_METHODS.POST,
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      asset
-    })
+      asset,
+    }),
   })
     .then(function(response) {
       return response.json();
@@ -89,9 +113,9 @@ function changeOwnerApiCall(payload) {
     method: HTTP_METHODS.POST,
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   })
     .then(function(response) {
       return response.json();
@@ -114,11 +138,19 @@ function* getAsset(action) {
   }
 }
 
-function* getAssets() {
+function* getAssets(action) {
   try {
-    const response = yield call(fetchAssets);
+    const response = yield call(fetchAssets, action.payload);
+    console.log(response);
     if (response.success) {
-      yield put(getAssetsSuccess(response.data));
+      yield put(
+        getAssetsSuccess(
+          response.data,
+          action.payload.aType,
+          action.payload.limit,
+          action.payload.offset
+        )
+      );
     } else {
       yield put(getAssetsFailure());
     }
@@ -132,12 +164,12 @@ function* createAsset(action) {
     const response = yield call(createAssetApiCall, action.asset);
     if (response.success) {
       yield put(createAssetSuccess(response.data));
-      yield put(
-        setUserMessage(`Asset '${response.data.name}' has been created`, true)
-      );
+      const message = `Asset '${response.data.name}' has been created`;
+      yield put(setUserMessage(message, true));
     } else {
       yield put(createAssetFailure(response.error));
       // FIXME: if anything that could be better
+
       if (typeof response.error === "string")
         yield put(setUserMessage(response.error));
       else yield put(setUserMessage("Unable to create asset"));
@@ -145,6 +177,27 @@ function* createAsset(action) {
   } catch (err) {
     yield put(createAssetFailure(err));
   }
+}
+
+function* importAssets(action) {
+  const errors = [];
+  for (let i = 0; i < action.assets.length; i++) {
+    try {
+      const response = yield call(createAssetApiCall, action.assets[i]);
+      if (response.success) {
+        yield put(updateAssetImportCount(i + 1));
+      } else {
+        // TODO: send specific error from backend
+        const error = response.error;
+        errors.push({ status: error.status, error: error.data.method, sku: action.assets[i].sku })
+      }
+    } catch (err) {
+      // do nothing
+    }
+  }
+  yield put(importAssetsSuccess());
+  yield put(updateAssetUploadError(errors));
+  yield put(setUserMessage(`Imported ${action.assets.length} records`, true));
 }
 
 function* assetEvent(action) {
@@ -179,9 +232,10 @@ function* changeOwner(action) {
 }
 
 export default function* watchAssets() {
-  yield takeLatest(GET_ASSETS_REQUEST, getAssets);
+  yield takeEvery(GET_ASSETS_REQUEST, getAssets);
   yield takeLatest(CREATE_ASSET_REQUEST, createAsset);
   yield takeLatest(GET_ASSET_DETAIL_REQUEST, getAsset);
   yield takeLatest(ASSET_EVENT_REQUEST, assetEvent);
   yield takeLatest(CHANGE_OWNER_REQUEST, changeOwner);
+  yield takeLatest(IMPORT_ASSETS_REQUEST, importAssets);
 }

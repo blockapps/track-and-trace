@@ -85,7 +85,7 @@ describe('Asset Manager Tests', function () {
     }, RestStatus.UNAUTHORIZED, /"createAsset"/, AssetError.NULL)
   });
 
-  it('Create Asset', async function () {
+  it.skip('Create Asset', async function () {
     const assetArgs = factory.getAssetArgs();
 
     const asset = await manufacturerAssetManagerContract.createAsset(assetArgs);

@@ -21,7 +21,7 @@ const distributorCredentials = { token: process.env.MANUFACTURER_TOKEN };
 const options = { config }
 let existingSku;
 
-describe('Asset Manager Tests', function () {
+describe.skip('Asset Manager Tests', function () {
   this.timeout(config.timeout);
 
   let assetManagerContract, manufacturerAssetManagerContract, distributorAssetManagerContract;
@@ -85,7 +85,7 @@ describe('Asset Manager Tests', function () {
     }, RestStatus.UNAUTHORIZED, /"createAsset"/, AssetError.NULL)
   });
 
-  it.skip('Create Asset', async function () {
+  it('Create Asset', async function () {
     const assetArgs = factory.getAssetArgs();
 
     const asset = await manufacturerAssetManagerContract.createAsset(assetArgs);

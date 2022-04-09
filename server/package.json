@@ -20,7 +20,7 @@
     "js-yaml": "^3.12.2",
     "jwt-decode": "^2.2.0",
     "mocha": "^6.0.2",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "winston": "^3.2.0"
   },
   "scripts": {

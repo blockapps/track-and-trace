@@ -8,7 +8,7 @@
     "connected-react-router": "^6.2.2",
     "history": "^4.7.2",
     "immer": "^1.12.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "react-papaparse": "^3.7.1",
